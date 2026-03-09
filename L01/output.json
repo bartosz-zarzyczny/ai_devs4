@@ -1,0 +1,307 @@
+[
+  {
+    "name": "Albert",
+    "surname": "Skiba",
+    "gender": "M",
+    "born": 1991,
+    "city": "Grudziądz",
+    "tags": [
+      "IT"
+    ]
+  },
+  {
+    "name": "Cezary",
+    "surname": "Walczak",
+    "gender": "M",
+    "born": 1989,
+    "city": "Grudziądz",
+    "tags": [
+      "praca fizyczna"
+    ]
+  },
+  {
+    "name": "Cezary",
+    "surname": "Żurek",
+    "gender": "M",
+    "born": 1987,
+    "city": "Grudziądz",
+    "tags": [
+      "transport"
+    ]
+  },
+  {
+    "name": "Damian",
+    "surname": "Kruk",
+    "gender": "M",
+    "born": 1998,
+    "city": "Grudziądz",
+    "tags": [
+      "praca fizyczna"
+    ]
+  },
+  {
+    "name": "Dawid",
+    "surname": "Sokołowski",
+    "gender": "M",
+    "born": 1997,
+    "city": "Grudziądz",
+    "tags": [
+      "praca z pojazdami"
+    ]
+  },
+  {
+    "name": "Edward",
+    "surname": "Wiśniewski",
+    "gender": "M",
+    "born": 1988,
+    "city": "Grudziądz",
+    "tags": [
+      "praca fizyczna"
+    ]
+  },
+  {
+    "name": "Eryk",
+    "surname": "Mazurek",
+    "gender": "M",
+    "born": 1995,
+    "city": "Grudziądz",
+    "tags": [
+      "praca fizyczna"
+    ]
+  },
+  {
+    "name": "Grzegorz",
+    "surname": "Cieślak",
+    "gender": "M",
+    "born": 1995,
+    "city": "Grudziądz",
+    "tags": [
+      "IT"
+    ]
+  },
+  {
+    "name": "Jacek",
+    "surname": "Nowak",
+    "gender": "M",
+    "born": 1991,
+    "city": "Grudziądz",
+    "tags": [
+      "transport"
+    ]
+  },
+  {
+    "name": "Jan",
+    "surname": "Jasiński",
+    "gender": "M",
+    "born": 1994,
+    "city": "Grudziądz",
+    "tags": [
+      "praca fizyczna"
+    ]
+  },
+  {
+    "name": "Klaudiusz",
+    "surname": "Walczak",
+    "gender": "M",
+    "born": 1990,
+    "city": "Grudziądz",
+    "tags": [
+      "IT"
+    ]
+  },
+  {
+    "name": "Oskar",
+    "surname": "Sieradzki",
+    "gender": "M",
+    "born": 1993,
+    "city": "Grudziądz",
+    "tags": [
+      "transport"
+    ]
+  },
+  {
+    "name": "Oskar",
+    "surname": "Tomczyk",
+    "gender": "M",
+    "born": 1990,
+    "city": "Grudziądz",
+    "tags": [
+      "IT"
+    ]
+  },
+  {
+    "name": "Sławomir",
+    "surname": "Mazur",
+    "gender": "M",
+    "born": 1992,
+    "city": "Grudziądz",
+    "tags": [
+      "IT"
+    ]
+  },
+  {
+    "name": "Stanisław",
+    "surname": "Kubiak",
+    "gender": "M",
+    "born": 1993,
+    "city": "Grudziądz",
+    "tags": [
+      "IT"
+    ]
+  },
+  {
+    "name": "Stefan",
+    "surname": "Król",
+    "gender": "M",
+    "born": 1998,
+    "city": "Grudziądz",
+    "tags": [
+      "IT"
+    ]
+  },
+  {
+    "name": "Szymon",
+    "surname": "Woźniak",
+    "gender": "M",
+    "born": 1989,
+    "city": "Grudziądz",
+    "tags": [
+      "medycyna",
+      "praca z ludźmi"
+    ]
+  },
+  {
+    "name": "Szymon",
+    "surname": "Michalski",
+    "gender": "M",
+    "born": 1994,
+    "city": "Grudziądz",
+    "tags": [
+      "medycyna"
+    ]
+  },
+  {
+    "name": "Wojciech",
+    "surname": "Kruk",
+    "gender": "M",
+    "born": 1986,
+    "city": "Grudziądz",
+    "tags": [
+      "praca z ludźmi"
+    ]
+  },
+  {
+    "name": "Wojciech",
+    "surname": "Bielik",
+    "gender": "M",
+    "born": 1986,
+    "city": "Grudziądz",
+    "tags": [
+      "transport"
+    ]
+  },
+  {
+    "name": "Zdzisław",
+    "surname": "Krawczyk",
+    "gender": "M",
+    "born": 1994,
+    "city": "Grudziądz",
+    "tags": [
+      "edukacja",
+      "praca z ludźmi"
+    ]
+  },
+  {
+    "name": "Alan",
+    "surname": "Wieczorek",
+    "gender": "M",
+    "born": 1986,
+    "city": "Grudziądz",
+    "tags": [
+      "praca fizyczna"
+    ]
+  },
+  {
+    "name": "Kewin",
+    "surname": "Walczak",
+    "gender": "M",
+    "born": 1995,
+    "city": "Grudziądz",
+    "tags": [
+      "medycyna",
+      "praca z ludźmi"
+    ]
+  },
+  {
+    "name": "Natan",
+    "surname": "Czarnecki",
+    "gender": "M",
+    "born": 1992,
+    "city": "Grudziądz",
+    "tags": [
+      "medycyna",
+      "praca z ludźmi"
+    ]
+  },
+  {
+    "name": "Radosław",
+    "surname": "Kaczor",
+    "gender": "M",
+    "born": 1994,
+    "city": "Grudziądz",
+    "tags": [
+      "medycyna"
+    ]
+  },
+  {
+    "name": "Maksymilian",
+    "surname": "Pawlak",
+    "gender": "M",
+    "born": 1999,
+    "city": "Grudziądz",
+    "tags": [
+      "IT"
+    ]
+  },
+  {
+    "name": "Nikodem",
+    "surname": "Sokołowski",
+    "gender": "M",
+    "born": 1996,
+    "city": "Grudziądz",
+    "tags": [
+      "edukacja",
+      "praca z ludźmi"
+    ]
+  },
+  {
+    "name": "Remigiusz",
+    "surname": "Kurek",
+    "gender": "M",
+    "born": 1999,
+    "city": "Grudziądz",
+    "tags": [
+      "IT"
+    ]
+  },
+  {
+    "name": "Tymoteusz",
+    "surname": "Żurek",
+    "gender": "M",
+    "born": 1986,
+    "city": "Grudziądz",
+    "tags": [
+      "praca z ludźmi"
+    ]
+  },
+  {
+    "name": "Władysław",
+    "surname": "Wójcik",
+    "gender": "M",
+    "born": 1990,
+    "city": "Grudziądz",
+    "tags": [
+      "praca fizyczna"
+    ]
+  }
+]
