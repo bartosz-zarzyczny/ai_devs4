@@ -52,7 +52,6 @@ W katalogu głównym utwórz plik `.env`:
 ```env
 API_OPEN_ROUTER_KEY=twoj_klucz_openrouter
 AI_DEVS_4_API_KEY=twoj_klucz_ai_devs
-OPENROUTER_MODEL=google/gemini-2.0-flash-lite-001
 ```
 
 Wymagane zmienne:
@@ -60,9 +59,6 @@ Wymagane zmienne:
 - `API_OPEN_ROUTER_KEY` do tagowania przez OpenRouter
 - `AI_DEVS_4_API_KEY` do wysłania odpowiedzi do endpointu `verify`
 
-Opcjonalna zmienna:
-
-- `OPENROUTER_MODEL` jeśli chcesz nadpisać model domyślny
 
 ## Uruchamianie
 
