@@ -1,0 +1,76 @@
+Będziemy używać języka programowania python. Przygotuj kod, który pobierze dane z pliku
+
+people.csv
+następnie przefiltruje dane przez
+
+są mężczyznami, którzy teraz w 2026 roku mająmiędzy 20, a 40 lat
+urodzonych w Grudziądzu
+i zapisze do nowego pliku people_out.csv
+
+
+
+
+
+
+
+stwóz kod łaczący sie z api open router, klucz do api zanajduje sięw pliku .env Zaproponuj do skorzystania z taniego i małego modelu do wysłania danych w pliku CSV people_out.csv, wysyłający zawartość i tagujący odpoweidnio ludzie wg schematu:
+Każdą z potencjalnych osób musisz odpowiednio otagować. Mamy do dyspozycji następujące tagi:
+-IT
+-transport
+-edukacja
+-medycyna
+-praca z ludźmi
+-praca z pojazdami
+-praca fizyczna
+Jedna osoba może mieć wiele tagów.
+odpowiedź zapisz do pliku output.json i sformatuj:
+{
+"name": "Jan",
+"surname": "Kowalski",
+"gender": "M",
+"born": 1987,
+"city": "Warszawa",
+"tags": ["tag1", "tag2"]
+},
+{
+"name": "Anna",
+"surname": "Nowak",
+"gender": "F",
+"born": 1993,
+"city": "Grudziądz",
+"tags": ["tagA", "tagB", "tagC"]
+}
+
+
+
+
+
+
+
+stwóz kod, który wykona zadanie:
+listę osób, którymi powinniśmy się zainteresować. Oczekujemy formatu odpowiedzi jak poniżej, wysłanego na adres https://hub.ag3nts.org/verify
+
+Nazwa zadania to: people.
+
+{
+"apikey": "tutaj-twój-klucz-api",
+"task": "people",
+"answer": [
+{
+"name": "Jan",
+"surname": "Kowalski",
+"gender": "M",
+"born": 1987,
+"city": "Warszawa",
+"tags": ["tag1", "tag2"]
+},
+{
+"name": "Anna",
+"surname": "Nowak",
+"gender": "F",
+"born": 1993,
+"city": "Grudziądz",
+"tags": ["tagA", "tagB", "tagC"]
+}
+]
+}
