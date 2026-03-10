@@ -1,0 +1,54 @@
+[
+  {
+    "name": "Oskar",
+    "surname": "Sieradzki",
+    "birthYear": 1993,
+    "accessLevel": 7,
+    "powerPlantCity": "Tczew",
+    "powerPlant": "PWR1593PL",
+    "distanceKm": 0.56695,
+    "closestPoint": {
+      "latitude": 54.085,
+      "longitude": 18.792
+    }
+  },
+  {
+    "name": "Wojciech",
+    "surname": "Bielik",
+    "birthYear": 1986,
+    "accessLevel": 7,
+    "powerPlantCity": "Chelmno",
+    "powerPlant": "PWR2758PL",
+    "distanceKm": 0.84306,
+    "closestPoint": {
+      "latitude": 53.355,
+      "longitude": 18.415
+    }
+  },
+  {
+    "name": "Cezary",
+    "surname": "Żurek",
+    "birthYear": 1987,
+    "accessLevel": 1,
+    "powerPlantCity": "Zabrze",
+    "powerPlant": "PWR3847PL",
+    "distanceKm": 0.862219,
+    "closestPoint": {
+      "latitude": 50.3015,
+      "longitude": 18.7912
+    }
+  },
+  {
+    "name": "Damian",
+    "surname": "Kruk",
+    "birthYear": 1998,
+    "accessLevel": 1,
+    "powerPlantCity": "Radom",
+    "powerPlant": "PWR8406PL",
+    "distanceKm": 0.973217,
+    "closestPoint": {
+      "latitude": 51.395,
+      "longitude": 21.162
+    }
+  }
+]

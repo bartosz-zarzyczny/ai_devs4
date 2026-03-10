@@ -4,7 +4,16 @@
 }
 
 
+Zweryfikowany wynik (zaakceptowany przez /verify):
 
+name: Wojciech
+surname: Bielik
+accessLevel: 7
+powerPlant: PWR2758PL
+Status verify:
+
+code: 0
+message: {FLG:BUSTED}
 
 
 

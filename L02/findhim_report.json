@@ -1,0 +1,52 @@
+{
+  "task": "findhim",
+  "maxDistanceKm": 2.0,
+  "candidateCount": 4,
+  "selected": {
+    "name": "Wojciech",
+    "surname": "Bielik",
+    "accessLevel": 7,
+    "powerPlant": "PWR2758PL"
+  },
+  "selectedDebug": {
+    "name": "Wojciech",
+    "surname": "Bielik",
+    "birthYear": 1986,
+    "accessLevel": 7,
+    "powerPlantCity": "Chelmno",
+    "powerPlant": "PWR2758PL",
+    "distanceKm": 0.84306,
+    "closestPoint": {
+      "latitude": 53.355,
+      "longitude": 18.415
+    }
+  },
+  "verifyTrials": [
+    {
+      "answer": {
+        "name": "Oskar",
+        "surname": "Sieradzki",
+        "accessLevel": 7,
+        "powerPlant": "PWR1593PL"
+      },
+      "ok": false,
+      "response": {
+        "code": -910,
+        "message": "Incorrect person identification. Check name, surname, access level, and power plant code."
+      }
+    },
+    {
+      "answer": {
+        "name": "Wojciech",
+        "surname": "Bielik",
+        "accessLevel": 7,
+        "powerPlant": "PWR2758PL"
+      },
+      "ok": true,
+      "response": {
+        "code": 0,
+        "message": "{FLG:BUSTED}"
+      }
+    }
+  ]
+}
