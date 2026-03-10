@@ -58,4 +58,4 @@ Zweryfikowany wynik `findhim`:
 
 Odebrana flaga:
 
-- `{FLG:BUSTED}`
+- `{FLG:REDACTED}` <!-- placeholder: rzeczywista flaga nie powinna być przechowywana w README -->
