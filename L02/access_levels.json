@@ -1,0 +1,332 @@
+[
+  {
+    "name": "Albert",
+    "surname": "Skiba",
+    "birthYear": 1991,
+    "accessLevel": 4,
+    "raw": {
+      "name": "Albert",
+      "surname": "Skiba",
+      "accessLevel": 4
+    }
+  },
+  {
+    "name": "Cezary",
+    "surname": "Walczak",
+    "birthYear": 1989,
+    "accessLevel": 8,
+    "raw": {
+      "name": "Cezary",
+      "surname": "Walczak",
+      "accessLevel": 8
+    }
+  },
+  {
+    "name": "Cezary",
+    "surname": "Żurek",
+    "birthYear": 1987,
+    "accessLevel": 1,
+    "raw": {
+      "name": "Cezary",
+      "surname": "Żurek",
+      "accessLevel": 1
+    }
+  },
+  {
+    "name": "Damian",
+    "surname": "Kruk",
+    "birthYear": 1998,
+    "accessLevel": 1,
+    "raw": {
+      "name": "Damian",
+      "surname": "Kruk",
+      "accessLevel": 1
+    }
+  },
+  {
+    "name": "Dawid",
+    "surname": "Sokołowski",
+    "birthYear": 1997,
+    "accessLevel": 4,
+    "raw": {
+      "name": "Dawid",
+      "surname": "Sokołowski",
+      "accessLevel": 4
+    }
+  },
+  {
+    "name": "Edward",
+    "surname": "Wiśniewski",
+    "birthYear": 1988,
+    "accessLevel": 7,
+    "raw": {
+      "name": "Edward",
+      "surname": "Wiśniewski",
+      "accessLevel": 7
+    }
+  },
+  {
+    "name": "Eryk",
+    "surname": "Mazurek",
+    "birthYear": 1995,
+    "accessLevel": 4,
+    "raw": {
+      "name": "Eryk",
+      "surname": "Mazurek",
+      "accessLevel": 4
+    }
+  },
+  {
+    "name": "Grzegorz",
+    "surname": "Cieślak",
+    "birthYear": 1995,
+    "accessLevel": 5,
+    "raw": {
+      "name": "Grzegorz",
+      "surname": "Cieślak",
+      "accessLevel": 5
+    }
+  },
+  {
+    "name": "Jacek",
+    "surname": "Nowak",
+    "birthYear": 1991,
+    "accessLevel": 1,
+    "raw": {
+      "name": "Jacek",
+      "surname": "Nowak",
+      "accessLevel": 1
+    }
+  },
+  {
+    "name": "Jan",
+    "surname": "Jasiński",
+    "birthYear": 1994,
+    "accessLevel": 6,
+    "raw": {
+      "name": "Jan",
+      "surname": "Jasiński",
+      "accessLevel": 6
+    }
+  },
+  {
+    "name": "Klaudiusz",
+    "surname": "Walczak",
+    "birthYear": 1990,
+    "accessLevel": 0,
+    "raw": {
+      "name": "Klaudiusz",
+      "surname": "Walczak",
+      "accessLevel": 0
+    }
+  },
+  {
+    "name": "Oskar",
+    "surname": "Sieradzki",
+    "birthYear": 1993,
+    "accessLevel": 7,
+    "raw": {
+      "name": "Oskar",
+      "surname": "Sieradzki",
+      "accessLevel": 7
+    }
+  },
+  {
+    "name": "Oskar",
+    "surname": "Tomczyk",
+    "birthYear": 1990,
+    "accessLevel": 6,
+    "raw": {
+      "name": "Oskar",
+      "surname": "Tomczyk",
+      "accessLevel": 6
+    }
+  },
+  {
+    "name": "Sławomir",
+    "surname": "Mazur",
+    "birthYear": 1992,
+    "accessLevel": 0,
+    "raw": {
+      "name": "Sławomir",
+      "surname": "Mazur",
+      "accessLevel": 0
+    }
+  },
+  {
+    "name": "Stanisław",
+    "surname": "Kubiak",
+    "birthYear": 1993,
+    "accessLevel": 5,
+    "raw": {
+      "name": "Stanisław",
+      "surname": "Kubiak",
+      "accessLevel": 5
+    }
+  },
+  {
+    "name": "Stefan",
+    "surname": "Król",
+    "birthYear": 1998,
+    "accessLevel": 3,
+    "raw": {
+      "name": "Stefan",
+      "surname": "Król",
+      "accessLevel": 3
+    }
+  },
+  {
+    "name": "Szymon",
+    "surname": "Woźniak",
+    "birthYear": 1989,
+    "accessLevel": 1,
+    "raw": {
+      "name": "Szymon",
+      "surname": "Woźniak",
+      "accessLevel": 1
+    }
+  },
+  {
+    "name": "Szymon",
+    "surname": "Michalski",
+    "birthYear": 1994,
+    "accessLevel": 8,
+    "raw": {
+      "name": "Szymon",
+      "surname": "Michalski",
+      "accessLevel": 8
+    }
+  },
+  {
+    "name": "Wojciech",
+    "surname": "Kruk",
+    "birthYear": 1986,
+    "accessLevel": 2,
+    "raw": {
+      "name": "Wojciech",
+      "surname": "Kruk",
+      "accessLevel": 2
+    }
+  },
+  {
+    "name": "Wojciech",
+    "surname": "Bielik",
+    "birthYear": 1986,
+    "accessLevel": 7,
+    "raw": {
+      "name": "Wojciech",
+      "surname": "Bielik",
+      "accessLevel": 7
+    }
+  },
+  {
+    "name": "Zdzisław",
+    "surname": "Krawczyk",
+    "birthYear": 1994,
+    "accessLevel": 4,
+    "raw": {
+      "name": "Zdzisław",
+      "surname": "Krawczyk",
+      "accessLevel": 4
+    }
+  },
+  {
+    "name": "Alan",
+    "surname": "Wieczorek",
+    "birthYear": 1986,
+    "accessLevel": 5,
+    "raw": {
+      "name": "Alan",
+      "surname": "Wieczorek",
+      "accessLevel": 5
+    }
+  },
+  {
+    "name": "Kewin",
+    "surname": "Walczak",
+    "birthYear": 1995,
+    "accessLevel": 4,
+    "raw": {
+      "name": "Kewin",
+      "surname": "Walczak",
+      "accessLevel": 4
+    }
+  },
+  {
+    "name": "Natan",
+    "surname": "Czarnecki",
+    "birthYear": 1992,
+    "accessLevel": 8,
+    "raw": {
+      "name": "Natan",
+      "surname": "Czarnecki",
+      "accessLevel": 8
+    }
+  },
+  {
+    "name": "Radosław",
+    "surname": "Kaczor",
+    "birthYear": 1994,
+    "accessLevel": 2,
+    "raw": {
+      "name": "Radosław",
+      "surname": "Kaczor",
+      "accessLevel": 2
+    }
+  },
+  {
+    "name": "Maksymilian",
+    "surname": "Pawlak",
+    "birthYear": 1999,
+    "accessLevel": 5,
+    "raw": {
+      "name": "Maksymilian",
+      "surname": "Pawlak",
+      "accessLevel": 5
+    }
+  },
+  {
+    "name": "Nikodem",
+    "surname": "Sokołowski",
+    "birthYear": 1996,
+    "accessLevel": 1,
+    "raw": {
+      "name": "Nikodem",
+      "surname": "Sokołowski",
+      "accessLevel": 1
+    }
+  },
+  {
+    "name": "Remigiusz",
+    "surname": "Kurek",
+    "birthYear": 1999,
+    "accessLevel": 7,
+    "raw": {
+      "name": "Remigiusz",
+      "surname": "Kurek",
+      "accessLevel": 7
+    }
+  },
+  {
+    "name": "Tymoteusz",
+    "surname": "Żurek",
+    "birthYear": 1986,
+    "accessLevel": 6,
+    "raw": {
+      "name": "Tymoteusz",
+      "surname": "Żurek",
+      "accessLevel": 6
+    }
+  },
+  {
+    "name": "Władysław",
+    "surname": "Wójcik",
+    "birthYear": 1990,
+    "accessLevel": 1,
+    "raw": {
+      "name": "Władysław",
+      "surname": "Wójcik",
+      "accessLevel": 1
+    }
+  }
+]
