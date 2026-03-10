@@ -1,0 +1,144 @@
+import json,math;from pathlib import Path
+base=Path('L02')
+plants=json.loads((base/'plant.json').read_text(encoding='utf-8'))['power_plants']
+locs=json.loads((base/'locations.json').read_text(encoding='utf-8'))
+R=6371.0
+
+def hav(a,b,c,d):
+ import math
+ p1,p2=math.radians(a),math.radians(c)
+ dp=math.radians(c-a);dl=math.radians(d-b)
+ x=math.sin(dp/2)**2+math.cos(p1)*math.cos(p2)*math.sin(dl/2)**2
+ return 2*R*math.atan2(math.sqrt(x),math.sqrt(1-x))
+rows=[]
+for person in locs:
+ best=(1e9,None,None)
+ for pl_name,pl in plants.items():
+  if not pl.get('is_active'): continue
+  m=pl_name
+  # no coordinates in plant.json? inspect
+
+print('keys in plant entry:',next(iter(plants.values())).keys())
+
+
+
+
+
+
+import json, urllib.parse, urllib.request, math, time
+from pathlib import Path
+base=Path('L02')
+plants=json.loads((base/'plant.json').read_text(encoding='utf-8'))['power_plants']
+people=json.loads((base/'locations.json').read_text(encoding='utf-8'))
+
+def geocode(city):
+ q=urllib.parse.urlencode({'q':f'{city}, Poland','format':'json','limit':1})
+ url='https://nominatim.openstreetmap.org/search?'+q
+ req=urllib.request.Request(url,headers={'User-Agent':'ai_devs4-script'})
+ with urllib.request.urlopen(req,timeout=30) as r:
+  arr=json.loads(r.read().decode('utf-8'))
+ if not arr: return None
+ return float(arr[0]['lat']), float(arr[0]['lon'])
+
+coords={}
+for city in plants:
+ c=geocode(city)
+ coords[city]=c
+ time.sleep(1)
+print('plant coords',coords)
+
+R=6371.0
+def hav(a,b,c,d):
+ p1,p2=math.radians(a),math.radians(c)
+ dp=math.radians(c-a);dl=math.radians(d-b)
+ x=math.sin(dp/2)**2+math.cos(p1)*math.cos(p2)*math.sin(dl/2)**2
+ return 2*R*math.atan2(math.sqrt(x),math.sqrt(1-x))
+
+best=[]
+for person in people:
+ best_d=1e9;best_city=None;best_pt=None
+ for loc in person['locations']:
+  la,lo=loc['latitude'],loc['longitude']
+  for city,p in coords.items():
+   if not p: continue
+   d=hav(la,lo,p[0],p[1])
+   if d<best_d:
+    best_d=d;best_city=city;best_pt=(la,lo)
+ best.append((best_d,person['name'],person['surname'],best_city,best_pt))
+best.sort(key=lambda x:x[0])
+for row in best[:10]:
+ print(row)
+
+
+
+
+
+
+ python .\L02\solve_findhim.py --input .\L02\people_out.csv --plants .\L02\plant.json --report .\L02\findhim_report.json --candidates .\L02\findhim_candidates.json --max-distance-km 2.0 --verify
+
+
+
+
+ import json,os,urllib.request,urllib.error
+from pathlib import Path
+
+def load_env(path):
+ if not path.exists(): return
+ for raw in path.read_text(encoding='utf-8').splitlines():
+  line=raw.strip()
+  if not line or line.startswith('#') or '=' not in line: continue
+  k,v=line.split('=',1);os.environ.setdefault(k.strip(),v.strip().strip('"').strip("'"))
+
+root=Path('.')
+load_env(root/'.env')
+api=os.getenv('AI_DEVS_4_API_KEY')
+cands=json.loads((root/'L02'/'findhim_candidates.json').read_text(encoding='utf-8'))
+for c in cands:
+ ans={'name':c['name'],'surname':c['surname'],'accessLevel':c['accessLevel'],'powerPlant':c['powerPlant']}
+ payload={'apikey':api,'task':'findhim','answer':ans}
+ data=json.dumps(payload,ensure_ascii=False).encode('utf-8')
+ req=urllib.request.Request('https://hub.ag3nts.org/verify',data=data,headers={'Content-Type':'application/json'},method='POST')
+ try:
+  with urllib.request.urlopen(req,timeout=120) as r:
+   out=r.read().decode('utf-8','replace')
+   print('OK',ans,out)
+ except urllib.error.HTTPError as e:
+  body=e.read().decode('utf-8','replace')
+  print('ERR',ans,body)
+
+
+
+
+
+
+
+import json, os, urllib.request, urllib.error; from pathlib import Path
+root=Path('.')
+for raw in (root/'.env').read_text(encoding='utf-8').splitlines():
+ line=raw.strip()
+ if (not line) or line.startswith('#') or ('=' not in line):
+  continue
+ k,v=line.split('=',1)
+ os.environ.setdefault(k.strip(), v.strip().replace('"','').replace("'",''))
+api=os.getenv('AI_DEVS_4_API_KEY')
+cands=json.loads((root/'L02'/'findhim_candidates.json').read_text(encoding='utf-8'))
+for c in cands:
+ ans={'name':c['name'],'surname':c['surname'],'accessLevel':c['accessLevel'],'powerPlant':c['powerPlant']}
+ payload={'apikey':api,'task':'findhim','answer':ans}
+ req=urllib.request.Request('https://hub.ag3nts.org/verify', data=json.dumps(payload,ensure_ascii=False).encode('utf-8'), headers={'Content-Type':'application/json'}, method='POST')
+ try:
+  with urllib.request.urlopen(req,timeout=120) as r:
+   print('OK', ans, r.read().decode('utf-8','replace'))
+ except urllib.error.HTTPError as e:
+  print('ERR', ans, e.read().decode('utf-8','replace'))
+
+
+
+
+$envFile = '.\.env'; if (Test-Path $envFile) { Get-Content $envFile | ForEach-Object { $line = $_.Trim(); if ($line -and -not $line.StartsWith('#') -and $line.Contains('=')) { $parts = $line.Split('=',2); if (-not $env:$($parts[0].Trim())) { [Environment]::SetEnvironmentVariable($parts[0].Trim(), $parts[1].Trim().Trim('"').Trim("'"), 'Process') } } } }; $api = $env:AI_DEVS_4_API_KEY; $cands = Get-Content '.\L02\findhim_candidates.json' -Raw | ConvertFrom-Json; foreach ($c in $cands) { $payload = @{ apikey = $api; task = 'findhim'; answer = @{ name = $c.name; surname = $c.surname; accessLevel = $c.accessLevel; powerPlant = $c.powerPlant } } | ConvertTo-Json -Depth 6; try { $resp = Invoke-RestMethod -Uri 'https://hub.ag3nts.org/verify' -Method Post -Body $payload -ContentType 'application/json'; Write-Output ('OK ' + ($c.name + ' ' + $c.surname) + ' -> ' + ($resp | ConvertTo-Json -Compress)) } catch { $errBody = $_.ErrorDetails.Message; Write-Output ('ERR ' + ($c.name + ' ' + $c.surname) + ' -> ' + $errBody) } }
+
+
+
+
+
+

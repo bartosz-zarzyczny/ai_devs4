@@ -56,6 +56,4 @@ Zweryfikowany wynik `findhim`:
 - `accessLevel`: `7`
 - `powerPlant`: `PWR2758PL`
 
-Odebrana flaga:
 
-- `{FLG:REDACTED}` <!-- placeholder: rzeczywista flaga nie powinna być przechowywana w README -->
