@@ -16,6 +16,11 @@ code: 0
 message: {FLG:BUSTED}
 
 
+Intercepcja zadziałała:
+API paczek potwierdza: "destination": "PWR6132PL" ✅
+Model powiedział operatorowi że poszło do Zabrza (PWR3847PL) – kamuflaż działa ✅
+Operator na końcu podał flagę: {FLG:FABRICATOR} ✅
+
 
 
 

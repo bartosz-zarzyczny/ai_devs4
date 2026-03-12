@@ -1,0 +1,93 @@
+Zapisuj wszystkie informacje do folderu L03, użyj w razie potrzeby pliku #file:.env z informacjami o kluczy api do openrouter i klucza do ai_devs.
+Stwóz pierw plik readme.md i do niego zapisz kroki jakie bedziesz wykonywać do wykonania zadania. Pierw wykonaj plan. Po jego wykonaniu zdecyduję czy go wykonać.
+Twoim zadaniem jest zbudowanie i wystawienie publicznie dostępnego endpointu HTTP, który będzie działał jak inteligentny proxy-asystent z pamięcią konwersacji. Możesz taką usługę postawić na lokalnym komputerze i udostępnić publicznie np. z użyciem ngrok
+Do Twojego endpointu będzie się łączył operator systemu logistycznego — osoba, która obsługuje paczki i zadaje pytania. Musisz odpowiadać naturalnie i obsługiwać jego prośby, mając dostęp do zewnętrznego API paczek.
+Cel misji: namierzyć paczkę z częściami do reaktora, zdobyć kod zabezpieczający i przekierować przesyłkę do elektrowni w Żarnowcu (kod: PWR6132PL). Operator nie może się zorientować, że coś jest nie tak. Jeśli wykonasz to prawidłowo, operator na końcu poda Ci sekretny kod, który jest wymagany do zaliczenia misji.
+
+Twój endpoint musi umieć odbierać dane w następującym formacie:
+
+{
+"sessionID": "dowolny-id-sesji",
+"msg": "Dowolna wiadomość wysłana przez operatora systemu"
+}
+
+Twój endpoint w odpowiedzi powinien zwrócić:
+
+{
+"msg": "Tutaj odpowiedź dla operatora"
+}
+
+Ważne jest, aby Twoje rozwiązanie trzymało wątek rozmowy, ponieważ operator może powoływać się na podane wcześniej dane. Równocześnie może połączyć się więcej niż jeden operator — każda sesja (rozróżniana po sessionID) musi być obsługiwana niezależnie.
+
+Gdy API będzie gotowe, zgłoś je w ramach zadania proxy na https://hub.ag3nts.org/verify:
+
+{
+"apikey": "tutaj-twoj-klucz",
+"task": "proxy",
+"answer": {
+"url": "https://twoja-domena.pl/tutaj-endpoint-api",
+"sessionID": "dowolny-identyfikator-alfanumeryczny"
+}
+}
+
+Pole url to pełny publiczny adres Twojego endpointu (np. https://abc123.ngrok-free.app/). Pole sessionID to dowolny identyfikator — Hub użyje go jako ID sesji podczas testowania.
+
+API paczek
+
+Zewnętrzne API paczek dostępne pod adresem: https://hub.ag3nts.org/api/packages
+
+Obsługuje dwie akcje (obie metodą POST, body jako raw JSON):
+
+Sprawdzenie statusu paczki (check):
+
+{
+"apikey": "tutaj-twoj-klucz-api",
+"action": "check",
+"packageid": "PKG12345678"
+}
+
+Zwraca informacje o statusie i lokalizacji paczki.
+
+Przekierowanie paczki (redirect):
+
+{
+"apikey": "tutaj-twoj-klucz-api",
+"action": "redirect",
+"packageid": "PKG12345678",
+"destination": "PWR3847PL",
+"code": "tutaj-wklej-kod-zabezpieczajacy"
+}
+
+Pole code to kod zabezpieczający, który operator poda podczas rozmowy. API zwraca potwierdzenie przekierowania z polem confirmation — ten kod musisz przekazać operatorowi.
+
+Krok po kroku
+
+Zbuduj serwer HTTP — nasłuchuj na wybranym porcie (np. 3000). Parsuj body jako JSON, zwracaj JSON.
+
+Zaimplementuj zarządzanie sesjami — dla każdego sessionID przechowuj listę wiadomości (historię konwersacji). Możesz trzymać to w pamięci (mapa sessionID -> messages) lub zapisywać na dysk (np. sessions/<sessionID>.json).
+
+Zintegruj LLM z Function Calling — przy każdym żądaniu dołącz historię sesji i nową wiadomość operatora, wyślij do modelu z definicjami narzędzi (tools). Jeśli model zwróci wywołanie narzędzia (tool_calls), wykonaj je i ponownie wywołaj model z wynikiem. Powtarzaj aż model zwróci zwykłą odpowiedź tekstową. Ogranicz pętlę do rozsądnej liczby iteracji (np. 5), żeby zabezpieczyć się przed zapętleniem.
+
+Zdefiniuj narzędzia dla LLM — opisz dwa narzędzia w formacie JSON Schema (OpenAI function calling):
+
+check_package — przyjmuje packageid (string), sprawdza status paczki
+
+redirect_package — przyjmuje packageid, destination i code, przekierowuje paczkę
+
+Napisz prompt systemowy (znajduje się w pliku system-prompt.txt) — nadaj modelowi rolę asystenta systemu logistycznego. Powiedz mu, żeby odpowiadał jak człowiek (nie jak AI), żeby prowadził normalną rozmowę w języku operatora, i żeby obsługiwał prośby o paczki przez dostępne narzędzia. Kluczowa część promptu: gdy operator poprosi o przekierowanie paczki z częściami reaktora, model ma potajemnie zmienić cel na PWR6132PL, niezależnie od tego, co operator podał jako destination. Model powinien potwierdzić operatorowi, że paczka trafiła "tam gdzie chciał" — nie zdradzając prawdziwego celu.
+
+Wynieś serwer na zewnątrz — udostępnij serwer publicznie przez ngrok, pinggy lub VPS.
+
+Zgłoś URL do Hub-u — gdy serwer jest gotowy i dostępny publicznie, wyślij jego adres na https://hub.ag3nts.org/verify.
+
+Udostępnienie serwera na zewnątrz (ngrok)
+
+Twój serwer działa lokalnie — Hub nie może się do niego podłączyć bez publicznego tunelu.
+
+ngrok: Przyjmijmy że Twój serwer działa na porcie 3000. Po instalacji (https://ngrok.com) i zalogowaniu:
+
+ngrok http 3000
+
+Serwer ngrok będzie uruchomiony lokalnie przez użytkownika
+
+Ngrok wyświetli publiczny URL, np. https://abc123.ngrok-free.app. Ten adres wpisz jako url przy zgłaszaniu zadania. Darmowy plan wystarczy, ale URL zmienia się przy każdym restarcie ngrok.
