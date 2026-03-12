@@ -1,0 +1,7 @@
+{
+  "apikey": "",
+  "task": "sendit",
+  "answer": {
+    "declaration": "SYSTEM PRZESYŁEK\nKONDUKTORSKICH - DEKLARACJA\nZAWARTOŚCI\n======================================================\nDATA: 2026-03-12\nPUNKT NADAWCZY: Gdańsk\n------------------------------------------------------\nNADAWCA: 450202122\nPUNKT DOCELOWY: Żarnowiec\nTRASA: X-01\n------------------------------------------------------\nKATEGORIA PRZESYŁKI:\nA\n------------------------------------------------------\nOPIS ZAWARTOŚCI (max 200 znaków):\nkasety z paliwem\n------------------------------------------------------\nDEKLAROWANA MASA (kg):\n2800\n------------------------------------------------------\nWDP:\n4\n------------------------------------------------------\nUWAGI SPECJALNE:\nBRAK\n------------------------------------------------------\nKWOTA DO ZAPŁATY:\n0\n------------------------------------------------------\nOŚWIADCZAM, ŻE PODANE INFORMACJE SĄ PRAWDZIWE.\nBIORĘ NA SIEBIE KONSEKWENCJE ZA FAŁSZYWE OŚWIADCZENIE.\n======================================================\n"
+  }
+}

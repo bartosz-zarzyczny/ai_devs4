@@ -22,6 +22,12 @@ Model powiedział operatorowi że poszło do Zabrza (PWR3847PL) – kamuflaż dz
 Operator na końcu podał flagę: {FLG:FABRICATOR} ✅
 
 
+Response JSON: {
+  "code": 0,
+  "message": "{FLG:WISDOM}"
+}
+
+
 
 
 BONUSY:
