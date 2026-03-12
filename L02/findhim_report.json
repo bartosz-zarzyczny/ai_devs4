@@ -45,7 +45,7 @@
       "ok": true,
       "response": {
         "code": 0,
-        "message": "{FLG:BUSTED}"
+        "message": "FLAG_PLACEHOLDER"
       }
     }
   ]

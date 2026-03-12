@@ -75,9 +75,9 @@ Zbudowanie publicznie dostępnego endpointu HTTP działającego jako inteligentn
   }
   ```
 - Flaga pojawia się w ostatniej wiadomości operatora (Huba) w historii sesji, widoczna w:
-  - `L03/logs/<sessionID>.txt` — ostatni wpis `[USER]` kończy się kodem `{FLG:...}`
+  - `L03/logs/<sessionID>.txt` — ostatni wpis `[USER]` kończy się tokenem `FLAG_PLACEHOLDER`
   - `L03/logs/<sessionID>.json` — ostatni obiekt z `"role": "user"` w polu `"content"`
-  - `L03/logs/server.log` — linia `[INFO] [<sessionID>] USER: ... {FLG:...}`
+  - `L03/logs/server.log` — linia `[INFO] [<sessionID>] USER: ... FLAG_PLACEHOLDER`
 
 ### Krok 10 – Logowanie rozmów ✅
 - Każde zdarzenie jest zapisywane do katalogu `L03/logs/` (tworzony automatycznie)

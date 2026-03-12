@@ -53,7 +53,7 @@ Logi trafiają do dwóch plików:
 
 Przykładowa linia z `response_log.json`:
 ```json
-{"timestamp": "2026-03-12T20:54:00Z", "status_code": 200, "response": {"code": 0, "message": "{FLG:XXXXXX}"}, "route": null, "wdp": null}
+{"timestamp": "2026-03-12T20:54:00Z", "status_code": 200, "response": {"code": 0, "message": "FLAG_PLACEHOLDER"}, "route": null, "wdp": null}
 ```
 
 #### Opcje CLI

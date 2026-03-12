@@ -53,7 +53,7 @@ Oblicz lub ustal opłatę - regulamin SPK zawiera tabelę opłat. Opłata zależ
 
 Wyślij deklarację - gotowy tekst wyślij do /verify. Jeśli Hub odrzuci odpowiedź z komunikatem błędu, przeczytaj go uważnie - będzie zawierał wskazówki co poprawić.
 
-Koniec - jeśli wszystko przebiegło pomyślnie, Hub zwróci flagę {FLG:...}.
+Koniec - jeśli wszystko przebiegło pomyślnie, Hub zwróci identyfikator (np. FLAG_PLACEHOLDER).
 
 Wskazówki
 
