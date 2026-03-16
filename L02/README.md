@@ -56,4 +56,19 @@ Zweryfikowany wynik `findhim`:
 - `accessLevel`: `7`
 - `powerPlant`: `PWR2758PL`
 
+---
+
+## Zagadka: "Gość na poziomie stworzył Wallyego i Waldo"
+
+Zagadka polegała na zidentyfikowaniu twórcy słynnego "Gdzie jest Wally?" (**Martin Handford**) oraz odnalezieniu go w systemie pod odpowiednim "poziomem".
+
+**Rozwiązanie:**
+Odpytanie endpointu `/api/accesslevel` o osobę:
+- Imię: **Martin**
+- Nazwisko: **Handford**
+- Rok urodzenia: **1987**
+
+Zwraca ono flagę bonusową:
+`{FLG:WALDOISHERE}`
+
 

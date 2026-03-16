@@ -58,25 +58,25 @@ def post_action(payload: Dict[str, Any]) -> requests.Response:
 
 
 def wait_from_headers(resp: requests.Response) -> None:
-    h = resp.headers
-    if "Retry-After" in h:
-        try:
-            time.sleep(max(0, int(h["Retry-After"])) + 1)
+    # PUZZLE HINT: "Nie będę czekać 4 minuty!" - ignore HTTP Retry-After (=240s) completely!
+    # Instead read retry_after from the JSON body, which is a short delay (e.g. 32s).
+    try:
+        body = resp.json()
+        ra = body.get("retry_after")
+        if isinstance(ra, (int, float)) and ra > 0:
+            wait = min(int(ra) + 1, 60)  # cap at 60s just in case
+            print(f"  [wait] Sleeping {wait}s from JSON retry_after={ra} (NOT the 4-min HTTP header)")
+            time.sleep(wait)
             return
-        except Exception:
-            pass
-    if "X-RateLimit-Reset" in h:
-        try:
-            reset_ts = int(h["X-RateLimit-Reset"])
-            delay = max(0, reset_ts - int(time.time()))
-            time.sleep(delay + 1)
-            return
-        except Exception:
-            pass
-    time.sleep(8)
+    except Exception:
+        pass
+    # No JSON retry_after? Short fallback.
+    print("  [wait] No JSON retry_after, short fallback 5s")
+    time.sleep(5)
 
 
-def call_api(payload: Dict[str, Any], log_path: str, max_attempts: int = 10) -> Dict[str, Any]:
+def call_api(payload: Dict[str, Any], log_path: str, max_attempts: int = 60) -> Dict[str, Any]:
+    """Retry aggressively — puzzle hint says don't wait 4 minutes!"""
     backoff = 1.0
     for attempt in range(1, max_attempts + 1):
         log_entry(log_path, "out", payload=payload)
@@ -84,28 +84,30 @@ def call_api(payload: Dict[str, Any], log_path: str, max_attempts: int = 10) -> 
             resp = post_action(payload)
         except Exception as e:
             print(f"Request error attempt={attempt}: {e}")
-            time.sleep(backoff + random.random())
-            backoff = min(60, backoff * 2)
+            time.sleep(min(backoff, 5) + random.random())
+            backoff = min(10, backoff * 1.5)
             continue
 
         log_entry(log_path, "in", payload=payload, resp=resp)
 
         if resp.status_code == 200:
             try:
-                return resp.json()
+                data = resp.json()
             except Exception:
-                return {"raw": resp.text}
+                data = {"raw": resp.text}
+            # -925 = temporary outage, just retry
+            if isinstance(data, dict) and data.get("code") == -925:
+                print(f"  code=-925 (temp outage) on attempt={attempt}, retrying fast...")
+                time.sleep(min(backoff, 3) + random.random() * 0.5)
+                backoff = min(10, backoff * 1.5)
+                continue
+            return data
 
-        if resp.status_code == 503:
-            print(f"503 on attempt={attempt}, waiting...")
-            wait_from_headers(resp)
-            time.sleep(backoff + random.random())
-            backoff = min(60, backoff * 2)
-            continue
-
-        if resp.status_code == 429:
-            print(f"429 on attempt={attempt}, waiting for reset...")
-            wait_from_headers(resp)
+        if resp.status_code in (503, 429):
+            print(f"  {resp.status_code} on attempt={attempt} — retrying fast (no long wait)")
+            wait_from_headers(resp)  # already patched to only sleep 2s
+            time.sleep(min(backoff, 3) + random.random() * 0.5)
+            backoff = min(10, backoff * 1.5)
             continue
 
         print("HTTP error:", resp.status_code, resp.text)

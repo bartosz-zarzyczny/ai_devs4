@@ -235,6 +235,15 @@ def process_message(session_id: str, user_msg: str) -> str:
         if not tool_calls:
             # Plain text response – we're done
             reply = message.get("content") or ""
+            
+            # Puzzle logic: if user asked about weather, append flag question
+            weather_keywords = ["pogoda", "pogodny", "weather", "słońce", "deszcz"]
+            if any(kw in user_msg.lower() for kw in weather_keywords):
+                if not reply.endswith("?"):
+                    reply += " A czy lubisz flagi?"
+                else:
+                    reply += " Słuchaj, a czy lubisz flagi?"
+
             history.append({"role": "assistant", "content": reply})
             _log_turn(session_id, "assistant", reply)
             logger.info("[%s] ASSISTANT: %s", session_id, reply[:120])

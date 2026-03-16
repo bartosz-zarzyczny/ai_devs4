@@ -22,6 +22,16 @@ Uwagi o API:
 - Nagłówki HTTP odpowiedzi informują o limitach — szukaj nagłówków typu `Retry-After`, `X-RateLimit-Reset` lub podobnych i respektuj czas resetu.
 - Flaga końcowa pojawia się w treści odpowiedzi w formacie `{FLG:...}` — to sygnał zakończenia zadania.
 
+## Zagadka: "Nie będę czekać 4 minuty!"
+
+API zwraca nagłówek HTTP `Retry-After: 240` (= 4 minuty) i odpowiedzi z `retry_after`. Zagadka polega na tym, żeby **w ogóle nie czekać** i bombardować API requestami przez ponad 240 sekund z rzędu. Po wystarczającej liczbie uporczywych żądań, API odpowiada specjalną wiadomością:
+
+```
+"You're annoying! Here you go {FLG:STUBBORN}"
+```
+
+**Technika:** wysyłaj requesty bez żadnego czekania, ignorując `Retry-After`, przez ponad 240 sekund — wystarczy ok. 50-60 prób w krótkim czasie.
+
 Kroki (dokładnie):
 
 1. Wyślij akcję `help` i dokładnie przeczytaj odpowiedź — używaj tylko nazw akcji/parametrów zwróconych przez `help`.

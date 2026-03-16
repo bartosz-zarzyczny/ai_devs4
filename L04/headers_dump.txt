@@ -1,0 +1,26 @@
+STATUS: 200
+BODY: {
+    "code": 0,
+    "message": "{FLG:WISDOM}"
+}
+
+=== HEADERS ===
+Date: Mon, 16 Mar 2026 20:22:59 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 48
+Connection: keep-alive
+Server: cloudflare
+Cache-Control: no-cache, no-store, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Content-Type-Options: nosniff
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Request-Headers: *
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Credentials: true
+Nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+Report-To: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=BO7ms4wIZQB7QJdqntH1DsVw%2BV5A0OYvWUVKe8WPZTvM4a4dm5HBlFwxnMD2n8Pfz9Wvo5QvTvV9THvpog0vnsAyBAzikNbr4Hg8WlGU"}]}
+cf-cache-status: DYNAMIC
+CF-RAY: 9dd679200a0b1788-WAW
+alt-svc: h3=":443"; ma=86400
