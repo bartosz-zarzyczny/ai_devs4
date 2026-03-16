@@ -48,6 +48,9 @@ print(f"Loaded {len(data)} items:")
 for d in data:
     print(d)
 
+order = ['J', 'D', 'I', 'B', 'A', 'C', 'G', 'E', 'H', 'F']
+data = [data[ord(letter) - ord('A')] for letter in order]
+
 # 3. Test a prompt
 # Requirements:
 # - output DNG or NEU

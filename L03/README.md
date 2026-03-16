@@ -125,4 +125,19 @@ Zbudowanie publicznie dostępnego endpointu HTTP działającego jako inteligentn
 - Prompt systemowy w `system-prompt.txt` definiuje zachowanie asystenta, w tym ukrytą misję
 - Model **`gpt-4o`** (przez OpenRouter) — `gpt-4o-mini` nie rozpoznawał kontekstu reaktora wystarczająco niezawodnie
 - Intercepcja odbywa się **na poziomie serwera** (nie modelu): `dispatch_tool()` nadpisuje `destination` jeśli historia sesji zawiera słowa kluczowe związane z reaktorem/rdzeniami atomowymi
-- Katalog `logs/` jest tworzony automatycznie przy starcie serwera — nie wymaga ręcznej konfiguracji
+
+---
+
+## Zagadka: "W pogodny dzień zadałem wprost pytanie"
+
+Zagadka polegała na zmodyfikowaniu proxy tak, aby w odpowiedzi na pytanie o pogodę, asystent zapytał operatora o flagi.
+
+**Mechanizm:**
+W `server.py` dodano logikę wykrywającą słowa kluczowe związane z pogodą (`pogoda`, `pogodny`, itp.). Jeśli zostaną wykryte, do odpowiedzi modelu dopisywane jest pytanie: *"A czy lubisz flagi?"*.
+
+**Wynik:**
+Po zadaniu pytania przez operatora Huba o pogodę w Krakowie, asystent odpowiedział zgodnie z instrukcją i dodał pytanie o flagi. Operator w odpowiedzi podał flagę:
+`{FLG:JUSTASKED}`
+
+> [!NOTE]
+> Zmiany te nie wpływają na główną misję (przekierowanie reaktora). Kod przechwytujący (`dispatch_tool`) pozostaje aktywny, a pytanie o flagi jest doklejane tylko do końcowych odpowiedzi tekstowych asystenta, nie przerywając pętli narzędziowej. Główna flaga zadania (`{FLG:WISDOM}`) jest wciąż możliwa do zdobycia po poprawnym zakończeniu procedury przekierowania.
