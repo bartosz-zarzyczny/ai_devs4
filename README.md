@@ -8,6 +8,7 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L02/README.md](L02/README.md) - zadania `location`, `accesslevel`, `findhim` (analiza i verify)
  - [L03/README.md](L03/README.md) - lokalny serwer i narzędzia do submit (debug endpoints)
  - [L04/README.md](L04/README.md) - zadanie `sendit` (deklaracja transportowa, test tras, logowanie odpowiedzi)
+ - [L06/readme.md](L06/readme.md) - zadanie `categorize` (klasyfikator DNG/NEU, optymalizacja promptów, prompt caching)
 
 ## Konfiguracja
 
