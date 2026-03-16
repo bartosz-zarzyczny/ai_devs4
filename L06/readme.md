@@ -32,4 +32,4 @@ Zbudowanie klasyfikatora określającego, czy dany towar jest niebezpieczny (DNG
 ## Realizacja zadania
 Opisane kroki wdrożyłem do skryptu `task.py`. Uruchomienie go przebiegło pomyślnie i w wyniku iteracji 10 plików zdobyta została flaga:
 
-**{FLG:SMUGGLER}**
+**{FLG:_}**
