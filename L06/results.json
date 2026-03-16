@@ -1,12 +1,12 @@
 [
   {
-    "id": "i2710",
+    "id": "i6394",
     "status": 202,
     "res": {
       "code": 1,
       "message": "ACCEPTED",
       "debug": {
-        "output": "NEU",
+        "output": "DNG",
         "tokens": 69,
         "cached_tokens": 0,
         "input_cost": 0.138,
@@ -22,24 +22,68 @@
     }
   },
   {
-    "id": "i3344",
+    "id": "i9502",
     "status": 202,
     "res": {
       "code": 1,
       "message": "ACCEPTED",
       "debug": {
         "output": "NEU",
-        "tokens": 66,
+        "tokens": 68,
         "cached_tokens": 51,
-        "input_cost": 0.081,
+        "input_cost": 0.085,
         "output_cost": 0.004,
-        "balance": 1.273,
+        "balance": 1.269,
         "result": "correct classification",
         "classified_items": 2,
         "required_items": 10,
-        "global_cache_hit_rate": 37.78,
-        "global_cache_total_tokens": 135,
+        "global_cache_hit_rate": 37.23,
+        "global_cache_total_tokens": 137,
         "global_cache_cached_tokens": 51
+      }
+    }
+  },
+  {
+    "id": "i3491",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "DNG",
+        "tokens": 67,
+        "cached_tokens": 51,
+        "input_cost": 0.083,
+        "output_cost": 0.004,
+        "balance": 1.182,
+        "result": "correct classification",
+        "classified_items": 3,
+        "required_items": 10,
+        "global_cache_hit_rate": 50,
+        "global_cache_total_tokens": 204,
+        "global_cache_cached_tokens": 102
+      }
+    }
+  },
+  {
+    "id": "i6430",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "NEU",
+        "tokens": 64,
+        "cached_tokens": 51,
+        "input_cost": 0.077,
+        "output_cost": 0.004,
+        "balance": 1.101,
+        "result": "correct classification",
+        "classified_items": 4,
+        "required_items": 10,
+        "global_cache_hit_rate": 57.09,
+        "global_cache_total_tokens": 268,
+        "global_cache_cached_tokens": 153
       }
     }
   },
@@ -55,40 +99,40 @@
         "cached_tokens": 51,
         "input_cost": 0.069,
         "output_cost": 0.004,
-        "balance": 1.2,
+        "balance": 1.028,
         "result": "correct classification",
-        "classified_items": 3,
+        "classified_items": 5,
         "required_items": 10,
-        "global_cache_hit_rate": 52.31,
-        "global_cache_total_tokens": 195,
-        "global_cache_cached_tokens": 102
+        "global_cache_hit_rate": 62.2,
+        "global_cache_total_tokens": 328,
+        "global_cache_cached_tokens": 204
       }
     }
   },
   {
-    "id": "i1734",
+    "id": "i0254",
     "status": 202,
     "res": {
       "code": 1,
       "message": "ACCEPTED",
       "debug": {
         "output": "NEU",
-        "tokens": 63,
+        "tokens": 66,
         "cached_tokens": 51,
-        "input_cost": 0.075,
+        "input_cost": 0.081,
         "output_cost": 0.004,
-        "balance": 1.121,
+        "balance": 0.943,
         "result": "correct classification",
-        "classified_items": 4,
+        "classified_items": 6,
         "required_items": 10,
-        "global_cache_hit_rate": 59.3,
-        "global_cache_total_tokens": 258,
-        "global_cache_cached_tokens": 153
+        "global_cache_hit_rate": 64.72,
+        "global_cache_total_tokens": 394,
+        "global_cache_cached_tokens": 255
       }
     }
   },
   {
-    "id": "i6047",
+    "id": "i7628",
     "status": 202,
     "res": {
       "code": 1,
@@ -99,40 +143,40 @@
         "cached_tokens": 51,
         "input_cost": 0.083,
         "output_cost": 0.004,
-        "balance": 1.034,
+        "balance": 0.856,
         "result": "correct classification",
-        "classified_items": 5,
+        "classified_items": 7,
         "required_items": 10,
-        "global_cache_hit_rate": 62.77,
-        "global_cache_total_tokens": 325,
-        "global_cache_cached_tokens": 204
+        "global_cache_hit_rate": 66.38,
+        "global_cache_total_tokens": 461,
+        "global_cache_cached_tokens": 306
       }
     }
   },
   {
-    "id": "i0385",
+    "id": "i9084",
     "status": 202,
     "res": {
       "code": 1,
       "message": "ACCEPTED",
       "debug": {
         "output": "NEU",
-        "tokens": 65,
+        "tokens": 66,
         "cached_tokens": 51,
-        "input_cost": 0.079,
+        "input_cost": 0.081,
         "output_cost": 0.004,
-        "balance": 0.951,
+        "balance": 0.771,
         "result": "correct classification",
-        "classified_items": 6,
+        "classified_items": 8,
         "required_items": 10,
-        "global_cache_hit_rate": 65.38,
-        "global_cache_total_tokens": 390,
-        "global_cache_cached_tokens": 255
+        "global_cache_hit_rate": 67.74,
+        "global_cache_total_tokens": 527,
+        "global_cache_cached_tokens": 357
       }
     }
   },
   {
-    "id": "i8549",
+    "id": "i9217",
     "status": 202,
     "res": {
       "code": 1,
@@ -143,78 +187,34 @@
         "cached_tokens": 51,
         "input_cost": 0.085,
         "output_cost": 0.004,
-        "balance": 0.862,
-        "result": "correct classification",
-        "classified_items": 7,
-        "required_items": 10,
-        "global_cache_hit_rate": 66.81,
-        "global_cache_total_tokens": 458,
-        "global_cache_cached_tokens": 306
-      }
-    }
-  },
-  {
-    "id": "i4051",
-    "status": 202,
-    "res": {
-      "code": 1,
-      "message": "ACCEPTED",
-      "debug": {
-        "output": "NEU",
-        "tokens": 67,
-        "cached_tokens": 51,
-        "input_cost": 0.083,
-        "output_cost": 0.004,
-        "balance": 0.775,
-        "result": "correct classification",
-        "classified_items": 8,
-        "required_items": 10,
-        "global_cache_hit_rate": 68,
-        "global_cache_total_tokens": 525,
-        "global_cache_cached_tokens": 357
-      }
-    }
-  },
-  {
-    "id": "i9763",
-    "status": 202,
-    "res": {
-      "code": 1,
-      "message": "ACCEPTED",
-      "debug": {
-        "output": "NEU",
-        "tokens": 67,
-        "cached_tokens": 51,
-        "input_cost": 0.083,
-        "output_cost": 0.004,
-        "balance": 0.688,
+        "balance": 0.682,
         "result": "correct classification",
         "classified_items": 9,
         "required_items": 10,
-        "global_cache_hit_rate": 68.92,
-        "global_cache_total_tokens": 592,
+        "global_cache_hit_rate": 68.57,
+        "global_cache_total_tokens": 595,
         "global_cache_cached_tokens": 408
       }
     }
   },
   {
-    "id": "i0662",
+    "id": "i0619",
     "status": 202,
     "res": {
       "code": 0,
       "message": "ACCEPTED - {FLG:SMUGGLER}",
       "debug": {
         "output": "NEU",
-        "tokens": 66,
+        "tokens": 68,
         "cached_tokens": 51,
-        "input_cost": 0.081,
+        "input_cost": 0.085,
         "output_cost": 0.004,
-        "balance": 0.603,
+        "balance": 0.593,
         "result": "correct classification",
         "classified_items": 10,
         "required_items": 10,
-        "global_cache_hit_rate": 69.76,
-        "global_cache_total_tokens": 658,
+        "global_cache_hit_rate": 69.23,
+        "global_cache_total_tokens": 663,
         "global_cache_cached_tokens": 459,
         "flag": "{FLG:SMUGGLER}"
       }

@@ -1,0 +1,1 @@
+Return exactly 1 word: 'NEU' or 'DNG'. 'NEU' for safe items, tools, and ALL 'reactor' items. 'DNG' for weapons/ammo/hazardous. No explanations. ID:{id} Desc:{desc}
