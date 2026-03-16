@@ -26,6 +26,12 @@ Zbudowanie klasyfikatora określającego, czy dany towar jest niebezpieczny (DNG
 - Program najpierw automatycznie resetuje stan budżetu poleceniem: `{"prompt": "reset"}` na endpoint `/verify`.
 - Zapytania o kolejne przedmioty następują w pętli. Jeśli API zawróci odpowiedź o poprawnym formacie, jest ona przetwarzana. Błędna klasyfikacja lub błąd budżetowy anuluje wykonanie instrukcji w `task.py` aby ponownie wprowadzić ewentualne poprawki do promptu.
 
+### 4a. Interfejs graficzny w przeglądarce (`ui_server.py`)
+- Opracowano pełny interfejs webowy (Web UI), w którym można dynamicznie zmieniać i testować propmty przed ich wysłaniem.
+- Skrypt w Pythonie (`ui_server.py`) uruchamia wbudowany szybki serwer HTTP dostępny pod adresem: `http://localhost:8080`.
+- Zawiera osobny, bardzo widoczny blok, w którym ukazuje się uzyskana Flaga na samym szczycie ekranu. 
+- Z UI można analizować na żywo logi oraz weryfikować odrzucone paczki i tokeny.
+
 ### 5. Otrzymanie zwrotu błędu i odczyt z json odpowiedzi (Flaga)
 - Po poprawnym sklasyfikowaniu wszystkich 10 przedmiotów, podczas dziesiątego zapytania od huba odbierana jest odpowiedź, wewnątrz której serwer wysyła ukrytą flagę (`{FLG:xxxxxx}`).
 

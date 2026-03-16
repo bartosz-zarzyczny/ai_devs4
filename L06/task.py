@@ -55,6 +55,12 @@ for d in data:
 # Limit is 100 tokens including the desc. The prompt must be short.
 # It's better to put variables at the end.
 prompt_template = "Return exactly 1 word: 'NEU' or 'DNG'. 'NEU' for safe items, tools, and ALL 'reactor' items. 'DNG' for weapons/ammo/hazardous. No explanations. ID:{id} Desc:{desc}"
+import os
+if os.path.exists("prompt.txt"):
+    with open("prompt.txt", "r", encoding="utf-8") as pf:
+        content = pf.read().strip()
+        if content:
+            prompt_template = content
 
 all_results = []
 print("\nTesting prompt...")
