@@ -56,6 +56,7 @@
             font-size: 1.5rem;
             font-weight: 600;
             background: linear-gradient(135deg, #a5b4fc, #818cf8);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -222,6 +223,11 @@
             <h1>Categorize Agent UI</h1>
             <div class="badge" id="app-status">Ready</div>
         </header>
+        
+        <!-- Extracted Flag Area -->
+        <div id="flag-container" style="display: none; grid-column: 1 / -1; background: linear-gradient(135deg, #f59e0b, #d97706); padding: 1.5rem; border-radius: 12px; text-align: center; color: white; font-size: 1.5rem; font-weight: bold; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
+            NO FLAG YET
+        </div>
 
         <!-- Prompt Config -->
         <div class="card">
@@ -350,6 +356,7 @@
         function renderResults(resArr) {
             const grid = document.getElementById('results-grid');
             grid.innerHTML = "";
+            let foundFlag = null;
             if (!resArr || !resArr.length) return;
 
             resArr.forEach(item => {
@@ -359,6 +366,9 @@
                 let isOk = [200, 202].includes(item.status) && [0,1,2].includes(item.res.code);
                 let klass = isOk ? 'ok' : 'err';
                 let flagTxt = item.res.message && item.res.message.includes("{FLG:") ? `<div class="flg">${item.res.message}</div>` : '';
+                if (item.res.message && item.res.message.includes("{FLG:")) {
+                    foundFlag = item.res.message;
+                }
                 
                 let outStr = item.res?.debug?.output || 'No output details';
                 
@@ -370,6 +380,14 @@
                 `;
                 grid.appendChild(el);
             });
+            
+            const flagContainer = document.getElementById("flag-container");
+            if (foundFlag) {
+                flagContainer.style.display = "block";
+                flagContainer.textContent = "🏆 ZNALEZIONO FLAGĘ: " + foundFlag;
+            } else {
+                flagContainer.style.display = "none";
+            }
         }
     </script>
 </body>
