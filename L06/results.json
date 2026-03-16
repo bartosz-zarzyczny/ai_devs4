@@ -1,0 +1,223 @@
+[
+  {
+    "id": "i2710",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "NEU",
+        "tokens": 69,
+        "cached_tokens": 0,
+        "input_cost": 0.138,
+        "output_cost": 0.004,
+        "balance": 1.358,
+        "result": "correct classification",
+        "classified_items": 1,
+        "required_items": 10,
+        "global_cache_hit_rate": 0,
+        "global_cache_total_tokens": 69,
+        "global_cache_cached_tokens": 0
+      }
+    }
+  },
+  {
+    "id": "i3344",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "NEU",
+        "tokens": 66,
+        "cached_tokens": 51,
+        "input_cost": 0.081,
+        "output_cost": 0.004,
+        "balance": 1.273,
+        "result": "correct classification",
+        "classified_items": 2,
+        "required_items": 10,
+        "global_cache_hit_rate": 37.78,
+        "global_cache_total_tokens": 135,
+        "global_cache_cached_tokens": 51
+      }
+    }
+  },
+  {
+    "id": "i3188",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "DNG",
+        "tokens": 60,
+        "cached_tokens": 51,
+        "input_cost": 0.069,
+        "output_cost": 0.004,
+        "balance": 1.2,
+        "result": "correct classification",
+        "classified_items": 3,
+        "required_items": 10,
+        "global_cache_hit_rate": 52.31,
+        "global_cache_total_tokens": 195,
+        "global_cache_cached_tokens": 102
+      }
+    }
+  },
+  {
+    "id": "i1734",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "NEU",
+        "tokens": 63,
+        "cached_tokens": 51,
+        "input_cost": 0.075,
+        "output_cost": 0.004,
+        "balance": 1.121,
+        "result": "correct classification",
+        "classified_items": 4,
+        "required_items": 10,
+        "global_cache_hit_rate": 59.3,
+        "global_cache_total_tokens": 258,
+        "global_cache_cached_tokens": 153
+      }
+    }
+  },
+  {
+    "id": "i6047",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "NEU",
+        "tokens": 67,
+        "cached_tokens": 51,
+        "input_cost": 0.083,
+        "output_cost": 0.004,
+        "balance": 1.034,
+        "result": "correct classification",
+        "classified_items": 5,
+        "required_items": 10,
+        "global_cache_hit_rate": 62.77,
+        "global_cache_total_tokens": 325,
+        "global_cache_cached_tokens": 204
+      }
+    }
+  },
+  {
+    "id": "i0385",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "NEU",
+        "tokens": 65,
+        "cached_tokens": 51,
+        "input_cost": 0.079,
+        "output_cost": 0.004,
+        "balance": 0.951,
+        "result": "correct classification",
+        "classified_items": 6,
+        "required_items": 10,
+        "global_cache_hit_rate": 65.38,
+        "global_cache_total_tokens": 390,
+        "global_cache_cached_tokens": 255
+      }
+    }
+  },
+  {
+    "id": "i8549",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "NEU",
+        "tokens": 68,
+        "cached_tokens": 51,
+        "input_cost": 0.085,
+        "output_cost": 0.004,
+        "balance": 0.862,
+        "result": "correct classification",
+        "classified_items": 7,
+        "required_items": 10,
+        "global_cache_hit_rate": 66.81,
+        "global_cache_total_tokens": 458,
+        "global_cache_cached_tokens": 306
+      }
+    }
+  },
+  {
+    "id": "i4051",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "NEU",
+        "tokens": 67,
+        "cached_tokens": 51,
+        "input_cost": 0.083,
+        "output_cost": 0.004,
+        "balance": 0.775,
+        "result": "correct classification",
+        "classified_items": 8,
+        "required_items": 10,
+        "global_cache_hit_rate": 68,
+        "global_cache_total_tokens": 525,
+        "global_cache_cached_tokens": 357
+      }
+    }
+  },
+  {
+    "id": "i9763",
+    "status": 202,
+    "res": {
+      "code": 1,
+      "message": "ACCEPTED",
+      "debug": {
+        "output": "NEU",
+        "tokens": 67,
+        "cached_tokens": 51,
+        "input_cost": 0.083,
+        "output_cost": 0.004,
+        "balance": 0.688,
+        "result": "correct classification",
+        "classified_items": 9,
+        "required_items": 10,
+        "global_cache_hit_rate": 68.92,
+        "global_cache_total_tokens": 592,
+        "global_cache_cached_tokens": 408
+      }
+    }
+  },
+  {
+    "id": "i0662",
+    "status": 202,
+    "res": {
+      "code": 0,
+      "message": "ACCEPTED - {FLG:SMUGGLER}",
+      "debug": {
+        "output": "NEU",
+        "tokens": 66,
+        "cached_tokens": 51,
+        "input_cost": 0.081,
+        "output_cost": 0.004,
+        "balance": 0.603,
+        "result": "correct classification",
+        "classified_items": 10,
+        "required_items": 10,
+        "global_cache_hit_rate": 69.76,
+        "global_cache_total_tokens": 658,
+        "global_cache_cached_tokens": 459,
+        "flag": "{FLG:SMUGGLER}"
+      }
+    }
+  }
+]
