@@ -8,7 +8,9 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L02/README.md](L02/README.md) - zadania `location`, `accesslevel`, `findhim` (analiza i verify)
  - [L03/README.md](L03/README.md) - lokalny serwer i narzędzia do submit (debug endpoints)
  - [L04/README.md](L04/README.md) - zadanie `sendit` (deklaracja transportowa, test tras, logowanie odpowiedzi)
+ - [L05/README.md](L05/README.md) - narzędzia typu "railway" do wykonywania sekwencji akcji, bezpieczne logowanie i prosty UI do przeglądu logów
  - [L06/readme.md](L06/readme.md) - zadanie `categorize` (klasyfikator DNG/NEU, optymalizacja promptów, prompt caching) oraz interfejs graficzny UI (`ui_server.py`)
+ - [L07/README.md](L07/README.md) - zadanie `electricity` (pobieranie obrazu, analiza 3x3, automatyczny solver, lokalny UI oraz parsowanie meta-flag w PNG)
 
 ## Konfiguracja
 
@@ -67,4 +69,30 @@ python L05/scripts/serve_ui.py --port 8000
 	- Klient obsługuje nagłówki rate-limit (`Retry-After`, `X-RateLimit-Reset`) oraz kody 429/503 z eksponencjalnym backoffem i jitterem.
 	- Wynikowe flagi i pełne odpowiedzi zapisywane są w `L05/logs/railway_requests.log` (nie umieszczamy flag w README).
 	- Do uruchomienia skryptów wymagany jest klucz środowiskowy `AI_DEVS_4_API_KEY` (zobacz sekcję "Konfiguracja" wyżej).
+	 - Do uruchomienia skryptów wymagany jest klucz środowiskowy `AI_DEVS_4_API_KEY` (zobacz sekcję "Konfiguracja" wyżej).
+
+	## L07 — Electricity (puzzle + UI + solver)
+
+	Krótki opis:
+	- Cel: automatyczne rozwiązanie zadania "electricity" (pobranie obrazu, analiza 3x3, plan rotacji, wykonanie ruchów na hubie) oraz odkrycie ukrytej meta-informacji w pliku PNG.
+
+	Najważniejsze pliki:
+	- `L07/get_electricity.py` — pobiera aktualny obraz zadania z hubu (korzysta z `AI_DEVS_4_API_KEY` z pliku `.env`).
+	- `L07/electricity_solver.py` — analiza obrazu, tworzenie planu rotacji, parsowanie chunków PNG (tEXt) oraz funkcje pomocnicze do zastosowania planu.
+	- `L07/ui_server.py` — prosty serwer HTTP udostępniający UI i REST API (`/api/analyze`, `/api/apply-plan`, `/api/meta-flag`).
+	- `L07/ui.html` — interfejs przeglądarkowy: podgląd planszy, analiza kafelków, przyciski sterujące i przycisk "Odkryj meta-flagę".
+	- `L07/readme.md` — szczegółowe instrukcje i notatki dotyczące rozwiązania (lokalne).
+
+	Szybkie uruchomienie (virtualenv aktywowane):
+
+	```powershell
+	python -m pip install requests pillow python-dotenv
+	python L07/get_electricity.py    # pobiera current electricity.png i solved_electricity.png
+	python L07/ui_server.py          # uruchamia UI; domyślnie próbuje port 8080 i wybiera następny wolny
+	# otwórz w przeglądarce: http://127.0.0.1:8080/ (port może się różnić)
+	```
+
+	Uwaga:
+	- Serwery hub wymagają nagłówka/klucza API — skonfiguruj `AI_DEVS_4_API_KEY` w pliku `.env` w katalogu repo.
+	- UI udostępnia endpoint `GET /api/meta-flag`, który parsuje chunk tEXt wewnątrz pobranego PNG i dekoduje ewentualną ukrytą treść. README w `L07` zawiera więcej szczegółów technicznych.
 

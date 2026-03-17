@@ -246,6 +246,7 @@
         <button id="downloadBtn">Pobierz aktualny obraz</button>
         <button id="analyzeBtn" class="secondary">Analizuj planszę</button>
         <button id="applyBtn">Wykonaj cały plan</button>
+        <button id="metaFlagBtn" class="secondary">Odkryj meta flagę</button>
         <button id="resetBtn" class="ghost">Reset planszy</button>
         <div id="status" class="status">Ładowanie interfejsu…</div>
       </div>
@@ -305,6 +306,11 @@
           <h2>Odpowiedź API</h2>
           <div id="lastResponse" class="mono">Brak działań.</div>
         </div>
+
+        <div class="panel log" style="margin-top: 18px;">
+          <h2>Meta Flaga Z PNG</h2>
+          <div id="metaFlag" class="mono">Nie odczytano jeszcze ukrytej flagi.</div>
+        </div>
       </div>
     </section>
   </div>
@@ -323,7 +329,8 @@
       analysisBody: document.getElementById('analysisBody'),
       summary: document.getElementById('summary'),
       selectedInfo: document.getElementById('selectedInfo'),
-      lastResponse: document.getElementById('lastResponse')
+      lastResponse: document.getElementById('lastResponse'),
+      metaFlag: document.getElementById('metaFlag')
     };
 
     function setBusy(isBusy) {
@@ -538,6 +545,25 @@
       }
     }
 
+    async function loadMetaFlag() {
+      setBusy(true);
+      setStatus('Odczytuję ukrytą flagę z PNG…');
+      try {
+        const data = await api('/api/meta-flag');
+        if (!data.found) {
+          state.metaFlag.textContent = JSON.stringify(data, null, 2);
+          setStatus('Nie znaleziono CommentFLAG w PNG.', 'warn');
+          return;
+        }
+        state.metaFlag.textContent = JSON.stringify(data, null, 2);
+        setStatus(`Meta flaga: ${data.flag || 'brak'}`, data.flag ? 'good' : 'warn');
+      } catch (error) {
+        setStatus(`Błąd odczytu meta flagi: ${error.message}`, 'warn');
+      } finally {
+        setBusy(false);
+      }
+    }
+
     async function downloadBoard(reset = false) {
       setBusy(true);
       setStatus(reset ? 'Resetuję planszę…' : 'Pobieram aktualny obraz…');
@@ -559,6 +585,7 @@
     document.getElementById('resetBtn').addEventListener('click', () => downloadBoard(true));
     document.getElementById('analyzeBtn').addEventListener('click', loadAnalysis);
     document.getElementById('applyBtn').addEventListener('click', applyPlan);
+    document.getElementById('metaFlagBtn').addEventListener('click', loadMetaFlag);
 
     window.addEventListener('load', async () => {
       refreshImages();

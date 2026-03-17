@@ -145,4 +145,31 @@ Uwagi praktyczne
 - Solver opiera się na porównaniu obrazu bieżącego z obrazem wzorcowym, a nie na ręcznej definicji typów kafelków.
 - Po wykonaniu planu serwer pobiera świeży obraz i ponownie przelicza analizę, więc wynik jest od razu widoczny w UI.
 
+Dodatkowa zagadka: mapa na metapoziomie
+
+Wskazówkę „Mapa na metapoziomie” można czytać tak: zamiast analizować samą sieć przewodów jak klasyczną mapę połączeń, można potraktować cały obraz docelowy jako mapę wyższego poziomu, czyli wzorzec odniesienia dla planszy aktualnej.
+
+W praktyce oznacza to:
+
+- nie trzeba ręcznie modelować każdego rodzaju kafelka i jego semantyki,
+- nie trzeba rozwiązywać układu jako grafu połączeń,
+- można porównać stan bieżący z docelowym kafelek po kafelku,
+- obrót jest wyliczany przez znalezienie takiej orientacji pola, która najlepiej pasuje do odpowiedniego pola na mapie wzorcowej.
+
+To właśnie zostało zaimplementowane w tym rozwiązaniu: obraz docelowy pełni rolę „mapy meta”, a solver dopasowuje do niej aktualny stan planszy przez analizę obrazu i test 4 możliwych rotacji każdego pola.
+
+Dodatkowa podpowiedź: plik wie o sobie więcej niż obraz
+
+Wskazówkę „Nie tylko piksele niosą informację. Czasem plik mówi więcej niż pokazuje - zapytaj go o to, co wie o sobie.” warto rozumieć dosłownie: w zadaniach obrazkowych nie należy ograniczać się wyłącznie do analizy pikseli.
+
+W praktyce warto sprawdzić również:
+
+- nazwę pliku,
+- nagłówki HTTP przy pobieraniu,
+- metadane obrazu,
+- komentarze, profile i dodatkowe pola zapisane w pliku,
+- rozmiar, format, strukturę i ewentualne dane pomocnicze dołączone do zasobu.
+
+Innymi słowy: sam plik może zawierać wskazówki, które nie są widoczne na obrazie gołym okiem. To osobny trop analityczny, niezależny od rozpoznawania kształtów na planszy.
+
 Powodzenia!

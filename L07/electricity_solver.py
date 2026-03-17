@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import base64
 import itertools
 import json
 import re
+import struct
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -207,3 +209,67 @@ def save_analysis(path: Path | None = None) -> Path:
     output_path = path or (ROOT / 'analysis.json')
     output_path.write_text(json.dumps(analyze_board().to_dict(), indent=2), encoding='utf-8')
     return output_path
+
+
+def extract_png_text_chunks(image_path: Path | None = None) -> list[str]:
+    path = image_path or CURRENT_IMAGE
+    if not path.exists():
+        download_current_image()
+    data = path.read_bytes()
+    if data[:8] != b'\x89PNG\r\n\x1a\n':
+        raise RuntimeError(f'{path.name} nie jest poprawnym plikiem PNG')
+
+    text_chunks: list[str] = []
+    offset = 8
+    while offset < len(data):
+        length = struct.unpack('>I', data[offset:offset + 4])[0]
+        chunk_type = data[offset + 4:offset + 8].decode('ascii', errors='replace')
+        chunk_data = data[offset + 8:offset + 8 + length]
+        if chunk_type == 'tEXt':
+            text_chunks.append(chunk_data.decode('latin1'))
+        offset += 12 + length
+    return text_chunks
+
+
+def extract_meta_flag(image_path: Path | None = None) -> dict:
+    comments = extract_png_text_chunks(image_path)
+    parsed_comments = []
+    for item in comments:
+        if '\x00' in item:
+            key, value = item.split('\x00', 1)
+        else:
+            key, value = '', item
+        parsed_comments.append({'raw': item, 'key': key, 'value': value})
+
+    matching_comment = next(
+        (item for item in parsed_comments if item['key'] == 'Comment' and item['value'].startswith('FLAG:')),
+        None,
+    )
+    if not matching_comment:
+        return {
+            'found': False,
+            'comments': parsed_comments,
+            'flag': None,
+        }
+
+    payload_match = re.search(r'\(\s*([A-Za-z0-9+/=]+)\s*\)', matching_comment['value'])
+    if not payload_match:
+        return {
+            'found': True,
+            'comments': parsed_comments,
+            'comment': matching_comment,
+            'flag': None,
+            'error': 'Nie znaleziono payloadu base64 w CommentFLAG',
+        }
+
+    base64_payload = payload_match.group(1)
+    decoded_hex = base64.b64decode(base64_payload).decode('ascii')
+    flag = bytes(int(part, 16) for part in decoded_hex.split(',')).decode('utf-8')
+    return {
+        'found': True,
+        'comments': parsed_comments,
+        'comment': matching_comment,
+        'base64_payload': base64_payload,
+        'decoded_hex': decoded_hex,
+        'flag': flag,
+    }

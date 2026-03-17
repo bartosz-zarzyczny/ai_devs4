@@ -5,7 +5,7 @@ import socket
 import socketserver
 from pathlib import Path
 
-from electricity_solver import analyze_board, apply_plan, download_current_image, ensure_target_image, rotate_tile
+from electricity_solver import analyze_board, apply_plan, download_current_image, ensure_target_image, extract_meta_flag, rotate_tile
 
 PORT = int(os.environ.get('PORT', '8080'))
 
@@ -56,6 +56,13 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 analysis = analyze_board().to_dict()
                 self.write_json(analysis)
+            except Exception as error:
+                self.write_json({'error': str(error)}, status=500)
+            return
+
+        if self.path.startswith('/api/meta-flag'):
+            try:
+                self.write_json(extract_meta_flag())
             except Exception as error:
                 self.write_json({'error': str(error)}, status=500)
             return
