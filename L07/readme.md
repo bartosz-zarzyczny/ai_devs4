@@ -60,4 +60,89 @@ Wskazówki
 - Weryfikuj po każdym zestawie obrotów — błędy w interpretacji obrazu prowadzą do niepotrzebnych zapytań lub konieczności resetu.
 - Podejście agentowe: idealne do zautomatyzowania — agent może pobrać obraz, rozpoznać kafelki, policzyć obroty i wysyłać POSTy sekwencyjnie.
 
+Implementacja w tym folderze
+
+W folderze `L07` znajduje się działająca implementacja z UI WWW i backendem w Pythonie:
+
+- `get_electricity.py` — pobiera aktualny obraz `electricity.png` z użyciem klucza `AI_DEVS_4_API_KEY` z pliku `.env`.
+- `electricity_solver.py` — logika solvera: pobranie obrazów, wykrycie siatki 3x3, porównanie kafelków z obrazem docelowym i wykonanie obrotów przez API.
+- `ui_server.py` — serwer HTTP udostępniający UI i endpointy API.
+- `ui.html` — interfejs WWW do podglądu planszy, analizy pól i sterowania obrotami.
+- `electricity.png` — aktualny stan planszy pobrany z huba.
+- `solved_electricity.png` — obraz docelowy używany do porównania.
+
+Jak działa solver
+
+1. Pobiera bieżący obraz planszy i obraz docelowy.
+2. Wykrywa granice siatki 3x3 przez analizę ciemnych linii w obrazie.
+3. Wyciąga 9 kafelków z planszy aktualnej i 9 kafelków z planszy docelowej.
+4. Dla każdego pola testuje 4 warianty obrotu (`0`, `90`, `180`, `270` stopni w prawo).
+5. Wybiera obrót z najmniejszą różnicą pikseli względem odpowiadającego pola docelowego.
+6. Wysyła odpowiednią liczbę zapytań `rotate` do huba.
+7. Pobiera świeży obraz planszy i ponownie wykonuje analizę.
+
+Wymagania
+
+Kod korzysta z:
+
+- `requests`
+- `Pillow`
+
+Jeśli pakiety nie są jeszcze zainstalowane w aktywnym środowisku, doinstaluj je:
+
+```powershell
+pip install requests Pillow
+```
+
+Uruchomienie
+
+Pobranie aktualnego obrazu:
+
+```powershell
+python L07/get_electricity.py
+```
+
+Pobranie obrazu z resetem planszy:
+
+```powershell
+python L07/get_electricity.py --reset
+```
+
+Uruchomienie UI WWW:
+
+```powershell
+python L07/ui_server.py
+```
+
+Serwer spróbuje uruchomić się na porcie `8080`, a jeśli będzie zajęty, wybierze kolejny wolny port. Po starcie otworzy przeglądarkę z adresem `http://localhost:<port>/ui.html`.
+
+Funkcje UI
+
+Interfejs WWW pozwala na:
+
+- pobranie aktualnej planszy,
+- reset planszy,
+- analizę wszystkich 9 pól,
+- podgląd aktualnej i docelowej planszy z zaznaczeniem siatki,
+- kliknięcie konkretnego pola i obejrzenie go w powiększeniu,
+- ręczne wykonanie pojedynczego obrotu dla wybranego pola,
+- automatyczne wykonanie całego planu obrotów.
+
+Endpointy serwera
+
+`ui_server.py` udostępnia także endpointy pomocnicze:
+
+- `GET /api/status`
+- `GET /api/download`
+- `GET /api/reset`
+- `GET /api/analyze`
+- `POST /api/rotate`
+- `POST /api/apply-plan`
+
+Uwagi praktyczne
+
+- Klucz API jest odczytywany z głównego pliku `.env` z repozytorium.
+- Solver opiera się na porównaniu obrazu bieżącego z obrazem wzorcowym, a nie na ręcznej definicji typów kafelków.
+- Po wykonaniu planu serwer pobiera świeży obraz i ponownie przelicza analizę, więc wynik jest od razu widoczny w UI.
+
 Powodzenia!
