@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Electricity Control Panel</title>
+  <style>
+    :root {
+      --bg: #efe1c7;
+      --panel: rgba(255, 248, 235, 0.84);
+      --ink: #2b1c12;
+      --line: #b88f5c;
+      --accent: #8f3d16;
+      --accent-2: #265e57;
+      --muted: #6b5846;
+      --good: #1e6a39;
+      --warn: #8f3d16;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.5), transparent 28%),
+        linear-gradient(135deg, #e9d1ae, var(--bg));
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .shell {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      max-width: 64ch;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(98, 63, 34, 0.15);
+      border-radius: 18px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 20px 45px rgba(58, 34, 18, 0.08);
+    }
+
+    .controls {
+      padding: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-content: start;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font: inherit;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff9f1;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button.secondary { background: var(--accent-2); }
+    button.ghost { background: #f7ecd9; color: var(--ink); border: 1px solid rgba(98,63,34,0.15); }
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: 0.55; cursor: wait; transform: none; }
+
+    .status {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.55);
+      color: var(--muted);
+      min-height: 52px;
+    }
+
+    .status.good { color: var(--good); }
+    .status.warn { color: var(--warn); }
+
+    .boards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .board-card {
+      padding: 16px;
+    }
+
+    .board-card h2,
+    .analysis h2,
+    .preview h2,
+    .log h2 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .board-wrap {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.45);
+      border: 1px solid rgba(98,63,34,0.15);
+    }
+
+    .board-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .grid-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .grid-layer .line {
+      position: absolute;
+      background: rgba(143, 61, 22, 0.65);
+    }
+
+    .grid-layer .tile-hotspot {
+      position: absolute;
+      pointer-events: auto;
+      border: 2px solid rgba(38, 94, 87, 0.22);
+      background: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .grid-layer .tile-hotspot:hover,
+    .grid-layer .tile-hotspot.active {
+      background: rgba(38, 94, 87, 0.18);
+      border-color: rgba(38, 94, 87, 0.85);
+    }
+
+    .bottom {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 18px;
+    }
+
+    .analysis,
+    .preview,
+    .log {
+      padding: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid rgba(98,63,34,0.12);
+      text-align: left;
+    }
+
+    th { color: var(--muted); font-weight: 600; }
+
+    tr.active { background: rgba(38, 94, 87, 0.08); }
+    .rot-0 { color: var(--good); }
+    .rot-1, .rot-2, .rot-3 { color: var(--warn); font-weight: 700; }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .preview-box {
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(98,63,34,0.12);
+      border-radius: 14px;
+      padding: 10px;
+    }
+
+    .preview-box canvas {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      display: block;
+      background: #ead8b6;
+      border-radius: 10px;
+    }
+
+    .mono {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(98,63,34,0.15);
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 1000px) {
+      .hero,
+      .boards,
+      .bottom { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div>
+        <h1>Electricity<br/>Control Panel</h1>
+        <p>Podgląd aktualnej planszy i wzorca docelowego, analiza obrotów dla każdego pola 3x3, ręczne wykonanie pojedynczych ruchów oraz automatyczne zastosowanie całego planu.</p>
+      </div>
+      <div class="panel controls">
+        <button id="downloadBtn">Pobierz aktualny obraz</button>
+        <button id="analyzeBtn" class="secondary">Analizuj planszę</button>
+        <button id="applyBtn">Wykonaj cały plan</button>
+        <button id="resetBtn" class="ghost">Reset planszy</button>
+        <div id="status" class="status">Ładowanie interfejsu…</div>
+      </div>
+    </section>
+
+    <section class="boards">
+      <div class="panel board-card">
+        <h2>Aktualny stan</h2>
+        <div class="board-wrap">
+          <img id="currentImg" src="electricity.png" alt="Aktualna plansza" />
+          <div id="currentGrid" class="grid-layer"></div>
+        </div>
+      </div>
+      <div class="panel board-card">
+        <h2>Stan docelowy</h2>
+        <div class="board-wrap">
+          <img id="targetImg" src="solved_electricity.png" alt="Docelowa plansza" />
+          <div id="targetGrid" class="grid-layer"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bottom">
+      <div class="panel analysis">
+        <h2>Analiza pól</h2>
+        <div id="summary"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Pole</th>
+              <th>Obroty w prawo</th>
+              <th>Najlepszy score</th>
+              <th>Akcja</th>
+            </tr>
+          </thead>
+          <tbody id="analysisBody"></tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="panel preview" style="margin-bottom: 18px;">
+          <h2>Podgląd wybranego pola</h2>
+          <div class="preview-grid">
+            <div class="preview-box">
+              <strong>Aktualne</strong>
+              <canvas id="currentCanvas" width="220" height="220"></canvas>
+            </div>
+            <div class="preview-box">
+              <strong>Docelowe</strong>
+              <canvas id="targetCanvas" width="220" height="220"></canvas>
+            </div>
+          </div>
+          <p id="selectedInfo" class="mono" style="margin-top: 12px;">Kliknij pole na planszy lub w tabeli.</p>
+        </div>
+
+        <div class="panel log">
+          <h2>Odpowiedź API</h2>
+          <div id="lastResponse" class="mono">Brak działań.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const state = {
+      analysis: null,
+      selectedTile: null,
+      currentImg: document.getElementById('currentImg'),
+      targetImg: document.getElementById('targetImg'),
+      currentGrid: document.getElementById('currentGrid'),
+      targetGrid: document.getElementById('targetGrid'),
+      currentCanvas: document.getElementById('currentCanvas'),
+      targetCanvas: document.getElementById('targetCanvas'),
+      statusEl: document.getElementById('status'),
+      analysisBody: document.getElementById('analysisBody'),
+      summary: document.getElementById('summary'),
+      selectedInfo: document.getElementById('selectedInfo'),
+      lastResponse: document.getElementById('lastResponse')
+    };
+
+    function setBusy(isBusy) {
+      for (const btn of document.querySelectorAll('button')) btn.disabled = isBusy;
+    }
+
+    function setStatus(text, kind = '') {
+      state.statusEl.textContent = text;
+      state.statusEl.className = `status ${kind}`.trim();
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, options);
+      const text = await response.text();
+      let data = {};
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+      if (!response.ok) {
+        throw new Error(data.error || data.raw || `HTTP ${response.status}`);
+      }
+      return data;
+    }
+
+    function cacheBust(url) {
+      return `${url.split('?')[0]}?t=${Date.now()}`;
+    }
+
+    function refreshImages() {
+      state.currentImg.src = cacheBust('electricity.png');
+      state.targetImg.src = cacheBust('solved_electricity.png');
+    }
+
+    function renderGrid(container, image, gridX, gridY) {
+      container.innerHTML = '';
+      const rect = image.getBoundingClientRect();
+      const scaleX = rect.width / image.naturalWidth;
+      const scaleY = rect.height / image.naturalHeight;
+
+      for (const x of gridX) {
+        const line = document.createElement('div');
+        line.className = 'line';
+        line.style.left = `${x * scaleX}px`;
+        line.style.top = '0';
+        line.style.width = '2px';
+        line.style.height = '100%';
+        container.appendChild(line);
+      }
+
+      for (const y of gridY) {
+        const line = document.createElement('div');
+        line.className = 'line';
+        line.style.top = `${y * scaleY}px`;
+        line.style.left = '0';
+        line.style.height = '2px';
+        line.style.width = '100%';
+        container.appendChild(line);
+      }
+
+      if (container.id !== 'currentGrid') return;
+
+      for (const move of state.analysis.moves) {
+        const left = gridX[move.col - 1] * scaleX;
+        const top = gridY[move.row - 1] * scaleY;
+        const width = (gridX[move.col] - gridX[move.col - 1]) * scaleX;
+        const height = (gridY[move.row] - gridY[move.row - 1]) * scaleY;
+        const hotspot = document.createElement('button');
+        hotspot.className = 'tile-hotspot';
+        if (state.selectedTile === move.tile) hotspot.classList.add('active');
+        hotspot.style.left = `${left}px`;
+        hotspot.style.top = `${top}px`;
+        hotspot.style.width = `${width}px`;
+        hotspot.style.height = `${height}px`;
+        hotspot.title = move.tile;
+        hotspot.addEventListener('click', () => selectTile(move.tile));
+        container.appendChild(hotspot);
+      }
+    }
+
+    function drawTile(canvas, image, gridX, gridY, row, col) {
+      const ctx = canvas.getContext('2d');
+      const startX = gridX[col - 1];
+      const startY = gridY[row - 1];
+      const width = gridX[col] - gridX[col - 1];
+      const height = gridY[row] - gridY[row - 1];
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const scale = Math.min(canvas.width / width, canvas.height / height);
+      const drawWidth = width * scale;
+      const drawHeight = height * scale;
+      const left = (canvas.width - drawWidth) / 2;
+      const top = (canvas.height - drawHeight) / 2;
+      ctx.drawImage(image, startX, startY, width, height, left, top, drawWidth, drawHeight);
+    }
+
+    function renderSummary() {
+      if (!state.analysis) return;
+      const pending = state.analysis.moves.filter(move => move.rotate_right > 0);
+      const solvedText = state.analysis.solved ? 'plansza zgodna z wzorcem' : `pozostało ruchów: ${pending.reduce((sum, move) => sum + move.rotate_right, 0)}`;
+      state.summary.innerHTML = `
+        <span class="pill">Aktualna plansza: ${state.analysis.solved ? 'zgodna' : 'wymaga korekty'}</span>
+        <span class="pill">Pól do zmiany: ${pending.length}</span>
+        <span class="pill">Status: ${solvedText}</span>
+      `;
+    }
+
+    function renderTable() {
+      state.analysisBody.innerHTML = '';
+      for (const move of state.analysis.moves) {
+        const row = document.createElement('tr');
+        if (move.tile === state.selectedTile) row.classList.add('active');
+        row.innerHTML = `
+          <td>${move.tile}</td>
+          <td class="rot-${move.rotate_right}">${move.rotate_right}</td>
+          <td>${move.best_score}</td>
+          <td><button class="ghost" data-tile="${move.tile}">Obróć raz</button></td>
+        `;
+        row.addEventListener('click', event => {
+          if (event.target.tagName !== 'BUTTON') selectTile(move.tile);
+        });
+        row.querySelector('button').addEventListener('click', async event => {
+          event.stopPropagation();
+          await rotateOne(move.tile);
+        });
+        state.analysisBody.appendChild(row);
+      }
+    }
+
+    function selectTile(tile) {
+      state.selectedTile = tile;
+      const move = state.analysis.moves.find(item => item.tile === tile);
+      if (!move) return;
+      drawTile(state.currentCanvas, state.currentImg, state.analysis.current_grid_x, state.analysis.current_grid_y, move.row, move.col);
+      drawTile(state.targetCanvas, state.targetImg, state.analysis.target_grid_x, state.analysis.target_grid_y, move.row, move.col);
+      state.selectedInfo.textContent = `${move.tile}\nrotate_right=${move.rotate_right}\nscores=${JSON.stringify(move.scores)}`;
+      renderTable();
+      renderGrid(state.currentGrid, state.currentImg, state.analysis.current_grid_x, state.analysis.current_grid_y);
+    }
+
+    async function loadAnalysis() {
+      setBusy(true);
+      setStatus('Analizuję planszę…');
+      try {
+        refreshImages();
+        await Promise.all([
+          state.currentImg.decode().catch(() => {}),
+          state.targetImg.decode().catch(() => {})
+        ]);
+        state.analysis = await api('/api/analyze');
+        renderSummary();
+        renderTable();
+        renderGrid(state.currentGrid, state.currentImg, state.analysis.current_grid_x, state.analysis.current_grid_y);
+        renderGrid(state.targetGrid, state.targetImg, state.analysis.target_grid_x, state.analysis.target_grid_y);
+        const firstTile = state.selectedTile || state.analysis.moves[0]?.tile;
+        if (firstTile) selectTile(firstTile);
+        setStatus(state.analysis.solved ? 'Plansza jest już zgodna z wzorcem.' : 'Analiza gotowa.', state.analysis.solved ? 'good' : 'warn');
+      } catch (error) {
+        setStatus(`Błąd analizy: ${error.message}`, 'warn');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function rotateOne(tile) {
+      setBusy(true);
+      setStatus(`Wysyłam obrót dla ${tile}…`);
+      try {
+        const data = await api('/api/rotate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rotate: tile })
+        });
+        state.lastResponse.textContent = JSON.stringify(data.result, null, 2);
+        state.analysis = data.analysis;
+        refreshImages();
+        await Promise.all([
+          state.currentImg.decode().catch(() => {}),
+          state.targetImg.decode().catch(() => {})
+        ]);
+        renderSummary();
+        renderTable();
+        renderGrid(state.currentGrid, state.currentImg, state.analysis.current_grid_x, state.analysis.current_grid_y);
+        renderGrid(state.targetGrid, state.targetImg, state.analysis.target_grid_x, state.analysis.target_grid_y);
+        selectTile(tile);
+        setStatus(`Obrót dla ${tile} wykonany.`, 'good');
+      } catch (error) {
+        setStatus(`Błąd obrotu: ${error.message}`, 'warn');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function applyPlan() {
+      setBusy(true);
+      setStatus('Wykonuję cały plan obrotów…');
+      try {
+        const data = await api('/api/apply-plan', { method: 'POST' });
+        state.lastResponse.textContent = JSON.stringify(data.last_response || data, null, 2);
+        state.analysis = data.analysis;
+        refreshImages();
+        await Promise.all([
+          state.currentImg.decode().catch(() => {}),
+          state.targetImg.decode().catch(() => {})
+        ]);
+        renderSummary();
+        renderTable();
+        renderGrid(state.currentGrid, state.currentImg, state.analysis.current_grid_x, state.analysis.current_grid_y);
+        renderGrid(state.targetGrid, state.targetImg, state.analysis.target_grid_x, state.analysis.target_grid_y);
+        const pending = state.analysis.moves.filter(move => move.rotate_right > 0).length;
+        setStatus(pending === 0 ? 'Plan wykonany. Plansza zgadza się z wzorcem.' : 'Plan wykonany, ale wciąż są rozbieżności.', pending === 0 ? 'good' : 'warn');
+      } catch (error) {
+        setStatus(`Błąd wykonania planu: ${error.message}`, 'warn');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function downloadBoard(reset = false) {
+      setBusy(true);
+      setStatus(reset ? 'Resetuję planszę…' : 'Pobieram aktualny obraz…');
+      try {
+        await api(reset ? '/api/reset' : '/api/download');
+        refreshImages();
+        await Promise.all([
+          state.currentImg.decode().catch(() => {}),
+          state.targetImg.decode().catch(() => {})
+        ]);
+        await loadAnalysis();
+      } catch (error) {
+        setStatus(`Błąd pobierania: ${error.message}`, 'warn');
+        setBusy(false);
+      }
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', () => downloadBoard(false));
+    document.getElementById('resetBtn').addEventListener('click', () => downloadBoard(true));
+    document.getElementById('analyzeBtn').addEventListener('click', loadAnalysis);
+    document.getElementById('applyBtn').addEventListener('click', applyPlan);
+
+    window.addEventListener('load', async () => {
+      refreshImages();
+      await loadAnalysis();
+    });
+  </script>
+</body>
+</html>
