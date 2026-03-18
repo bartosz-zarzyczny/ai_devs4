@@ -53,6 +53,33 @@ Wymagany format pola `answer` to JSON zapisany jako string, np. `{"logs": "..."}
 Jeżeli Centrala zwróci feedback zamiast flagi, kod potrafi wyłuskać wskazane podzespoły i zbudować kolejną wersję pliku z logami, zachowując limit 1500 tokenów.
 Tokeny złych odpowiedzi liczę praktycznie jako znaki, żeby szybciej ocenić, ile miejsca zajmuje feedback i kiedy trzeba jeszcze mocniej skrócić log.
 
+## Ukryta flaga tokenowa
+
+W zadaniu pojawia się dodatkowa zagadka: odpowiedzi błędne zwracają pole `letter`, a jego wartość jest zgodna z `chr(tokenCount)`.
+To oznacza, że liczy się dokładna liczba tokenów wysyłanego tekstu, nie jego semantyka.
+
+Kod do automatycznego odtworzenia tej flagi znajduje się w:
+
+- [L08/hidden_flag_solver.py](hidden_flag_solver.py)
+
+Mechanizm:
+
+1. Wysyłane są 4 kolejne błędne odpowiedzi z dokładnymi budżetami tokenów: `70`, `76`, `65`, `71`.
+2. Centrala zwraca wtedy litery `F`, `L`, `A`, `G`.
+3. Po odblokowaniu mechanizmu serwer zwraca ukrytą flagę:
+   `{FLG:VIBECODER}`
+
+Uruchomienie:
+
+- `python L08/hidden_flag_solver.py`
+
+Po wykonaniu skrypt zapisuje wynik do `hidden_flag_result.json`.
+
+## UI
+
+Panel WWW ma teraz także przycisk i sekcję dla ukrytej flagi tokenowej.
+Po kliknięciu można odtworzyć sekwencję prób i zobaczyć wynik bez ręcznego wklejania odpowiedzi.
+
 Uruchomienie:
 
 - `python L08/task.py`

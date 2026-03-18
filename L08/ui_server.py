@@ -16,6 +16,7 @@ from failure_fetch import (
     summarize_failure_log,
     run_verification_cycle,
 )
+from hidden_flag_solver import run_hidden_flag_probe
 
 PORT = int(os.environ.get("PORT", "8080"))
 L08_DIR = Path(__file__).resolve().parent
@@ -78,6 +79,16 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                 self.write_json({"error": str(error)}, status=500)
             return
 
+        if parsed.path.startswith("/api/hidden-flag"):
+            try:
+                result = run_hidden_flag_probe()
+                payload = self.status_payload()
+                payload["hidden_flag_probe"] = result
+                self.write_json(payload)
+            except Exception as error:
+                self.write_json({"error": str(error)}, status=500)
+            return
+
         if parsed.path.startswith("/api/summary"):
             try:
                 head = int(params.get("head", [80])[0])
@@ -101,8 +112,11 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
         raw_summary = summarize_failure_log(head_limit=head_limit, tail_limit=tail_limit)
         compact_summary = summarize_compact_log(head_limit=head_limit, tail_limit=tail_limit)
         verification_path = L08_DIR / "verification_result.json"
+        hidden_flag_path = L08_DIR / "hidden_flag_result.json"
         verification = None
         verification_flag = None
+        hidden_flag = None
+        hidden_flag_result = None
         if verification_path.exists():
             try:
                 verification = json.loads(verification_path.read_text(encoding="utf-8"))
@@ -112,13 +126,22 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     verification_flag = match.group(0)
             except Exception:
                 verification = None
+        if hidden_flag_path.exists():
+            try:
+                hidden_flag_result = json.loads(hidden_flag_path.read_text(encoding="utf-8"))
+                hidden_flag = hidden_flag_result.get("hidden_flag")
+            except Exception:
+                hidden_flag_result = None
         return {
             "api_key_present": bool(os.getenv("AI_DEVS_4_API_KEY")),
             "log_file": str(L08_DIR / "failure.log"),
             "compact_file": str(L08_DIR / "failure_compact.log"),
             "verification_file": str(verification_path),
+            "hidden_flag_file": str(hidden_flag_path),
             "verification": verification,
             "verification_flag": verification_flag,
+            "hidden_flag": hidden_flag,
+            "hidden_flag_result": hidden_flag_result,
             "compact_max_tokens": 1500,
             "raw": {
                 **raw_summary,
