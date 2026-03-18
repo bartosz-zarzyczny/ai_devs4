@@ -6,11 +6,12 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 
 - [L01/README.md](L01/README.md) - zadanie `people` (filtrowanie, tagowanie, wysyłka do verify)
 - [L02/README.md](L02/README.md) - zadania `location`, `accesslevel`, `findhim` (analiza i verify)
- - [L03/README.md](L03/README.md) - lokalny serwer i narzędzia do submit (debug endpoints)
- - [L04/README.md](L04/README.md) - zadanie `sendit` (deklaracja transportowa, test tras, logowanie odpowiedzi)
- - [L05/README.md](L05/README.md) - narzędzia typu "railway" do wykonywania sekwencji akcji, bezpieczne logowanie i prosty UI do przeglądu logów
- - [L06/readme.md](L06/readme.md) - zadanie `categorize` (klasyfikator DNG/NEU, optymalizacja promptów, prompt caching) oraz interfejs graficzny UI (`ui_server.py`)
- - [L07/README.md](L07/README.md) - zadanie `electricity` (pobieranie obrazu, analiza 3x3, automatyczny solver, lokalny UI oraz parsowanie meta-flag w PNG)
+- [L03/README.md](L03/README.md) - lokalny serwer i narzędzia do submit (debug endpoints)
+- [L04/README.md](L04/README.md) - zadanie `sendit` (deklaracja transportowa, test tras, logowanie odpowiedzi)
+- [L05/README.md](L05/README.md) - narzędzia typu "railway" do wykonywania sekwencji akcji, bezpieczne logowanie i prosty UI do przeglądu logów
+- [L06/readme.md](L06/readme.md) - zadanie `categorize` (klasyfikator DNG/NEU, optymalizacja promptów, prompt caching) oraz interfejs graficzny UI (`ui_server.py`)
+- [L07/README.md](L07/README.md) - zadanie `electricity` (pobieranie obrazu, analiza 3x3, automatyczny solver, lokalny UI oraz parsowanie meta-flag w PNG)
+- [L08/README.md](L08/README.md) - zadanie `failure` (kompresja logów, UI WWW, pętla weryfikacji i finalna flaga)
 
 ## Konfiguracja
 
@@ -25,13 +26,14 @@ Wymagane zmienne:
 
 - `API_OPEN_ROUTER_KEY` dla skryptów używających OpenRouter (L01)
 - `AI_DEVS_4_API_KEY` dla endpointów hub.ag3nts.org (L01, L02)
- - `AI_DEVS_4_API_KEY` jest również używana przez skrypty w `L04` (send_payload/test_routes)
+- `AI_DEVS_4_API_KEY` jest również używana przez skrypty w `L04` (send_payload/test_routes)
 
 ## Ostatnie zmiany (skrót)
 
 - L03: dodano lokalny serwer i narzędzia pomocnicze; folder `L03` zawiera logi i endpointy debugujące (sprawdź L03/logs).
 - L04: komplet rozwiązań dla zadania `sendit` — `send_payload.py` (opcje `--route`, `--wdp`, `--response-log`), `test_routes.py` do batch-testów, `validate_declaration.py` do lokalnej walidacji. Usunięto pliki tymczasowe i dodano oddzielny `response_log.jsonl` dla maszynowego przetwarzania odpowiedzi.
 - Rezultat L04: poprawne wypełnienie deklaracji i otrzymanie potwierdzenia zwrotnego (szczegóły w [L04/README.md](L04/README.md)).
+- L08: dodano UI WWW, kompresję `failure.log` do `failure_compact.log` (48 linii, 1310 tokenów cl100k_base), weryfikację na `/verify` i zapis odpowiedzi do `verification_result.json`.
 
 ## L05 — Railway (automatyczny executor)
 
@@ -71,28 +73,38 @@ python L05/scripts/serve_ui.py --port 8000
 	- Do uruchomienia skryptów wymagany jest klucz środowiskowy `AI_DEVS_4_API_KEY` (zobacz sekcję "Konfiguracja" wyżej).
 	 - Do uruchomienia skryptów wymagany jest klucz środowiskowy `AI_DEVS_4_API_KEY` (zobacz sekcję "Konfiguracja" wyżej).
 
-	## L07 — Electricity (puzzle + UI + solver)
+## L07 — Electricity (puzzle + UI + solver)
 
-	Krótki opis:
-	- Cel: automatyczne rozwiązanie zadania "electricity" (pobranie obrazu, analiza 3x3, plan rotacji, wykonanie ruchów na hubie) oraz odkrycie ukrytej meta-informacji w pliku PNG.
+Krótki opis:
+- Cel: automatyczne rozwiązanie zadania "electricity" (pobranie obrazu, analiza 3x3, plan rotacji, wykonanie ruchów na hubie) oraz odkrycie ukrytej meta-informacji w pliku PNG.
 
-	Najważniejsze pliki:
-	- `L07/get_electricity.py` — pobiera aktualny obraz zadania z hubu (korzysta z `AI_DEVS_4_API_KEY` z pliku `.env`).
-	- `L07/electricity_solver.py` — analiza obrazu, tworzenie planu rotacji, parsowanie chunków PNG (tEXt) oraz funkcje pomocnicze do zastosowania planu.
-	- `L07/ui_server.py` — prosty serwer HTTP udostępniający UI i REST API (`/api/analyze`, `/api/apply-plan`, `/api/meta-flag`).
-	- `L07/ui.html` — interfejs przeglądarkowy: podgląd planszy, analiza kafelków, przyciski sterujące i przycisk "Odkryj meta-flagę".
-	- `L07/readme.md` — szczegółowe instrukcje i notatki dotyczące rozwiązania (lokalne).
+Najważniejsze pliki:
+- [L07/get_electricity.py](L07/get_electricity.py) — pobiera aktualny obraz zadania z hubu (korzysta z `AI_DEVS_4_API_KEY` z pliku .env).
+- [L07/electricity_solver.py](L07/electricity_solver.py) — analiza obrazu, tworzenie planu rotacji, parsowanie chunków PNG (tEXt) oraz funkcje pomocnicze do zastosowania planu.
+- [L07/ui_server.py](L07/ui_server.py) — prosty serwer HTTP udostępniający UI i REST API (`/api/analyze`, `/api/apply-plan`, `/api/meta-flag`).
+- [L07/ui.html](L07/ui.html) — interfejs przeglądarkowy: podgląd planszy, analiza kafelków, przyciski sterujące i przycisk "Odkryj meta-flagę".
+- [L07/README.md](L07/README.md) — szczegółowe instrukcje i notatki dotyczące rozwiązania.
 
-	Szybkie uruchomienie (virtualenv aktywowane):
+## L08 — Failure (kompresja logów + UI + weryfikacja)
 
-	```powershell
-	python -m pip install requests pillow python-dotenv
-	python L07/get_electricity.py    # pobiera current electricity.png i solved_electricity.png
-	python L07/ui_server.py          # uruchamia UI; domyślnie próbuje port 8080 i wybiera następny wolny
-	# otwórz w przeglądarce: http://127.0.0.1:8080/ (port może się różnić)
-	```
+Krótki opis:
+- Cel: pobranie `failure.log`, skrócenie go do limitu 1500 tokenów, wysłanie do `/verify` i zapisanie wyniku.
 
-	Uwaga:
-	- Serwery hub wymagają nagłówka/klucza API — skonfiguruj `AI_DEVS_4_API_KEY` w pliku `.env` w katalogu repo.
-	- UI udostępnia endpoint `GET /api/meta-flag`, który parsuje chunk tEXt wewnątrz pobranego PNG i dekoduje ewentualną ukrytą treść. README w `L07` zawiera więcej szczegółów technicznych.
+Najważniejsze pliki:
+- [L08/task.py](L08/task.py) — pobiera log, buduje `failure_compact.log`, wysyła weryfikację i zapisuje odpowiedź.
+- [L08/failure_fetch.py](L08/failure_fetch.py) — logika pobierania, kompresji, wyboru linii i obsługi feedbacku.
+- [L08/ui_server.py](L08/ui_server.py) — lokalny serwer HTTP z endpointami do pobierania, kompresji i weryfikacji.
+- [L08/ui.html](L08/ui.html) — interfejs WWW z podglądem surowego logu, skróconego logu, weryfikacji i flagi.
+- [L08/verification_result.json](L08/verification_result.json) — zapis odpowiedzi Centrali, zawiera `{FLG:XXXXXXX}`.
+
+Szybkie uruchomienie (virtualenv aktywowane):
+
+```powershell
+python L08/task.py
+python L08/ui_server.py
+```
+
+Uwaga:
+- `failure_compact.log` ma 48 linii i 1310 tokenów cl100k_base.
+- Weryfikacja działa przez POST na `https://hub.ag3nts.org/verify` z polem `answer` jako string JSON: `{"logs": "..."}`.
 

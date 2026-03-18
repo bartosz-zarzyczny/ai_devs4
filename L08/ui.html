@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Failure Log Console</title>
+  <style>
+    :root {
+      --bg: #0f1720;
+      --bg-2: #111b28;
+      --panel: rgba(18, 28, 42, 0.82);
+      --panel-2: rgba(255, 255, 255, 0.05);
+      --ink: #e6eef8;
+      --muted: #9fb0c4;
+      --accent: #54a3ff;
+      --accent-2: #7cdbb6;
+      --good: #67d18c;
+      --warn: #ffb86b;
+      --bad: #ff7b8a;
+      --line: rgba(255,255,255,0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(84, 163, 255, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(124, 219, 182, 0.12), transparent 32%),
+        linear-gradient(160deg, var(--bg), var(--bg-2));
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .shell {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      max-width: 68ch;
+    }
+
+    .flag-banner {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(103, 209, 140, 0.16), rgba(84, 163, 255, 0.10));
+      border: 1px solid rgba(103, 209, 140, 0.28);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    .flag-banner .label {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-size: 0.76rem;
+      margin-bottom: 6px;
+    }
+
+    .flag-banner .value {
+      font-size: clamp(1.2rem, 2.8vw, 2rem);
+      font-weight: 800;
+      color: var(--good);
+      word-break: break-word;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22);
+    }
+
+    .controls {
+      padding: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-content: start;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font: inherit;
+      cursor: pointer;
+      color: #06111d;
+      background: linear-gradient(135deg, var(--accent), #7cc4ff);
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button.secondary { background: linear-gradient(135deg, var(--accent-2), #b2f2dc); }
+    button.ghost {
+      background: rgba(255,255,255,0.06);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: 0.55; cursor: wait; transform: none; }
+
+    .status {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      min-height: 52px;
+      white-space: pre-wrap;
+    }
+    .status.good { color: var(--good); }
+    .status.warn { color: var(--warn); }
+    .status.bad { color: var(--bad); }
+
+    .top-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      padding: 16px;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.75rem;
+      margin-bottom: 8px;
+    }
+
+    .metric .value {
+      font-size: 1.45rem;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .metric .note {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .panel-box {
+      padding: 16px;
+    }
+
+    .panel-box h2 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    pre {
+      margin: 0;
+      padding: 14px;
+      background: rgba(0,0,0,0.18);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: #dce7f5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 540px;
+      overflow: auto;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .log-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 0.88rem;
+    }
+
+    .inline-input {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .inline-input input {
+      width: 80px;
+      border: 0;
+      outline: none;
+      color: var(--ink);
+      background: transparent;
+      font: inherit;
+    }
+
+    @media (max-width: 1100px) {
+      .hero,
+      .top-grid,
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div>
+        <h1>Failure Log<br/>Console</h1>
+        <p>UI do kroku 1: pobranie logów z hub.ag3nts.org, utworzenie skróconej wersji w osobnym pliku oraz szybki podgląd obu wariantów przed dalszą analizą.</p>
+        <div class="flag-banner">
+          <div class="label">Finalna flaga</div>
+          <div id="flagBanner" class="value">—</div>
+        </div>
+      </div>
+      <div class="panel controls">
+        <button id="downloadBtn">Pobierz failure.log</button>
+        <button id="compactBtn" class="secondary">Utwórz failure_compact.log (≤1500 tokenów)</button>
+        <button id="verifyBtn" class="secondary">Wyślij do weryfikacji</button>
+        <button id="refreshBtn" class="secondary">Odśwież status</button>
+        <button id="showSummaryBtn" class="ghost">Przeładuj podgląd</button>
+        <div id="status" class="status">Ładowanie interfejsu…</div>
+      </div>
+    </section>
+
+    <section class="top-grid">
+      <div class="panel metric">
+        <div class="label">Plik surowy</div>
+        <div id="fileState" class="value">—</div>
+        <div class="note" id="filePath">—</div>
+      </div>
+      <div class="panel metric">
+        <div class="label">Plik skrócony</div>
+        <div id="compactState" class="value">—</div>
+        <div class="note" id="compactPath">—</div>
+      </div>
+      <div class="panel metric">
+        <div class="label">Rozmiar surowy</div>
+        <div id="sizeValue" class="value">—</div>
+        <div class="note">Liczony w bajtach</div>
+      </div>
+      <div class="panel metric">
+        <div class="label">Rozmiar skrócony</div>
+        <div id="compactSizeValue" class="value">—</div>
+        <div class="note">Docelowo jeden wiersz = jedno zdarzenie</div>
+      </div>
+      <div class="panel metric">
+        <div class="label">Tokeny skrócone</div>
+        <div id="compactTokenCount" class="value">—</div>
+        <div class="note">Limit: 1500 tokenów</div>
+      </div>
+      <div class="panel metric">
+        <div class="label">Weryfikacja</div>
+        <div id="verifyState" class="value">—</div>
+        <div class="note" id="verifyFile">verification_result.json</div>
+      </div>
+      <div class="panel metric">
+        <div class="label">Flaga</div>
+        <div id="flagMetric" class="value">—</div>
+        <div class="note">Odczytana z odpowiedzi Centrali</div>
+      </div>
+      <div class="panel metric">
+        <div class="label">Liczba linii surowych</div>
+        <div id="lineCount" class="value">—</div>
+        <div class="note">Zliczane strumieniowo</div>
+      </div>
+      <div class="panel metric">
+        <div class="label">Liczba linii skróconych</div>
+        <div id="compactLineCount" class="value">—</div>
+        <div class="note">Zachowany timestamp, poziom i podzespół</div>
+      </div>
+      <div class="panel metric">
+        <div class="label">Poziomy logów</div>
+        <div id="levelsValue" class="value">—</div>
+        <div class="note">INFO / WARN / ERRO / CRIT</div>
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+      <div class="panel panel-box">
+        <h2>Podsumowanie surowe</h2>
+        <div class="badge-row">
+          <span class="badge" id="apiKeyBadge">API key: —</span>
+          <span class="badge" id="urlBadge">URL: —</span>
+          <span class="badge" id="firstBadge">Pierwsza linia: —</span>
+        </div>
+        <pre id="summaryText">Brak danych.</pre>
+      </div>
+
+      <div class="panel panel-box">
+        <h2>Podsumowanie skrócone</h2>
+        <div class="badge-row">
+          <span class="badge" id="compactFirstBadge">Pierwsza linia: —</span>
+          <span class="badge" id="compactLastBadge">Ostatnia linia: —</span>
+        </div>
+        <pre id="compactSummaryText">Brak danych.</pre>
+      </div>
+
+      <div class="panel panel-box">
+        <h2>Podgląd surowego logu</h2>
+        <div class="inline-input">
+          <label for="headCount">Head</label>
+          <input id="headCount" type="number" min="10" max="500" step="10" value="80" />
+        </div>
+        <div class="inline-input">
+          <label for="tailCount">Tail</label>
+          <input id="tailCount" type="number" min="10" max="500" step="10" value="40" />
+        </div>
+        <button id="previewBtn" class="ghost">Pobierz podgląd</button>
+        <div style="height: 12px"></div>
+        <pre id="preview">Brak danych.</pre>
+      </div>
+
+      <div class="panel panel-box">
+        <h2>Podgląd failure_compact.log</h2>
+        <div class="inline-input">
+          <label for="compactHeadCount">Head</label>
+          <input id="compactHeadCount" type="number" min="10" max="500" step="10" value="40" />
+        </div>
+        <div class="inline-input">
+          <label for="compactTailCount">Tail</label>
+          <input id="compactTailCount" type="number" min="10" max="500" step="10" value="20" />
+        </div>
+        <button id="compactPreviewBtn" class="ghost">Pobierz podgląd skrócony</button>
+        <div style="height: 12px"></div>
+        <pre id="compactPreview">Brak danych.</pre>
+      </div>
+
+      <div class="panel panel-box">
+        <h2>Weryfikacja i feedback</h2>
+        <div class="badge-row">
+          <span class="badge" id="verifyStatusBadge">status: —</span>
+          <span class="badge" id="verifyFocusBadge">focus: —</span>
+          <span class="badge" id="verifyRoundsBadge">rounds: —</span>
+        </div>
+        <pre id="verifyResponse">Brak odpowiedzi z centrali.</pre>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const state = {
+      current: null,
+      statusEl: document.getElementById('status'),
+      fileState: document.getElementById('fileState'),
+      filePath: document.getElementById('filePath'),
+      compactState: document.getElementById('compactState'),
+      compactPath: document.getElementById('compactPath'),
+      sizeValue: document.getElementById('sizeValue'),
+      compactSizeValue: document.getElementById('compactSizeValue'),
+      compactTokenCount: document.getElementById('compactTokenCount'),
+      lineCount: document.getElementById('lineCount'),
+      compactLineCount: document.getElementById('compactLineCount'),
+      levelsValue: document.getElementById('levelsValue'),
+      summaryText: document.getElementById('summaryText'),
+      compactSummaryText: document.getElementById('compactSummaryText'),
+      preview: document.getElementById('preview'),
+      compactPreview: document.getElementById('compactPreview'),
+      verifyState: document.getElementById('verifyState'),
+      verifyFile: document.getElementById('verifyFile'),
+      flagBanner: document.getElementById('flagBanner'),
+      flagMetric: document.getElementById('flagMetric'),
+      verifyStatusBadge: document.getElementById('verifyStatusBadge'),
+      verifyFocusBadge: document.getElementById('verifyFocusBadge'),
+      verifyRoundsBadge: document.getElementById('verifyRoundsBadge'),
+      verifyResponse: document.getElementById('verifyResponse'),
+      apiKeyBadge: document.getElementById('apiKeyBadge'),
+      urlBadge: document.getElementById('urlBadge'),
+      firstBadge: document.getElementById('firstBadge'),
+      compactFirstBadge: document.getElementById('compactFirstBadge'),
+      compactLastBadge: document.getElementById('compactLastBadge')
+    };
+
+    function setBusy(isBusy) {
+      for (const btn of document.querySelectorAll('button')) btn.disabled = isBusy;
+    }
+
+    function setStatus(text, kind = '') {
+      state.statusEl.textContent = text;
+      state.statusEl.className = `status ${kind}`.trim();
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, options);
+      const text = await response.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = { raw: text };
+      }
+      if (!response.ok) {
+        throw new Error(data.error || data.raw || `HTTP ${response.status}`);
+      }
+      return data;
+    }
+
+    function formatLevels(levels) {
+      const entries = Object.entries(levels || {});
+      if (!entries.length) return '—';
+      return entries.map(([name, count]) => `${name}:${count}`).join(' · ');
+    }
+
+    function render(data) {
+      state.current = data;
+      const raw = data.raw || data || {};
+      const compact = data.compact || {};
+      state.fileState.textContent = raw.exists ? 'obecny' : 'brak';
+      state.filePath.textContent = raw.path || data.log_file || '—';
+      state.compactState.textContent = compact.exists ? 'gotowy' : 'brak';
+      state.compactPath.textContent = compact.path || data.compact_file || '—';
+      state.sizeValue.textContent = raw.exists ? `${raw.size_bytes} B` : '—';
+      state.compactSizeValue.textContent = compact.exists ? `${compact.size_bytes} B` : '—';
+      state.compactTokenCount.textContent = compact.token_count != null ? `${compact.token_count} / ${data.compact_max_tokens || 1500}` : '—';
+      const verification = data.verification || {};
+      const final = verification.final || {};
+      const analysis = final.analysis || {};
+      const compactRound = final.compact || {};
+      const verificationFlag = data.verification_flag || verification.flag || verification.message || (final.response && final.response.message) || '—';
+      state.verifyState.textContent = verification.success ? 'ok' : '—';
+      state.verifyFile.textContent = data.verification_file || 'verification_result.json';
+      state.verifyStatusBadge.textContent = `status: ${verification.success ? 'ok' : 'pending'}`;
+      state.verifyFocusBadge.textContent = `focus: ${analysis.focus_devices && analysis.focus_devices.length ? analysis.focus_devices.join(', ') : '—'}`;
+      state.verifyRoundsBadge.textContent = `rounds: ${verification.history ? verification.history.length : 0}`;
+      state.verifyResponse.textContent = verification.history ? JSON.stringify(verification, null, 2) : 'Brak odpowiedzi z centrali.';
+      state.flagBanner.textContent = verificationFlag || '—';
+      state.flagMetric.textContent = verificationFlag || '—';
+      state.lineCount.textContent = raw.exists ? `${raw.line_count}` : '—';
+      state.compactLineCount.textContent = compact.exists ? `${compact.line_count}` : '—';
+      state.levelsValue.textContent = formatLevels(raw.levels);
+      state.summaryText.textContent = raw.summary_text || 'Brak podsumowania.';
+      state.compactSummaryText.textContent = compact.summary_text || 'Brak podsumowania.';
+      state.preview.textContent = [...(raw.head || []), ...(raw.tail || [])].join('\n') || 'Brak danych.';
+      state.compactPreview.textContent = [...(compact.head || []), ...(compact.tail || [])].join('\n') || 'Brak danych.';
+      state.apiKeyBadge.textContent = `API key: ${data.api_key_present ? 'tak' : 'nie'}`;
+      state.urlBadge.textContent = `URL: ${raw.source_url || '—'}`;
+      state.firstBadge.textContent = `Pierwsza linia: ${raw.first_nonempty || '—'}`;
+      state.compactFirstBadge.textContent = `Pierwsza linia: ${compact.first_nonempty || '—'}`;
+      state.compactLastBadge.textContent = `Ostatnia linia: ${compact.last_nonempty || '—'}`;
+    }
+
+    async function refreshStatus(showBusy = false) {
+      if (showBusy) {
+        setBusy(true);
+        setStatus('Pobieram status…');
+      }
+      try {
+        const data = await api('/api/status');
+        render(data);
+        setStatus(data.exists ? 'Podgląd gotowy.' : 'Plik nie został jeszcze pobrany.', data.exists ? 'good' : 'warn');
+      } catch (error) {
+        setStatus(`Błąd statusu: ${error.message}`, 'bad');
+      } finally {
+        if (showBusy) setBusy(false);
+      }
+    }
+
+    async function downloadLog() {
+      setBusy(true);
+      setStatus('Pobieram failure.log z huba…');
+      try {
+        const data = await api('/api/download');
+        render(data);
+        setStatus('failure.log pobrany i gotowy do analizy.', 'good');
+      } catch (error) {
+        setStatus(`Błąd pobierania: ${error.message}`, 'bad');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function buildCompactLog() {
+      setBusy(true);
+      setStatus('Tworzę failure_compact.log…');
+      try {
+        const data = await api('/api/compact');
+        render(data);
+        setStatus('failure_compact.log utworzony i gotowy do użycia.', 'good');
+      } catch (error) {
+        setStatus(`Błąd tworzenia pliku skróconego: ${error.message}`, 'bad');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function verifyLog() {
+      setBusy(true);
+      setStatus('Wysyłam failure_compact.log do weryfikacji…');
+      try {
+        const data = await api('/api/verify');
+        render(data);
+        const verification = data.verification || {};
+        const flagText = data.verification_flag || verification?.final?.response?.message || '—';
+        setStatus(verification.success ? `Weryfikacja zakończona sukcesem: ${flagText}` : 'Odebrano feedback i zapisano wynik.', verification.success ? 'good' : 'warn');
+      } catch (error) {
+        setStatus(`Błąd weryfikacji: ${error.message}`, 'bad');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function loadPreview() {
+      const head = Number(document.getElementById('headCount').value || 80);
+      const tail = Number(document.getElementById('tailCount').value || 40);
+      setBusy(true);
+      setStatus(`Wczytuję podgląd (${head}/${tail})…`);
+      try {
+        const data = await api(`/api/status?head=${encodeURIComponent(head)}&tail=${encodeURIComponent(tail)}`);
+        render(data);
+        setStatus('Podgląd logu odświeżony.', 'good');
+      } catch (error) {
+        setStatus(`Błąd podglądu: ${error.message}`, 'bad');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function loadCompactPreview() {
+      const head = Number(document.getElementById('compactHeadCount').value || 40);
+      const tail = Number(document.getElementById('compactTailCount').value || 20);
+      setBusy(true);
+      setStatus(`Wczytuję podgląd skrócony (${head}/${tail})…`);
+      try {
+        const data = await api(`/api/status?head=${encodeURIComponent(head)}&tail=${encodeURIComponent(tail)}`);
+        const compact = data.compact || {};
+        state.compactPreview.textContent = [...(compact.head || []), ...(compact.tail || [])].join('\n') || 'Brak danych.';
+        state.compactSummaryText.textContent = compact.summary_text || 'Brak podsumowania.';
+        state.compactState.textContent = compact.exists ? 'gotowy' : 'brak';
+        state.compactPath.textContent = compact.path || '—';
+        state.compactSizeValue.textContent = compact.exists ? `${compact.size_bytes} B` : '—';
+        state.compactTokenCount.textContent = compact.token_count != null ? `${compact.token_count} / ${data.compact_max_tokens || 1500}` : '—';
+        state.compactLineCount.textContent = compact.exists ? `${compact.line_count}` : '—';
+        state.compactFirstBadge.textContent = `Pierwsza linia: ${compact.first_nonempty || '—'}`;
+        state.compactLastBadge.textContent = `Ostatnia linia: ${compact.last_nonempty || '—'}`;
+        setStatus('Podgląd skrócony odświeżony.', 'good');
+      } catch (error) {
+        setStatus(`Błąd podglądu skróconego: ${error.message}`, 'bad');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', downloadLog);
+    document.getElementById('compactBtn').addEventListener('click', buildCompactLog);
+    document.getElementById('verifyBtn').addEventListener('click', verifyLog);
+    document.getElementById('refreshBtn').addEventListener('click', () => refreshStatus(true));
+    document.getElementById('showSummaryBtn').addEventListener('click', loadPreview);
+    document.getElementById('previewBtn').addEventListener('click', loadPreview);
+    document.getElementById('compactPreviewBtn').addEventListener('click', loadCompactPreview);
+
+    window.addEventListener('load', async () => {
+      await refreshStatus(false);
+    });
+  </script>
+</body>
+</html>
