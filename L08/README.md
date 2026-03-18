@@ -67,7 +67,7 @@ Mechanizm:
 1. Wysyłane są 4 kolejne błędne odpowiedzi z dokładnymi budżetami tokenów: `70`, `76`, `65`, `71`.
 2. Centrala zwraca wtedy litery `F`, `L`, `A`, `G`.
 3. Po odblokowaniu mechanizmu serwer zwraca ukrytą flagę:
-   `{FLG:VIBECODER}`
+   `{FLG:XXXXXXX}`
 
 Uruchomienie:
 
