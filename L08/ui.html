@@ -83,6 +83,15 @@
       word-break: break-word;
     }
 
+    .flag-banner.alt {
+      border-color: rgba(84, 163, 255, 0.28);
+      background: linear-gradient(135deg, rgba(84, 163, 255, 0.14), rgba(124, 219, 182, 0.10));
+    }
+
+    .flag-banner.alt .value {
+      color: #8fe2ff;
+    }
+
     .panel {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -256,11 +265,16 @@
           <div class="label">Finalna flaga</div>
           <div id="flagBanner" class="value">—</div>
         </div>
+        <div class="flag-banner alt" style="margin-top: 12px;">
+          <div class="label">Ukryta flaga tokenowa</div>
+          <div id="hiddenFlagBanner" class="value">—</div>
+        </div>
       </div>
       <div class="panel controls">
         <button id="downloadBtn">Pobierz failure.log</button>
         <button id="compactBtn" class="secondary">Utwórz failure_compact.log (≤1500 tokenów)</button>
         <button id="verifyBtn" class="secondary">Wyślij do weryfikacji</button>
+        <button id="hiddenFlagBtn" class="secondary">Odtwórz ukrytą flagę</button>
         <button id="refreshBtn" class="secondary">Odśwież status</button>
         <button id="showSummaryBtn" class="ghost">Przeładuj podgląd</button>
         <div id="status" class="status">Ładowanie interfejsu…</div>
@@ -302,6 +316,11 @@
         <div class="label">Flaga</div>
         <div id="flagMetric" class="value">—</div>
         <div class="note">Odczytana z odpowiedzi Centrali</div>
+      </div>
+      <div class="panel metric">
+        <div class="label">Ukryta flaga</div>
+        <div id="hiddenFlagMetric" class="value">—</div>
+        <div class="note">Seria odpowiedzi tokenowych: 70 / 76 / 65 / 71</div>
       </div>
       <div class="panel metric">
         <div class="label">Liczba linii surowych</div>
@@ -403,7 +422,9 @@
       verifyState: document.getElementById('verifyState'),
       verifyFile: document.getElementById('verifyFile'),
       flagBanner: document.getElementById('flagBanner'),
+      hiddenFlagBanner: document.getElementById('hiddenFlagBanner'),
       flagMetric: document.getElementById('flagMetric'),
+      hiddenFlagMetric: document.getElementById('hiddenFlagMetric'),
       verifyStatusBadge: document.getElementById('verifyStatusBadge'),
       verifyFocusBadge: document.getElementById('verifyFocusBadge'),
       verifyRoundsBadge: document.getElementById('verifyRoundsBadge'),
@@ -461,6 +482,7 @@
       const analysis = final.analysis || {};
       const compactRound = final.compact || {};
       const verificationFlag = data.verification_flag || verification.flag || verification.message || (final.response && final.response.message) || '—';
+      const hiddenFlag = data.hidden_flag || data.hidden_flag_result?.hidden_flag || '—';
       state.verifyState.textContent = verification.success ? 'ok' : '—';
       state.verifyFile.textContent = data.verification_file || 'verification_result.json';
       state.verifyStatusBadge.textContent = `status: ${verification.success ? 'ok' : 'pending'}`;
@@ -469,6 +491,8 @@
       state.verifyResponse.textContent = verification.history ? JSON.stringify(verification, null, 2) : 'Brak odpowiedzi z centrali.';
       state.flagBanner.textContent = verificationFlag || '—';
       state.flagMetric.textContent = verificationFlag || '—';
+      state.hiddenFlagBanner.textContent = hiddenFlag || '—';
+      state.hiddenFlagMetric.textContent = hiddenFlag || '—';
       state.lineCount.textContent = raw.exists ? `${raw.line_count}` : '—';
       state.compactLineCount.textContent = compact.exists ? `${compact.line_count}` : '—';
       state.levelsValue.textContent = formatLevels(raw.levels);
@@ -543,6 +567,21 @@
       }
     }
 
+    async function fetchHiddenFlag() {
+      setBusy(true);
+      setStatus('Odtwarzam ukrytą flagę z tokenów…');
+      try {
+        const data = await api('/api/hidden-flag');
+        render(data);
+        const hiddenFlag = data.hidden_flag || data.hidden_flag_result?.hidden_flag || '—';
+        setStatus(hiddenFlag !== '—' ? `Ukryta flaga odnaleziona: ${hiddenFlag}` : 'Wysłano serię prób tokenowych.', hiddenFlag !== '—' ? 'good' : 'warn');
+      } catch (error) {
+        setStatus(`Błąd ukrytej flagi: ${error.message}`, 'bad');
+      } finally {
+        setBusy(false);
+      }
+    }
+
     async function loadPreview() {
       const head = Number(document.getElementById('headCount').value || 80);
       const tail = Number(document.getElementById('tailCount').value || 40);
@@ -587,6 +626,7 @@
     document.getElementById('downloadBtn').addEventListener('click', downloadLog);
     document.getElementById('compactBtn').addEventListener('click', buildCompactLog);
     document.getElementById('verifyBtn').addEventListener('click', verifyLog);
+    document.getElementById('hiddenFlagBtn').addEventListener('click', fetchHiddenFlag);
     document.getElementById('refreshBtn').addEventListener('click', () => refreshStatus(true));
     document.getElementById('showSummaryBtn').addEventListener('click', loadPreview);
     document.getElementById('previewBtn').addEventListener('click', loadPreview);

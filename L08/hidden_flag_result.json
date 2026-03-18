@@ -1,0 +1,69 @@
+{
+  "sequence": [
+    70,
+    76,
+    65,
+    71
+  ],
+  "history": [
+    {
+      "token_count": 70,
+      "line_count": 11,
+      "path": "D:\\Repo\\AI_Devs4\\ai_devs4\\L08\\hidden_probe_70.log",
+      "response": {
+        "code": -949,
+        "message": "Thanks for sending the logs. Unfortunately, our technicians still do not know what happened to STMTURB12.",
+        "tokenCount": 70,
+        "lineCount": 11,
+        "letter": "F",
+        "status_code": 400
+      },
+      "letter": "F",
+      "flag": null
+    },
+    {
+      "token_count": 76,
+      "line_count": 11,
+      "path": "D:\\Repo\\AI_Devs4\\ai_devs4\\L08\\hidden_probe_76.log",
+      "response": {
+        "code": -949,
+        "message": "Thanks for sending the logs. Unfortunately, our technicians still do not know what happened to STMTURB12.",
+        "tokenCount": 76,
+        "lineCount": 11,
+        "letter": "L",
+        "status_code": 400
+      },
+      "letter": "L",
+      "flag": null
+    },
+    {
+      "token_count": 65,
+      "line_count": 11,
+      "path": "D:\\Repo\\AI_Devs4\\ai_devs4\\L08\\hidden_probe_65.log",
+      "response": {
+        "code": -949,
+        "message": "Thanks for sending the logs. Unfortunately, our technicians still do not know what happened to STMTURB12.",
+        "tokenCount": 65,
+        "lineCount": 11,
+        "letter": "A",
+        "status_code": 400
+      },
+      "letter": "A",
+      "flag": null
+    },
+    {
+      "token_count": 71,
+      "line_count": 11,
+      "path": "D:\\Repo\\AI_Devs4\\ai_devs4\\L08\\hidden_probe_71.log",
+      "response": {
+        "code": 100,
+        "message": "Secret: {FLG:VIBECODER}",
+        "status_code": 200
+      },
+      "letter": null,
+      "flag": "{FLG:VIBECODER}"
+    }
+  ],
+  "hidden_flag": "{FLG:VIBECODER}",
+  "success": true
+}
