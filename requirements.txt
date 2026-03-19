@@ -1,0 +1,10 @@
+# Root dependencies for AI Devs 4 tasks.
+# Install with: python -m pip install -r requirements.txt
+
+requests>=2.32.0
+tiktoken>=0.7.0
+fastapi>=0.115.0
+pydantic>=2.9.0
+python-dotenv>=1.0.1
+Pillow>=10.4.0
+uvicorn>=0.30.0

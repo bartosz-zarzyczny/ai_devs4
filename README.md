@@ -12,10 +12,11 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L06/readme.md](L06/readme.md) - zadanie `categorize` (klasyfikator DNG/NEU, optymalizacja promptów, prompt caching) oraz interfejs graficzny UI (`ui_server.py`)
 - [L07/README.md](L07/README.md) - zadanie `electricity` (pobieranie obrazu, analiza 3x3, automatyczny solver, lokalny UI oraz parsowanie meta-flag w PNG)
 - [L08/README.md](L08/README.md) - zadanie `failure` (kompresja logów, UI WWW, pętla weryfikacji i finalna flaga)
+- [L09/README.md](L09/README.md) - zadanie `mailbox` (wyszukiwanie poczty w zmail, UI WWW, główna flaga z `/verify` oraz bonusowa flaga z załącznika)
 
 ## Konfiguracja
 
-Projekt korzysta ze standardowej biblioteki Pythona. W katalogu głównym utwórz plik `.env`:
+Projekt korzysta głównie ze standardowej biblioteki Pythona, ale kilka lekcji wymaga dodatkowych paczek z `requirements.txt`. W katalogu głównym utwórz plik `.env`:
 
 ```env
 API_OPEN_ROUTER_KEY=twoj_klucz_openrouter
@@ -28,12 +29,44 @@ Wymagane zmienne:
 - `AI_DEVS_4_API_KEY` dla endpointów hub.ag3nts.org (L01, L02)
 - `AI_DEVS_4_API_KEY` jest również używana przez skrypty w `L04` (send_payload/test_routes)
 
+Instalacja zależności:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+`requirements.txt` obejmuje wspólne paczki używane w repozytorium: `requests`, `tiktoken`, `fastapi`, `pydantic`, `python-dotenv`, `Pillow` i `uvicorn`.
+
 ## Ostatnie zmiany (skrót)
 
 - L03: dodano lokalny serwer i narzędzia pomocnicze; folder `L03` zawiera logi i endpointy debugujące (sprawdź L03/logs).
 - L04: komplet rozwiązań dla zadania `sendit` — `send_payload.py` (opcje `--route`, `--wdp`, `--response-log`), `test_routes.py` do batch-testów, `validate_declaration.py` do lokalnej walidacji. Usunięto pliki tymczasowe i dodano oddzielny `response_log.jsonl` dla maszynowego przetwarzania odpowiedzi.
 - Rezultat L04: poprawne wypełnienie deklaracji i otrzymanie potwierdzenia zwrotnego (szczegóły w [L04/README.md](L04/README.md)).
 - L08: dodano UI WWW, kompresję `failure.log` do `failure_compact.log` (48 linii, 1310 tokenów cl100k_base), weryfikację na `/verify` i zapis odpowiedzi do `verification_result.json`.
+- L09: dodano UI WWW do `zmail`, osobny tor dla głównej flagi i bonusowy solver załącznika; wyniki zapisują się do `verification_result.json` oraz `bonus_flag_result.json`.
+
+## L09 — Mailbox
+
+Krótki opis:
+- Cel: przeszukanie skrzynki operatora przez API `zmail`, pobranie pełnych treści wiadomości i wysłanie odpowiedzi do `/verify`.
+- Dodatkowo: bonusowy tor wyszukuje wiadomość z załącznikiem `dokumenty.zip`, rozpakowuje archiwum i dekoduje dodatkową flagę.
+
+Najważniejsze pliki:
+- [L09/task.py](L09/task.py) — uruchamia wysłanie odpowiedzi do `/verify` i zapisuje wynik do `verification_result.json`.
+- [L09/mailbox_client.py](L09/mailbox_client.py) — wspólne wywołania `zmail`, weryfikacja głównej flagi oraz logika bonusu.
+- [L09/bonus_solver.py](L09/bonus_solver.py) — osobny skrypt do odszukania i dekodowania bonusowej flagi.
+- [L09/ui_server.py](L09/ui_server.py) — lokalny serwer HTTP z endpointami dla statusu, `help`, `search`, `getThread`, `getMessages`, `verify` i bonusu.
+- [L09/ui.html](L09/ui.html) — panel WWW z przyciskami do kolejnych kroków i widokiem wyników.
+- [L09/verification_result.json](L09/verification_result.json) — odpowiedź huba po poprawnym wysłaniu głównej flagi.
+- [L09/bonus_flag_result.json](L09/bonus_flag_result.json) — wynik bonusowego solvera.
+
+Szybkie uruchomienie:
+
+```powershell
+python L09/ui_server.py
+python L09/task.py
+python L09/bonus_solver.py
+```
 
 ## L05 — Railway (automatyczny executor)
 
