@@ -140,4 +140,4 @@ Po zadaniu pytania przez operatora Huba o pogodę w Krakowie, asystent odpowiedz
 `{FLG:JUSTASKED}`
 
 > [!NOTE]
-> Zmiany te nie wpływają na główną misję (przekierowanie reaktora). Kod przechwytujący (`dispatch_tool`) pozostaje aktywny, a pytanie o flagi jest doklejane tylko do końcowych odpowiedzi tekstowych asystenta, nie przerywając pętli narzędziowej. Główna flaga zadania (`{FLG:WISDOM}`) jest wciąż możliwa do zdobycia po poprawnym zakończeniu procedury przekierowania.
+> Zmiany te nie wpływają na główną misję (przekierowanie reaktora). Kod przechwytujący (`dispatch_tool`) pozostaje aktywny, a pytanie o flagi jest doklejane tylko do końcowych odpowiedzi tekstowych asystenta, nie przerywając pętli narzędziowej. Główna flaga zadania (`{FLG:XXXXX}`) jest wciąż możliwa do zdobycia po poprawnym zakończeniu procedury przekierowania.
