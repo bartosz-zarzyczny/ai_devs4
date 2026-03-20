@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L10 - Drone Mission Control</title>
+<style>
+  :root {
+    --panel: rgba(10, 18, 33, 0.86);
+    --line: rgba(148, 163, 184, 0.22);
+    --text: #e5eefc;
+    --muted: #96a4be;
+    --accent: #59f0ff;
+    --accent-2: #ff5cc8;
+    --good: #70f0a8;
+    --warn: #ffd166;
+    --bad: #ff7b7b;
+    --shadow: 0 22px 55px rgba(2, 8, 23, 0.42);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(89, 240, 255, 0.16), transparent 28%),
+      radial-gradient(circle at 85% 10%, rgba(255, 92, 200, 0.18), transparent 22%),
+      linear-gradient(180deg, #04101d 0%, #07111f 60%, #050b13 100%);
+  }
+
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 18px 40px;
+  }
+
+  .hero {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 1.5fr 1fr;
+    align-items: stretch;
+    margin-bottom: 18px;
+  }
+
+  .hero-panel,
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+  }
+
+  .hero-panel {
+    padding: 26px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-panel::after {
+    content: "";
+    position: absolute;
+    inset: auto -40px -70px auto;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(89, 240, 255, 0.2), transparent 66%);
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(89, 240, 255, 0.1);
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    margin: 0 0 10px;
+    font-size: clamp(30px, 5vw, 48px);
+    line-height: 1.03;
+  }
+
+  .lead {
+    margin: 0;
+    color: var(--muted);
+    max-width: 70ch;
+    line-height: 1.65;
+  }
+
+  .info-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat {
+    padding: 18px;
+    background: rgba(8, 15, 28, 0.84);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 18px;
+  }
+
+  .stat span {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .stat strong {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(148, 163, 184, 0.08);
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  .badge.accent { border-color: rgba(89, 240, 255, 0.35); color: var(--accent); }
+  .badge.pink { border-color: rgba(255, 92, 200, 0.35); color: var(--accent-2); }
+  .badge.good { border-color: rgba(112, 240, 168, 0.35); color: var(--good); }
+
+  .side-card {
+    padding: 20px;
+    display: grid;
+    gap: 14px;
+    align-content: start;
+  }
+
+  .side-card h2,
+  .card h2 {
+    margin: 0;
+    font-size: 19px;
+  }
+
+  .side-card p,
+  .card p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  button {
+    appearance: none;
+    border: 1px solid rgba(89, 240, 255, 0.3);
+    background: linear-gradient(180deg, rgba(14, 25, 44, 0.95), rgba(10, 18, 33, 0.95));
+    color: var(--text);
+    padding: 11px 16px;
+    border-radius: 12px;
+    font: inherit;
+    cursor: pointer;
+    transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    box-shadow: 0 8px 24px rgba(2, 8, 23, 0.22);
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(89, 240, 255, 0.55);
+  }
+
+  button.primary {
+    border-color: rgba(255, 92, 200, 0.45);
+    background: linear-gradient(180deg, rgba(44, 12, 34, 0.98), rgba(21, 10, 28, 0.98));
+  }
+
+  .grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 18px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .card ul {
+    margin: 12px 0 0 20px;
+    color: var(--text);
+  }
+
+  .card li { margin: 6px 0; }
+
+  pre {
+    margin: 14px 0 0;
+    padding: 16px;
+    border-radius: 16px;
+    background: #07101c;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    color: #d8e7ff;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .output {
+    margin-top: 18px;
+  }
+
+  .flag {
+    display: inline-flex;
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: rgba(112, 240, 168, 0.12);
+    border: 1px solid rgba(112, 240, 168, 0.35);
+    color: var(--good);
+    font-weight: 700;
+  }
+
+  .warning {
+    color: var(--warn);
+  }
+
+  .error {
+    color: var(--bad);
+  }
+
+  .footer {
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 860px) {
+    .hero,
+    .grid,
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <div class="hero-panel">
+      <div class="eyebrow">L10 / drone mission control</div>
+      <h1>Inspect the main strike, then switch to the Radom bonus route.</h1>
+      <p class="lead">This panel reflects the current solver flow: the verified dam mission in sector <strong>2,4</strong> and the bonus photo run that follows the fuchsia balloon clue in Radom.</p>
+
+      <div class="badge-row">
+        <span class="badge accent">main target: PWR6132PL</span>
+        <span class="badge pink">bonus target: PWR8406PL</span>
+        <span class="badge good">bonus LED: #FF00FF</span>
+      </div>
+    </div>
+
+    <aside class="card side-card">
+      <h2>Quick facts</h2>
+      <p>Use the buttons below to load the base instructions or the bonus route. The bonus path is the one hinted by “Fuksja widziała balon w Radomiu”.</p>
+      <div class="info-grid">
+        <div class="stat">
+          <span>Main mission</span>
+          <strong>Dam sector 2,4</strong>
+        </div>
+        <div class="stat">
+          <span>Bonus mission</span>
+          <strong>Radom balloon</strong>
+        </div>
+      </div>
+      <div class="actions">
+        <button onclick="loadInstructions()">Show main route</button>
+        <button class="primary" onclick="loadBonus()">Show bonus route</button>
+        <button onclick="runMission()">Run mission</button>
+        <button onclick="loadResult()">Load last result</button>
+      </div>
+    </aside>
+  </section>
+
+  <section class="grid">
+    <article class="card">
+      <h2>Main route</h2>
+      <p>Verified instructions for the standard verify flow.</p>
+      <div class="actions" style="margin-top: 12px;">
+        <button onclick="loadInstructions()">Refresh</button>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2>Bonus route</h2>
+      <p>Radom balloon photo run with the fuchsia LED clue.</p>
+      <div class="actions" style="margin-top: 12px;">
+        <button class="primary" onclick="loadBonus()">Run bonus route</button>
+      </div>
+    </article>
+  </section>
+
+  <section class="output" id="output"></section>
+
+  <div class="footer">The UI calls the local lesson server for instructions and uses the saved hub response when available.</div>
+</main>
+
+<script>
+const out = document.getElementById('output');
+
+function show(data, isError = false) {
+  const flag = typeof data === 'object' && data && (data.flag || data.bonusFlag) ? (data.flag || data.bonusFlag) : null;
+  const flagLabel = data && data.bonusFlag ? 'BONUS FLAG' : 'FLAG';
+  const heading = data && data.title ? `<div class="badge pink" style="margin-bottom:10px;">${data.title}</div>` : '';
+  const summary = data && data.summary ? `<div class="badge accent" style="margin-bottom:10px;">${data.summary}</div>` : '';
+  out.innerHTML = `${heading}${summary}${flag ? `<div class="flag">${flagLabel}: ${flag}</div>` : ''}<pre class="${isError ? 'error' : ''}">${JSON.stringify(data, null, 2)}</pre>`;
+}
+
+async function loadInstructions() {
+  out.innerHTML = '<pre>Loading main instructions...</pre>';
+  const r = await fetch('/api/instructions');
+  show(await r.json(), !r.ok);
+}
+
+async function loadBonus() {
+  out.innerHTML = '<pre>Running bonus route...</pre>';
+  const r = await fetch('/api/bonus');
+  show(await r.json(), !r.ok);
+}
+
+async function runMission() {
+  out.innerHTML = '<pre>Sending mission to the hub...</pre>';
+  const r = await fetch('/api/run');
+  show(await r.json(), !r.ok);
+}
+
+async function loadResult() {
+  out.innerHTML = '<pre>Loading last saved result...</pre>';
+  const r = await fetch('/api/result');
+  show(await r.json(), !r.ok);
+}
+</script>
+</body>
+</html>
