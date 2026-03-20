@@ -13,6 +13,7 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L07/README.md](L07/README.md) - zadanie `electricity` (pobieranie obrazu, analiza 3x3, automatyczny solver, lokalny UI oraz parsowanie meta-flag w PNG)
 - [L08/README.md](L08/README.md) - zadanie `failure` (kompresja logów, UI WWW, pętla weryfikacji i finalna flaga)
 - [L09/README.md](L09/README.md) - zadanie `mailbox` (wyszukiwanie poczty w zmail, UI WWW, główna flaga z `/verify` oraz bonusowa flaga z załącznika)
+- [L10/README.md](L10/README.md) - zadanie `drone` (analiza mapy, UI WWW, lot drona i weryfikacja na `/verify`)
 
 ## Konfiguracja
 
@@ -44,6 +45,30 @@ python -m pip install -r requirements.txt
 - Rezultat L04: poprawne wypełnienie deklaracji i otrzymanie potwierdzenia zwrotnego (szczegóły w [L04/README.md](L04/README.md)).
 - L08: dodano UI WWW, kompresję `failure.log` do `failure_compact.log` (48 linii, 1310 tokenów cl100k_base), weryfikację na `/verify` i zapis odpowiedzi do `verification_result.json`.
 - L09: dodano UI WWW do `zmail`, osobny tor dla głównej flagi i bonusowy solver załącznika; wyniki zapisują się do `verification_result.json` oraz `bonus_flag_result.json`.
+- L10: dodano UI WWW dla zadania `drone`, solver z analizą mapy przez vision, weryfikację lotu i zapis odpowiedzi do `verification_result.json`.
+
+## L10 — Drone
+
+Krótki opis:
+- Cel: przeprowadzenie drona przez misje weryfikacyjną na hubie, z analizą mapy do sektora tamy i uruchomieniem lotu z potwierdzonymi parametrami.
+
+Najważniejsze pliki:
+- [L10/task.py](L10/task.py) — uruchamia analizę mapy i wysyła instrukcje do `/verify`.
+- [L10/drone_solver.py](L10/drone_solver.py) — wspólna logika vision, budowy instrukcji, resetu i zapisu wyników.
+- [L10/ui_server.py](L10/ui_server.py) — lokalny serwer HTTP z endpointami statusu, analizy, resetu i uruchomienia misji.
+- [L10/ui.html](L10/ui.html) — panel WWW do krokowego sprawdzania stanu i uruchamiania misji.
+- [L10/verification_result.json](L10/verification_result.json) — ostatnia odpowiedz z huba po poprawnym locie.
+
+Szybkie uruchomienie:
+
+```powershell
+python L10/ui_server.py
+python L10/task.py
+```
+
+Uwaga:
+- W tej lekcji nie byly potrzebne nowe zaleznosci poza paczkami obecnymi juz w root `requirements.txt`.
+- Zweryfikowany sektor tamy to `2,4`, a sensowna wysokosc lotu to `8m` lub wyzsza.
 
 ## L09 — Mailbox
 
