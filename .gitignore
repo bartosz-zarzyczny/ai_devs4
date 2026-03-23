@@ -206,3 +206,6 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 .ssh/
+# L11 sensor data (large downloaded files)
+L11/sensors/
+L11/sensors.zip

@@ -1,0 +1,206 @@
+{
+  "total_files": 9999,
+  "programmatic_anomalies": {
+    "0158": [
+      "humidity_percent=68.5 but sensor is inactive (expected 0)"
+    ],
+    "0307": [
+      "humidity_percent=105.3 outside range [40.0, 80.0]"
+    ],
+    "0516": [
+      "humidity_percent=60.9 but sensor is inactive (expected 0)"
+    ],
+    "0567": [
+      "voltage_supply_v=224.4 outside range [229.0, 231.0]"
+    ],
+    "0753": [
+      "voltage_supply_v=224.4 outside range [229.0, 231.0]"
+    ],
+    "1053": [
+      "temperature_K=1101 outside range [553.0, 873.0]"
+    ],
+    "1269": [
+      "water_level_meters=21.5 outside range [5.0, 15.0]"
+    ],
+    "1632": [
+      "temperature_K=742 but sensor is inactive (expected 0)"
+    ],
+    "1678": [
+      "humidity_percent=70.1 but sensor is inactive (expected 0)"
+    ],
+    "1819": [
+      "pressure_bar=184 outside range [60.0, 160.0]"
+    ],
+    "2044": [
+      "temperature_K=526 outside range [553.0, 873.0]"
+    ],
+    "2175": [
+      "voltage_supply_v=227.2 outside range [229.0, 231.0]"
+    ],
+    "2238": [
+      "temperature_K=1039 outside range [553.0, 873.0]"
+    ],
+    "2500": [
+      "water_level_meters=3.9 outside range [5.0, 15.0]"
+    ],
+    "2958": [
+      "water_level_meters=10.2 but sensor is inactive (expected 0)"
+    ],
+    "3123": [
+      "voltage_supply_v=230.5 but sensor is inactive (expected 0)"
+    ],
+    "3713": [
+      "temperature_K=534 outside range [553.0, 873.0]"
+    ],
+    "3798": [
+      "temperature_K=742 but sensor is inactive (expected 0)"
+    ],
+    "4040": [
+      "temperature_K=536 outside range [553.0, 873.0]"
+    ],
+    "4186": [
+      "humidity_percent=63.4 but sensor is inactive (expected 0)"
+    ],
+    "4237": [
+      "pressure_bar=249.1 outside range [60.0, 160.0]"
+    ],
+    "4630": [
+      "humidity_percent=66.2 but sensor is inactive (expected 0)"
+    ],
+    "4673": [
+      "pressure_bar=89.8 but sensor is inactive (expected 0)"
+    ],
+    "4888": [
+      "water_level_meters=1.8 outside range [5.0, 15.0]"
+    ],
+    "5022": [
+      "water_level_meters=3.3 outside range [5.0, 15.0]"
+    ],
+    "5156": [
+      "voltage_supply_v=227.2 outside range [229.0, 231.0]"
+    ],
+    "5405": [
+      "humidity_percent=61.5 but sensor is inactive (expected 0)"
+    ],
+    "5714": [
+      "temperature_K=658 but sensor is inactive (expected 0)"
+    ],
+    "5715": [
+      "pressure_bar=127.9 but sensor is inactive (expected 0)"
+    ],
+    "5799": [
+      "water_level_meters=10.1 but sensor is inactive (expected 0)"
+    ],
+    "6197": [
+      "humidity_percent=79.8 but sensor is inactive (expected 0)"
+    ],
+    "6281": [
+      "humidity_percent=90.1 outside range [40.0, 80.0]"
+    ],
+    "6336": [
+      "humidity_percent=58.4 but sensor is inactive (expected 0)"
+    ],
+    "7680": [
+      "humidity_percent=71.3 but sensor is inactive (expected 0)"
+    ],
+    "7701": [
+      "humidity_percent=49.5 but sensor is inactive (expected 0)"
+    ],
+    "8076": [
+      "water_level_meters=5.2 but sensor is inactive (expected 0)"
+    ],
+    "8168": [
+      "voltage_supply_v=276.1 outside range [229.0, 231.0]"
+    ],
+    "8410": [
+      "voltage_supply_v=304.5 outside range [229.0, 231.0]"
+    ],
+    "8457": [
+      "pressure_bar=186.8 outside range [60.0, 160.0]"
+    ],
+    "9151": [
+      "voltage_supply_v=223.4 outside range [229.0, 231.0]"
+    ],
+    "9288": [
+      "voltage_supply_v=230.6 but sensor is inactive (expected 0)"
+    ],
+    "9422": [
+      "humidity_percent=58 but sensor is inactive (expected 0)"
+    ],
+    "9518": [
+      "pressure_bar=87.2 but sensor is inactive (expected 0)"
+    ],
+    "9583": [
+      "humidity_percent=72.5 but sensor is inactive (expected 0)"
+    ],
+    "9604": [
+      "voltage_supply_v=225.6 outside range [229.0, 231.0]"
+    ],
+    "9848": [
+      "voltage_supply_v=230.1 but sensor is inactive (expected 0)"
+    ]
+  },
+  "note_anomalies": {
+    "1743": "This is not the pattern I expected, because the current state does not match healthy history, so I marked this case for revalidation until quality control clears it.",
+    "5000": "This state looks unstable, since this report cannot be treated as normal, and I submitted it for root-cause analysis before this can be accepted.",
+    "7266": "This state looks unstable, because the output suggests a potential fault, and I submitted it for root-cause analysis before this result is trusted again.",
+    "8369": "I can see a clear irregularity, since this report cannot be treated as normal, so I opened a deeper diagnostic task until diagnostics confirm stability.",
+    "9614": "This state looks unstable, since confidence in this report is low, so I opened a deeper diagnostic task until quality control clears it.",
+    "9717": "Something is clearly off, because the behavior is too erratic for approval, and I requested a focused technical review until a technician signs it off."
+  },
+  "all_anomaly_ids": [
+    "0158",
+    "0307",
+    "0516",
+    "0567",
+    "0753",
+    "1053",
+    "1269",
+    "1632",
+    "1678",
+    "1743",
+    "1819",
+    "2044",
+    "2175",
+    "2238",
+    "2500",
+    "2958",
+    "3123",
+    "3713",
+    "3798",
+    "4040",
+    "4186",
+    "4237",
+    "4630",
+    "4673",
+    "4888",
+    "5000",
+    "5022",
+    "5156",
+    "5405",
+    "5714",
+    "5715",
+    "5799",
+    "6197",
+    "6281",
+    "6336",
+    "7266",
+    "7680",
+    "7701",
+    "8076",
+    "8168",
+    "8369",
+    "8410",
+    "8457",
+    "9151",
+    "9288",
+    "9422",
+    "9518",
+    "9583",
+    "9604",
+    "9614",
+    "9717",
+    "9848"
+  ],
+  "count": 52
+}
