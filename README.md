@@ -14,6 +14,8 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L08/README.md](L08/README.md) - zadanie `failure` (kompresja logów, UI WWW, pętla weryfikacji i finalna flaga)
 - [L09/README.md](L09/README.md) - zadanie `mailbox` (wyszukiwanie poczty w zmail, UI WWW, główna flaga z `/verify` oraz bonusowa flaga z załącznika)
 - [L10/README.md](L10/README.md) - zadanie `drone` (analiza mapy, UI WWW, lot drona i weryfikacja na `/verify`)
+- [L11/README.md](L11/README.md) - zadanie `evaluation` (detekcja anomalii w 10 000 odczytach sensorów, klasyfikacja LLM notatek operatorów, bonusowa flaga z AWK)
+- [L12/README.md](L12/README.md) - zadanie `firmware` (agentowa pętla na VM, uruchomienie cooler.bin, weryfikacja ECCS; bonus: zagadka z `/bin/flaggengenerator schmetterling`)
 
 ## Konfiguracja
 
@@ -40,12 +42,62 @@ python -m pip install -r requirements.txt
 
 ## Ostatnie zmiany (skrót)
 
+- L12: agentowa pętla na VM z `cooler.bin`; flaga główna `{FLG:XXXXXXXX}` z `/verify`; bonusowa zagadka `/bin/flaggengenerator schmetterling` → `{FLG:XXXXXXXX}`; UI z kartą bonusu i przyciskiem.
+- L11: detekcja anomalii w 10 000 plikach JSON (46 programistycznych + 6 z notatek); flaga `{FLG:XXXXXXX}`; bonus AWK `{FLG:XXXXXXXX}`.
 - L03: dodano lokalny serwer i narzędzia pomocnicze; folder `L03` zawiera logi i endpointy debugujące (sprawdź L03/logs).
 - L04: komplet rozwiązań dla zadania `sendit` — `send_payload.py` (opcje `--route`, `--wdp`, `--response-log`), `test_routes.py` do batch-testów, `validate_declaration.py` do lokalnej walidacji. Usunięto pliki tymczasowe i dodano oddzielny `response_log.jsonl` dla maszynowego przetwarzania odpowiedzi.
 - Rezultat L04: poprawne wypełnienie deklaracji i otrzymanie potwierdzenia zwrotnego (szczegóły w [L04/README.md](L04/README.md)).
 - L08: dodano UI WWW, kompresję `failure.log` do `failure_compact.log` (48 linii, 1310 tokenów cl100k_base), weryfikację na `/verify` i zapis odpowiedzi do `verification_result.json`.
 - L09: dodano UI WWW do `zmail`, osobny tor dla głównej flagi i bonusowy solver załącznika; wyniki zapisują się do `verification_result.json` oraz `bonus_flag_result.json`.
 - L10: dodano UI WWW dla zadania `drone`, solver z analizą mapy przez vision, weryfikację lotu i zapis odpowiedzi do `verification_result.json`.
+
+## L12 — Firmware (agentowy solver + bonus flaggengenerator)
+
+Krótki opis:
+- Cel: agentowa pętla (claude-sonnet) łączy się z ograniczoną maszyną wirtualną przez Shell API, konfiguruje `settings.ini`, usuwa lock-plik i uruchamia `cooler.bin`, a następnie wysyła kod `ECCS-...` do `/verify`.
+- Bonus: zagadka „Uruchom mnie z niemieckim motylem" — uruchomienie `/bin/flaggengenerator schmetterling` zwraca base64 → `{FLG:XXXXXXXXXX}`.
+
+Najważniejsze pliki:
+- [L12/task.py](L12/task.py) — agentowy solver: narzędzia `shell_cmd` + `submit_answer`, pętla LLM, flag `--reboot`.
+- [L12/bonus_probe.py](L12/bonus_probe.py) — jednorazowy probe kandydatów hasła dla `flaggengenerator`.
+- [L12/ui_server.py](L12/ui_server.py) — serwer HTTP z endpointami `/api/status`, `/api/shell`, `/api/bonus/run`, `/api/reboot`.
+- [L12/ui.html](L12/ui.html) — panel WWW: karty flag (główna + bonus), log agenta, ręczny terminal, przycisk reboot.
+- [L12/verification_result.json](L12/verification_result.json) — odpowiedź huba po poprawnym submit.
+
+Szybkie uruchomienie:
+
+```powershell
+python L12/task.py
+python L12/ui_server.py
+```
+
+Wyniki:
+- Flaga główna: `{FLG:XXXXXXXXX}`
+- Flaga bonusowa: `{FLG:XXXXXXXX}` (`/bin/flaggengenerator schmetterling` → base64)
+
+## L11 — Evaluation (anomalie w odczytach sensorów)
+
+Krótki opis:
+- Cel: znalezienie anomalii w 10 000 plikach JSON z odczytami sensorów elektrowni (wartości poza zakresem, nieaktywne pola ≠ 0, rozbieżności notatek operatorów) i wysłanie listy ID do `/verify`.
+
+Najważniejsze pliki:
+- [L11/task.py](L11/task.py) — pobiera `sensors.zip`, wykrywa anomalie programistycznie i przez LLM, wysyła do `/verify`.
+- [L11/bonus_solver.py](L11/bonus_solver.py) — dekoduje bonusową flagę przez skrypt AWK z `decode.txt`.
+- [L11/ui_server.py](L11/ui_server.py) — serwer HTTP do inspekcji wykrytych anomalii.
+- [L11/ui.html](L11/ui.html) — panel WWW z listą anomalii.
+- [L11/verification_result.json](L11/verification_result.json) — odpowiedź huba.
+
+Szybkie uruchomienie:
+
+```powershell
+python L11/task.py
+python L11/bonus_solver.py
+python L11/ui_server.py
+```
+
+Wyniki:
+- 52 anomalie (46 programistycznych + 6 z notatek), flaga: `{FLG:XXXXXXXXXXX}`
+- Bonus AWK: `{FLG:XXXXXXXXXXX}`
 
 ## L10 — Drone
 
