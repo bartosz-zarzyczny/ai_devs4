@@ -16,6 +16,7 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L10/README.md](L10/README.md) - zadanie `drone` (analiza mapy, UI WWW, lot drona i weryfikacja na `/verify`)
 - [L11/README.md](L11/README.md) - zadanie `evaluation` (detekcja anomalii w 10 000 odczytach sensorów, klasyfikacja LLM notatek operatorów, bonusowa flaga z AWK)
 - [L12/README.md](L12/README.md) - zadanie `firmware` (agentowa pętla na VM, uruchomienie cooler.bin, weryfikacja ECCS; bonus: zagadka z `/bin/flaggengenerator schmetterling`)
+- [L13/README.md](L13/README.md) - zadanie `reactor` (autonomiczny robot na planszy 7×5, omijanie bloków reaktora, UI WWW z trybem AUTO-PLAY)
 
 ## Konfiguracja
 
@@ -42,6 +43,7 @@ python -m pip install -r requirements.txt
 
 ## Ostatnie zmiany (skrót)
 
+- L13: autonomiczny solver zadania `reactor`; robot przeszedł całą mapę 7×5 w 11 krokach bez kolizji; flaga `{FLG:INSTALLED}`; UI WWW z trybem AUTO-PLAY na porcie 8013.
 - L12: agentowa pętla na VM z `cooler.bin`; flaga główna `{FLG:XXXXXXXX}` z `/verify`; bonusowa zagadka `/bin/flaggengenerator schmetterling` → `{FLG:XXXXXXXX}`; UI z kartą bonusu i przyciskiem.
 - L11: detekcja anomalii w 10 000 plikach JSON (46 programistycznych + 6 z notatek); flaga `{FLG:XXXXXXX}`; bonus AWK `{FLG:XXXXXXXX}`.
 - L03: dodano lokalny serwer i narzędzia pomocnicze; folder `L03` zawiera logi i endpointy debugujące (sprawdź L03/logs).
@@ -50,6 +52,27 @@ python -m pip install -r requirements.txt
 - L08: dodano UI WWW, kompresję `failure.log` do `failure_compact.log` (48 linii, 1310 tokenów cl100k_base), weryfikację na `/verify` i zapis odpowiedzi do `verification_result.json`.
 - L09: dodano UI WWW do `zmail`, osobny tor dla głównej flagi i bonusowy solver załącznika; wyniki zapisują się do `verification_result.json` oraz `bonus_flag_result.json`.
 - L10: dodano UI WWW dla zadania `drone`, solver z analizą mapy przez vision, weryfikację lotu i zapis odpowiedzi do `verification_result.json`.
+
+## L13 — Reactor (autonomiczny robot)
+
+Krótki opis:
+- Cel: przeprowadzenie robota transportującego przez planszę 7×5, omijając pionowo poruszające się bloki reaktora, aż do kolumny 7 wiersz 5.
+
+Najważniejsze pliki:
+- [L13/task.py](L13/task.py) — autonomiczny solver: pętla `start → decide → right/wait/left`, obsługa 409 (reset i restart), zapis do `verification_result.json`.
+- [L13/ui_server.py](L13/ui_server.py) — serwer HTTP (port 8013) z endpointami `/api/state` i `/api/command`.
+- [L13/ui.html](L13/ui.html) — panel WWW: wizualizacja planszy 7×5, przyciski komend, tryb AUTO-PLAY.
+- [L13/verification_result.json](L13/verification_result.json) — odpowiedź huba po zaliczeniu zadania.
+
+Szybkie uruchomienie:
+
+```powershell
+python L13/task.py
+python L13/ui_server.py
+```
+
+Wyniki:
+- Flaga: `{FLG:INSTALLED}` — robot dotarł do celu w 11 krokach.
 
 ## L12 — Firmware (agentowy solver + bonus flaggengenerator)
 

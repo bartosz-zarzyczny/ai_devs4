@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L13 — Reactor Robot</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Courier New", monospace;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    h1 { color: #ff6b6b; font-size: 1.6rem; margin-bottom: 4px; }
+    .subtitle { color: #8b949e; font-size: 0.85rem; margin-bottom: 20px; }
+
+    /* Grid */
+    .grid-section { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; }
+
+    .axis-y {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-top: 28px;
+    }
+    .axis-label {
+      width: 20px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #484f58;
+      font-size: 11px;
+    }
+
+    .grid-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .axis-x {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .axis-x-label {
+      width: 52px;
+      text-align: center;
+      color: #484f58;
+      font-size: 11px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(7, 52px);
+      gap: 6px;
+    }
+
+    .cell {
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 22px;
+      border: 2px solid transparent;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .cell-empty  { background: #161b22; border-color: #21262d; color: #30363d; font-size: 14px; }
+    .cell-robot  { background: #1f3a5f; border-color: #58a6ff; color: #fff; }
+    .cell-goal   { background: #1a3a2a; border-color: #3fb950; color: #3fb950; }
+    .cell-block  { background: #3d1a1a; border-color: #f85149; color: #f85149; animation: pulse 1s ease-in-out infinite alternate; }
+
+    @keyframes pulse { from { opacity: 0.8; } to { opacity: 1; } }
+
+    /* Status */
+    .status-bar {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #e3b341;
+      min-height: 38px;
+    }
+
+    /* Buttons */
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+
+    button {
+      padding: 9px 18px;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      background: #21262d;
+      color: #c9d1d9;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    button:hover { background: #30363d; border-color: #8b949e; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    #btn-start  { border-color: #3fb950; color: #3fb950; }
+    #btn-start:hover  { background: #1a3a2a; }
+    #btn-right  { border-color: #58a6ff; color: #58a6ff; }
+    #btn-right:hover  { background: #1f3a5f; }
+    #btn-left   { border-color: #79c0ff; color: #79c0ff; }
+    #btn-left:hover   { background: #1f3a5f; }
+    #btn-wait   { border-color: #e3b341; color: #e3b341; }
+    #btn-wait:hover   { background: #2d2a1a; }
+    #btn-reset  { border-color: #8b949e; }
+    #btn-auto   { border-color: #d2a8ff; color: #d2a8ff; }
+    #btn-auto:hover   { background: #2d1a3d; }
+    #btn-auto.running { background: #3d1a1a; border-color: #f85149; color: #f85149; }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: #8b949e;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot {
+      width: 14px; height: 14px; border-radius: 3px;
+      display: flex; align-items: center; justify-content: center; font-size: 10px;
+    }
+
+    /* Log */
+    .log-title { color: #8b949e; font-size: 12px; margin-bottom: 6px; }
+    .log {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 10px 12px;
+      max-height: 220px;
+      overflow-y: auto;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .log-entry         { border-bottom: 1px solid #161b22; padding: 1px 0; }
+    .log-entry.cmd     { color: #79c0ff; }
+    .log-entry.ok      { color: #3fb950; }
+    .log-entry.err     { color: #f85149; }
+    .log-entry.info    { color: #8b949e; }
+    .log-entry.success { color: #d2a8ff; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h1>L13 — Reactor Robot</h1>
+<p class="subtitle">Sterowanie robotem transportującym przez reaktor (7 × 5)</p>
+
+<!-- Grid -->
+<div class="grid-section">
+  <div class="axis-y" id="axisY"></div>
+  <div class="grid-col">
+    <div class="axis-x" id="axisX"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<!-- Status bar -->
+<div class="status-bar" id="status">Naciśnij START aby rozpocząć sesję.</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#1f3a5f;border:1px solid #58a6ff">🤖</div> Robot (P)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1a3a2a;border:1px solid #3fb950">🎯</div> Cel (G)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3d1a1a;border:1px solid #f85149">⬛</div> Blok reaktora (B)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#161b22;border:1px solid #21262d;color:#30363d;font-size:10px">·</div> Puste (.)</div>
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <button id="btn-start" onclick="sendCmd('start')">▶ START</button>
+  <button id="btn-left"  onclick="sendCmd('left')">← LEFT</button>
+  <button id="btn-wait"  onclick="sendCmd('wait')">⏸ WAIT</button>
+  <button id="btn-right" onclick="sendCmd('right')">→ RIGHT</button>
+  <button id="btn-reset" onclick="sendCmd('reset')">↺ RESET</button>
+  <button id="btn-auto"  onclick="toggleAuto()">⚡ AUTO-PLAY</button>
+</div>
+
+<!-- Log -->
+<div class="log-title">Log poleceń</div>
+<div class="log" id="log"><div class="log-entry info">Oczekiwanie…</div></div>
+
+<script>
+  // ------------------------------------------------------------------ config
+  const ROWS = 5, COLS = 7;
+  const ROBOT_ROW = 4, GOAL_COL = 6;
+  const AUTO_DELAY_MS = 700;
+
+  // ------------------------------------------------------------------ state
+  let lastBoard = null;
+  let lastBlocks = [];
+  let robotCol = 0;
+  let autoMode = false;
+  let autoTimer = null;
+
+  // ------------------------------------------------------------------ build grid
+  const axisX = document.getElementById('axisX');
+  for (let c = 0; c < COLS; c++) {
+    const d = document.createElement('div');
+    d.className = 'axis-x-label';
+    d.textContent = c + 1;
+    axisX.appendChild(d);
+  }
+
+  const axisY = document.getElementById('axisY');
+  for (let r = 0; r < ROWS; r++) {
+    const d = document.createElement('div');
+    d.className = 'axis-label';
+    d.textContent = r + 1;
+    axisY.appendChild(d);
+  }
+
+  const gridEl = document.getElementById('grid');
+  const cells = [];
+  for (let r = 0; r < ROWS; r++) {
+    cells[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      const el = document.createElement('div');
+      el.className = 'cell cell-empty';
+      el.textContent = '·';
+      gridEl.appendChild(el);
+      cells[r][c] = el;
+    }
+  }
+
+  // ------------------------------------------------------------------ render
+  function renderBoard(board) {
+    if (!board || board.length !== ROWS) return;
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const ch = String(board[r][c] || '.').toUpperCase().trim();
+        const el = cells[r][c];
+        el.className = 'cell';
+        if (ch === 'B') {
+          el.classList.add('cell-block'); el.textContent = '⬛';
+        } else if (ch === 'P' || ch === 'R') {
+          el.classList.add('cell-robot'); el.textContent = '🤖';
+          if (r === ROBOT_ROW) robotCol = c;
+        } else if (ch === 'G') {
+          el.classList.add('cell-goal'); el.textContent = '🎯';
+        } else {
+          el.classList.add('cell-empty'); el.textContent = '·';
+        }
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------ parse
+  function parseBoard(data) {
+    for (const key of ['board', 'map', 'grid', 'state']) {
+      const raw = data[key];
+      if (Array.isArray(raw) && raw.length === ROWS) {
+        return raw.map(row => typeof row === 'string' ? row.toUpperCase().split('') : row.map(c => String(c).toUpperCase()));
+      }
+    }
+    const msg = String(data.message || data.msg || JSON.stringify(data));
+    const lines = msg.split(/[\n\r]/).map(l => l.trim().replace(/\s/g, '').replace(/[|,]/g, ''));
+    const boardLines = lines.filter(l => l.length === COLS && /^[PGBpgb.]+$/i.test(l));
+    if (boardLines.length === ROWS) return boardLines.map(l => l.toUpperCase().split(''));
+    return null;
+  }
+
+  function parseBlocks(data) {
+    for (const key of ['blocks', 'reactorBlocks', 'reactor_blocks', 'obstacles']) {
+      const raw = data[key];
+      if (Array.isArray(raw) && raw.length > 0 && typeof raw[0] === 'object') return raw;
+    }
+    return [];
+  }
+
+  // ------------------------------------------------------------------ decision
+  function blockWillHitBottom(blk) {
+    const top = blk.top_row != null ? blk.top_row : (blk.topRow != null ? blk.topRow : blk.y);
+    const dir = (blk.direction || blk.dir || 'unknown').toLowerCase();
+    let nextTop;
+    if (dir === 'down')  nextTop = top < ROBOT_ROW - 1 ? top + 1 : top - 1;
+    else if (dir === 'up') nextTop = top > 0 ? top - 1 : top + 1;
+    else return top >= ROBOT_ROW - 2;
+    return nextTop + 1 >= ROBOT_ROW;
+  }
+
+  function decide(board, blocks) {
+    const byCol = {};
+    for (const blk of blocks) {
+      const c = blk.col != null ? blk.col : (blk.column != null ? blk.column : blk.x);
+      (byCol[c] = byCol[c] || []).push(blk);
+    }
+
+    const safeNow  = c => c >= 0 && c < COLS && board[ROBOT_ROW][c] !== 'B';
+    const safeNext = c => {
+      if (c < 0 || c >= COLS) return false;
+      return !(byCol[c] || []).some(blockWillHitBottom);
+    };
+
+    const next = robotCol + 1, prev = robotCol - 1;
+    if (safeNow(next) && safeNext(next))  return 'right';
+    if (safeNow(robotCol) && safeNext(robotCol)) return 'wait';
+    if (safeNow(prev) && safeNext(prev))  return 'left';
+    return 'wait';
+  }
+
+  // ------------------------------------------------------------------ API
+  async function sendCmd(command) {
+    addLog(`> ${command}`, 'cmd');
+    try {
+      const resp = await fetch('/api/command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command }),
+      });
+      const data = await resp.json();
+
+      const board = parseBoard(data);
+      if (board) { lastBoard = board; renderBoard(board); }
+      const blk = parseBlocks(data);
+      if (blk.length > 0) lastBlocks = blk;
+
+      const raw = JSON.stringify(data, null, 0);
+      const isFin = /\{FLG:[^}]+\}/i.test(raw)
+        || (data.code === 0 && /congratul|success|win|done|flag/i.test(String(data.message || '')));
+
+      if (isFin) {
+        const flagM = raw.match(/\{FLG:[^}]+\}/i);
+        addLog('=== SUKCES! ' + (flagM ? flagM[0] : data.message) + ' ===', 'success');
+        setStatus('🎉 Zadanie zaliczone! ' + (flagM ? flagM[0] : ''));
+        if (autoMode) toggleAuto();
+        return data;
+      }
+
+      const msg = data.message ? String(data.message).substring(0, 120) : raw.substring(0, 120);
+      addLog('  ' + msg, data.code === 0 ? 'ok' : 'err');
+      updateStatus(data, board);
+      return data;
+    } catch (e) {
+      addLog('  ERROR: ' + e.message, 'err');
+      return null;
+    }
+  }
+
+  // ------------------------------------------------------------------ UI helpers
+  function setStatus(text) {
+    document.getElementById('status').textContent = text;
+  }
+
+  function updateStatus(data, board) {
+    if (board) {
+      const rCol = board[ROBOT_ROW].indexOf('P');
+      const pos = rCol >= 0 ? `Robot: kolumna ${rCol + 1}/7` : '';
+      const msg = data.message ? ' | ' + String(data.message).substring(0, 80) : '';
+      setStatus(pos + msg);
+    } else {
+      setStatus(String(data.message || '').substring(0, 150));
+    }
+  }
+
+  function addLog(text, cls) {
+    const log = document.getElementById('log');
+    // Remove placeholder
+    const placeholder = log.querySelector('.log-entry.info');
+    if (placeholder && placeholder.textContent === 'Oczekiwanie…') placeholder.remove();
+
+    const d = document.createElement('div');
+    d.className = 'log-entry ' + cls;
+    d.textContent = text;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+    // Keep at most 200 entries
+    while (log.children.length > 200) log.removeChild(log.firstChild);
+  }
+
+  // ------------------------------------------------------------------ auto-play
+  function toggleAuto() {
+    autoMode = !autoMode;
+    const btn = document.getElementById('btn-auto');
+    if (autoMode) {
+      btn.textContent = '⏹ STOP AUTO';
+      btn.classList.add('running');
+      runAutoStep();
+    } else {
+      btn.textContent = '⚡ AUTO-PLAY';
+      btn.classList.remove('running');
+      if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+    }
+  }
+
+  async function runAutoStep() {
+    if (!autoMode) return;
+
+    if (!lastBoard) {
+      const data = await sendCmd('start');
+      if (data) {
+        const board = parseBoard(data);
+        if (board) lastBoard = board;
+      }
+    } else {
+      const board = lastBoard;
+      const rCol = board[ROBOT_ROW].findIndex(c => c === 'P' || c === 'R');
+      if (rCol >= 0) {
+        robotCol = rCol;
+        if (robotCol === GOAL_COL) {
+          addLog('=== ROBOT W CELU ===', 'success');
+          toggleAuto();
+          return;
+        }
+        const cmd = decide(board, lastBlocks);
+        await sendCmd(cmd);
+      } else {
+        await sendCmd('wait');
+      }
+    }
+
+    if (autoMode) autoTimer = setTimeout(runAutoStep, AUTO_DELAY_MS);
+  }
+</script>
+</body>
+</html>
