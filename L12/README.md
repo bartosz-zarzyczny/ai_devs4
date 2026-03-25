@@ -65,7 +65,7 @@ Decoded: **`{FLG:BRATWURST}`**
 
 ```python
 import base64
-base64.b64decode('e0ZMRzpCUkFUV1VSU1R9').decode()  # '{FLG:BRATWURST}'
+base64.b64decode('e0ZMRzpCUkFUV1VSU1R9').decode()  # '{FLG:XXXXXXXXXXXX}'
 ```
 
 Or via the UI — click the **"Run flaggengenerator"** button in the flag bar.
