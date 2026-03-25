@@ -96,6 +96,6 @@ AI_DEVS_4_API_KEY=twoj_klucz_ai_devs
 
 ## Wyniki
 
-- Flaga: `{FLG:INSTALLED}`
+- Flaga: `{FLG:XXXXXXXX}`
 - Robot dotarł do celu w **11 krokach** (bez żadnej śmierci).
 - Wynik zapisany w `verification_result.json`.

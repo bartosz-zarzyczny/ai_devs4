@@ -72,7 +72,7 @@ python L13/ui_server.py
 ```
 
 Wyniki:
-- Flaga: `{FLG:INSTALLED}` — robot dotarł do celu w 11 krokach.
+- Flaga: `{FLG:XXXXX}` — robot dotarł do celu w 11 krokach.
 
 ## L12 — Firmware (agentowy solver + bonus flaggengenerator)
 
