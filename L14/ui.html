@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L14 Negotiations — Debug UI</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1, h2 { color: #333; }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        input, textarea, button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f9f9f9;
+            border-left: 4px solid #007bff;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        .error {
+            border-left-color: #dc3545;
+        }
+        .success {
+            border-left-color: #28a745;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f4f4f4;
+            font-weight: bold;
+        }
+        .item-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .item:hover {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 L14 Negotiations — Debug UI</h1>
+    
+    <div class="container">
+        <h2>📊 CSV Data</h2>
+        <div class="section">
+            <button onclick="loadItems()">Load Items</button>
+            <div id="itemsResult" class="result" style="display:none;"></div>
+        </div>
+        
+        <div class="section" id="itemsSection" style="display:none;">
+            <h3>Available Items (click to test)</h3>
+            <div id="itemsList" class="item-list"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>🔍 Test Tool: search_item</h2>
+        <div class="section">
+            <textarea id="searchQuery" placeholder="Enter natural language query (e.g., 'kabel 10 metrów')" style="width:100%; height:60px;"></textarea>
+            <button onclick="testSearchItem()">Test Search</button>
+            <div id="searchResult" class="result" style="display:none;"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>🎯 Test Tool: find_all</h2>
+        <div class="section">
+            <textarea id="findAllQuery" placeholder="Enter items separated by comma (e.g., 'kabel, śruba, turbina')" style="width:100%; height:60px;"></textarea>
+            <button onclick="testFindAll()">Test Find All</button>
+            <div id="findAllResult" class="result" style="display:none;"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>📋 Instructions</h2>
+        <ol>
+            <li><strong>Load Items:</strong> Click "Load Items" to fetch CSV data from hub and show available items.</li>
+            <li><strong>Test search_item:</strong> Enter a natural language query (e.g., "kabel 10 metrów") and see which cities sell it.</li>
+            <li><strong>Test find_all:</strong> Enter multiple items separated by commas to find cities that have ALL of them.</li>
+            <li><strong>Tool Server:</strong> Start <code>python L14/tool_server.py</code> to serve the actual endpoints.</li>
+            <li><strong>Expose Tool Server:</strong> Use <code>ngrok http 8080</code> to expose the tool server publicly.</li>
+            <li><strong>Register Tools:</strong> Update NGROK_URL in .env and run <code>python L14/task.py</code> to register tools with hub.</li>
+            <li><strong>Wait for Result:</strong> The agent will start processing. After 30-60 seconds, check the result with <code>python L14/task.py --check</code>.</li>
+        </ol>
+    </div>
+    
+    <script>
+        async function loadItems() {
+            try {
+                const resp = await fetch('/api/items');
+                const data = await resp.json();
+                
+                const resultDiv = document.getElementById('itemsResult');
+                resultDiv.innerHTML = `
+                    <strong>Loaded ${data.count} unique items</strong>
+                    <p>Showing first 50 items:</p>
+                `;
+                resultDiv.style.display = 'block';
+                resultDiv.classList.add('success');
+                
+                const itemsList = document.getElementById('itemsList');
+                itemsList.innerHTML = data.items.map(item => 
+                    `<div class="item" onclick="testSearchItemWithName('${item}')">${item}</div>`
+                ).join('');
+                
+                document.getElementById('itemsSection').style.display = 'block';
+            } catch (e) {
+                document.getElementById('itemsResult').innerHTML = `<strong>Error:</strong> ${e.message}`;
+                document.getElementById('itemsResult').style.display = 'block';
+                document.getElementById('itemsResult').classList.add('error');
+            }
+        }
+        
+        async function testSearchItem() {
+            const query = document.getElementById('searchQuery').value;
+            if (!query.trim()) {
+                alert('Enter a query');
+                return;
+            }
+            testSearchItemWithName(query);
+        }
+        
+        async function testSearchItemWithName(query) {
+            try {
+                const resp = await fetch('/api/test_search_item', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query })
+                });
+                const data = await resp.json();
+                
+                const resultDiv = document.getElementById('searchResult');
+                resultDiv.innerHTML = `
+                    <strong>Query:</strong> ${data.query}<br>
+                    <strong>Cities:</strong> ${data.cities.length > 0 ? data.cities.join(', ') : 'none found'}
+                `;
+                resultDiv.style.display = 'block';
+                resultDiv.classList.add('success');
+            } catch (e) {
+                const resultDiv = document.getElementById('searchResult');
+                resultDiv.innerHTML = `<strong>Error:</strong> ${e.message}`;
+                resultDiv.style.display = 'block';
+                resultDiv.classList.add('error');
+            }
+        }
+        
+        async function testFindAll() {
+            const query = document.getElementById('findAllQuery').value;
+            if (!query.trim()) {
+                alert('Enter items (comma-separated)');
+                return;
+            }
+            
+            const items = query.split(',').map(s => s.trim());
+            
+            try {
+                const resp = await fetch('/api/test_find_all', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: items })
+                });
+                const data = await resp.json();
+                
+                const resultDiv = document.getElementById('findAllResult');
+                resultDiv.innerHTML = `
+                    <strong>Items:</strong> ${data.items.join(', ')}<br>
+                    <strong>Common Cities:</strong> ${data.common_cities.length > 0 ? data.common_cities.join(', ') : 'none found'}
+                `;
+                resultDiv.style.display = 'block';
+                resultDiv.classList.add('success');
+            } catch (e) {
+                const resultDiv = document.getElementById('findAllResult');
+                resultDiv.innerHTML = `<strong>Error:</strong> ${e.message}`;
+                resultDiv.style.display = 'block';
+                resultDiv.classList.add('error');
+            }
+        }
+    </script>
+</body>
+</html>

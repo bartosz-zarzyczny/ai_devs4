@@ -1,0 +1,15 @@
+{
+  "count": 2,
+  "calls": [
+    {
+      "timestamp": "2026-03-26T16:54:45.063763Z",
+      "endpoint": "search_item",
+      "params": "turbina"
+    },
+    {
+      "timestamp": "2026-03-26T16:54:55.449292Z",
+      "endpoint": "search_item",
+      "params": "Turbina wiatrowa maj¹ca 48V i moc 400W"
+    }
+  ]
+}
