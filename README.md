@@ -17,6 +17,7 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L11/README.md](L11/README.md) - zadanie `evaluation` (detekcja anomalii w 10 000 odczytach sensorów, klasyfikacja LLM notatek operatorów, bonusowa flaga z AWK)
 - [L12/README.md](L12/README.md) - zadanie `firmware` (agentowa pętla na VM, uruchomienie cooler.bin, weryfikacja ECCS; bonus: zagadka z `/bin/flaggengenerator schmetterling`)
 - [L13/README.md](L13/README.md) - zadanie `reactor` (autonomiczny robot na planszy 7×5, omijanie bloków reaktora, UI WWW z trybem AUTO-PLAY)
+- [L15/README.md](L15/README.md) - zadanie `savethem` (optimal routing agent, toolsearch discovery, fuel+food constraints, Dijkstra pathfinding, UI WWW z wizualizacją mapy 10×10)
 
 ## Konfiguracja
 
