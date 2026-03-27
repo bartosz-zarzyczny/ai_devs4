@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L15 Savethem — Route Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #58a6ff;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .info-bar {
+            background: #161b22;
+            padding: 12px 16px;
+            border-left: 3px solid #238636;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .info-bar a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        .info-bar a:hover {
+            text-decoration: underline;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 40px);
+            gap: 2px;
+            margin-bottom: 30px;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: default;
+            user-select: none;
+            position: relative;
+            background: #0d1117;
+        }
+
+        .cell.grass {
+            background: #1f6feb;
+            color: #fff;
+        }
+
+        .cell.water {
+            background: #0969da;
+            color: #fff;
+        }
+
+        .cell.tree {
+            background: #238636;
+            color: #fff;
+        }
+
+        .cell.stone {
+            background: #6e40aa;
+            color: #fff;
+        }
+
+        .cell.start {
+            background: #a371f7;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .cell.goal {
+            background: #f85149;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .cell.path {
+            background: #fdbf2d;
+            color: #000;
+        }
+
+        .cell.current {
+            background: #79c0ff;
+            color: #000;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #30363d;
+            border-radius: 2px;
+        }
+
+        .resources {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .resource-card {
+            background: #161b22;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+        }
+
+        .resource-card h3 {
+            color: #58a6ff;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .resource-card .value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #58a6ff;
+        }
+
+        .route-info {
+            background: #161b22;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #238636;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .route-info strong {
+            color: #58a6ff;
+        }
+
+        .route-steps {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            color: #fdbf2d;
+            margin-top: 6px;
+        }
+
+        .status {
+            background: #161b22;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #238636;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .status.loading {
+            border-left-color: #58a6ff;
+        }
+
+        .status.error {
+            border-left-color: #f85149;
+        }
+
+        .status.success {
+            border-left-color: #238636;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ L15 Savethem — Route Visualization</h1>
+
+        <div class="info-bar">
+            <strong>Task:</strong> Find optimal route to Skolwin with limited fuel (10) and food (10).
+            <br>
+            <strong>Preview:</strong> <a href="https://hub.ag3nts.org/savethem_preview.html" target="_blank">savethem_preview.html</a>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background: #1f6feb;"></div>
+                Grass
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #0969da;"></div>
+                Water
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #238636;"></div>
+                Tree
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #6e40aa;"></div>
+                Stone
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #a371f7;"></div>
+                Start
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #f85149;"></div>
+                Goal (Skolwin)
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #fdbf2d;"></div>
+                Route
+            </div>
+        </div>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="resources">
+            <div class="resource-card">
+                <h3>FUEL</h3>
+                <div class="value" id="fuel">10/10</div>
+            </div>
+            <div class="resource-card">
+                <h3>FOOD</h3>
+                <div class="value" id="food">10/10</div>
+            </div>
+            <div class="resource-card">
+                <h3>VEHICLE</h3>
+                <div class="value" id="vehicle">-</div>
+            </div>
+        </div>
+
+        <div class="route-info">
+            <strong>Route Status:</strong> <span id="route-status">Waiting for data...</span>
+            <div class="route-steps" id="route-steps"></div>
+        </div>
+
+        <div class="status loading" id="status">
+            ℹ️ Refreshing data... (Updates every 2s)
+        </div>
+    </div>
+
+    <script>
+        const GRID_SIZE = 10;
+        const REFRESH_INTERVAL = 2000; // ms
+
+        async function updateUI() {
+            try {
+                const response = await fetch('/api/state');
+                if (!response.ok) {
+                    showStatus('Error fetching state', 'error');
+                    return;
+                }
+                const data = await response.json();
+                renderMap(data.map);
+                renderRoute(data.route);
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        function renderMap(mapData) {
+            const gridEl = document.getElementById('grid');
+            gridEl.innerHTML = '';
+
+            if (!mapData) {
+                for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell grass';
+                    cell.textContent = '.';
+                    gridEl.appendChild(cell);
+                }
+                return;
+            }
+
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+
+                    let symbol = '.';
+                    let type = 'grass';
+
+                    if (mapData[r] && mapData[r][c]) {
+                        symbol = mapData[r][c];
+                        const s = symbol.toUpperCase();
+
+                        if (s === 'S' || s === 'P' || s === '@') {
+                            type = 'start';
+                        } else if (s === 'G' || s === 'E') {
+                            type = 'goal';
+                        } else if (s === '~' || s === '|') {
+                            type = 'water';
+                        } else if (s === 'T' || s === '*') {
+                            type = 'tree';
+                        } else if (s === '#' || s === 'X') {
+                            type = 'stone';
+                        }
+                    }
+
+                    cell.classList.add(type);
+                    cell.textContent = symbol;
+                    gridEl.appendChild(cell);
+                }
+            }
+        }
+
+        function renderRoute(routeData) {
+            const statusEl = document.getElementById('route-status');
+            const stepsEl = document.getElementById('route-steps');
+            const vehicleEl = document.getElementById('vehicle');
+
+            if (!routeData || routeData.length === 0) {
+                statusEl.textContent = 'No route data';
+                stepsEl.textContent = '';
+                vehicleEl.textContent = '-';
+                return;
+            }
+
+            const vehicle = routeData[0] || '-';
+            const directions = routeData.slice(1);
+
+            vehicleEl.textContent = vehicle.toUpperCase();
+            statusEl.textContent = `${directions.length} moves`)
+            stepsEl.textContent = directions.join(' → ');
+
+            showStatus(`✓ Route loaded: ${vehicle} (${directions.length} moves)`, 'success');
+        }
+
+        function showStatus(message, type = 'loading') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        // Initial update and periodic refresh
+        updateUI();
+        setInterval(updateUI, REFRESH_INTERVAL);
+    </script>
+</body>
+</html>
