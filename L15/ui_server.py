@@ -1,126 +1,78 @@
 #!/usr/bin/env python3
-"""
-L15 UI Server: Local HTTP server for route visualization.
+"""L15 UI server — display Savethem map and route."""
 
-Serves ui.html and provides API endpoints for route data.
-"""
+from __future__ import annotations
 
-import os
+import http.server
 import json
-import threading
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+import os
+import socketserver
 from pathlib import Path
+from urllib.parse import urlparse
 
-PORT = 8015
-SCRIPT_DIR = Path(__file__).parent
+L15_DIR = Path(__file__).resolve().parent
+os.chdir(L15_DIR)
 
-# Shared state (protected by lock)
-_state_lock = threading.Lock()
-_last_route = None
-_last_map = None
+PORT = int(os.environ.get("PORT", "8015"))
+
+VERIFICATION_FILE = L15_DIR / "verification_result.json"
+TASK_PY = L15_DIR / "task.py"
 
 
-class UIHandler(SimpleHTTPRequestHandler):
-    """HTTP request handler for UI server."""
+def _load_json(path: Path) -> dict | None:
+    if path.exists():
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            return None
+    return None
+
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        super().end_headers()
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.end_headers()
 
     def do_GET(self):
-        """Handle GET requests."""
-        if self.path == "/":
+        parsed = urlparse(self.path)
+
+        if parsed.path == "/" or parsed.path == "":
             self.path = "/ui.html"
+            return super().do_GET()
 
-        if self.path == "/ui.html":
-            self.send_response(200)
-            self.send_header("Content-type", "text/html; charset=utf-8")
-            self.end_headers()
-            html_file = SCRIPT_DIR / "ui.html"
-            if html_file.exists():
-                self.wfile.write(html_file.read_bytes())
-            else:
-                self.wfile.write(b"<h1>ui.html not found</h1>")
+        if parsed.path == "/api/state":
+            data = _load_json(VERIFICATION_FILE)
+            self._json(data or {})
+            return
 
-        elif self.path == "/api/state":
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            with _state_lock:
-                state = {
-                    "route": _last_route,
-                    "map": _last_map,
-                }
-            self.wfile.write(json.dumps(state).encode())
+        return super().do_GET()
 
-        elif self.path.startswith("/api/"):
-            # Other API endpoints
-            self.send_response(404)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": "Not found"}).encode())
+    def _json(self, obj: object) -> None:
+        body = json.dumps(obj, ensure_ascii=False).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
-        else:
-            # Try to serve static files from L15 directory
-            try:
-                file_path = SCRIPT_DIR / self.path.lstrip("/")
-                if file_path.exists() and file_path.is_file():
-                    self.send_response(200)
-                    content_type = "text/plain"
-                    if self.path.endswith(".json"):
-                        content_type = "application/json"
-                    elif self.path.endswith(".html"):
-                        content_type = "text/html"
-                    self.send_header("Content-type", content_type)
-                    self.end_headers()
-                    self.wfile.write(file_path.read_bytes())
-                else:
-                    self.send_response(404)
-                    self.end_headers()
-            except Exception as e:
-                self.send_response(500)
-                self.send_header("Content-type", "text/plain")
-                self.end_headers()
-                self.wfile.write(f"Error: {e}".encode())
-
-    def do_POST(self):
-        """Handle POST requests (e.g., to update state)."""
-        content_length = int(self.headers.get("Content-Length", 0))
-        body = self.rfile.read(content_length)
-
-        if self.path == "/api/update_state":
-            try:
-                data = json.loads(body)
-                global _last_route, _last_map
-                with _state_lock:
-                    _last_route = data.get("route")
-                    _last_map = data.get("map")
-                self.send_response(200)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(json.dumps({"ok": True}).encode())
-            except Exception as e:
-                self.send_response(400)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": str(e)}).encode())
-        else:
-            self.send_response(404)
-            self.end_headers()
-
-    def log_message(self, format, *args):
-        """Suppress default logging."""
+    def log_message(self, fmt: str, *args: object) -> None:
         pass
 
 
-def main():
-    """Start UI server."""
-    server = HTTPServer(("localhost", PORT), UIHandler)
-    print(f"[UI] Savethem UI server listening on http://localhost:{PORT}")
-    print(f"[UI] Open in browser: http://localhost:{PORT}/ui.html")
-    print(f"[UI] API endpoint: http://localhost:{PORT}/api/state")
-    print(f"[UI] Press Ctrl+C to stop")
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        print("\n[UI] Shutting down...")
-        server.shutdown()
+def main() -> None:
+    with socketserver.TCPServer(("", PORT), Handler) as srv:
+        srv.allow_reuse_address = True
+        print(f"L15 UI server: http://localhost:{PORT}")
+        try:
+            srv.serve_forever()
+        except KeyboardInterrupt:
+            print("Stopped.")
 
 
 if __name__ == "__main__":

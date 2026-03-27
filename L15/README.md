@@ -90,20 +90,22 @@ POST <tool_url>
 1. Wyślij do toolsearch kilka zapytań w języku angielskim pokrywających: mapę, pojazdy, zasady terenu.
 2. Dla każdego zwróconego narzędzia zapamiętaj URL i opis.
 3. Odpytaj każde narzędzie szczegółowymi zapytaniami, by zebrać pełne dane.
+4. Zapisz mapę wraz z legendą - może być w pliku txt lub innym
 
 ### Faza 2 — Analiza danych
 
 1. Sparsuj mapę 10×10 — zidentyfikuj pozycję startową, cel (Skolwin) i przeszkody.
 2. Pobierz listę pojazdów: nazwa, koszt paliwa na ruch, koszt jedzenia na ruch (lub prędkość).
 3. Ustal koszty wejścia na poszczególne typy terenu.
+4. Dowiedz się ile razy można zmieniać pojazd i czy pokojuje on jakieś przeszkody (skały, drzewa, wodę)
 
-### Faza 3 — Wyznaczanie optymalnej trasy
+### Faza 3 — Wyznaczanie trasy (nie musi być ona optymalna pod względem odległości ale ma mieścić się w zasobacg)
 
-Zastosuj **Dijkstrę z rozszerzonym stanem**:
+
 
 - **Stan:** `(wiersz, kolumna, paliwo_pozostałe, jedzenie_pozostałe, pojazd)`
-- **Koszt:** minimalizacja długości trasy (liczba kroków), przy zachowaniu ograniczeń zasobów
-- **Możliwa zmiana pojazdu:** w dowolnym polu posłannik może przesiąść się do chodzenia pieszo
+- **Koszt:** minimalizacja długości trasy (liczba kroków), przy zachowaniu ograniczeń zasobów (paliwa i jedenia - tylko to nas limituje, nie pokonana droga)
+- **Możliwa zmiana pojazdu:** w dowolnym polu posłannik może przesiąść się do chodzenia pieszo (czyli np z rakiety na chodzenie)
 - **Warunki odcięcia:** paliwo < 0 lub jedzenie < 0 → ścieżka niedopuszczalna
 - **Cel:** dotarcie do pola Skolwina z nieujemnymi zasobami
 
@@ -121,6 +123,20 @@ Zastosuj **Dijkstrę z rozszerzonym stanem**:
 | `ui_server.py` | Lokalny serwer HTTP (stdlib `http.server`) do podglądu mapy i trasy |
 | `ui.html` | Panel WWW: siatka 10×10 z nałożoną trasą i stanem zasobów |
 | `verification_result.json` | Odpowiedź huba po zaliczeniu |
+| `bonus_result.json` | Odpowiedź huba po znalezieniu bobrów |
+
+## Bonus — Bobry (Beavers)
+
+Na mapie ukryty jest teren bobrów w polu `(1,6)` (0-indexed) — bezpośrednio
+przed ścianą wody. Aby aktywować bonus, wystarczy dotrzeć do tego pola trasą,
+która nie musi osiągać celu.
+
+**Trasa do bobrów** (9 kroków rakietą + 3 krochy pieszo):
+```json
+["rocket","up","up","up","up","up","up","right","right","right","dismount","right","right","right"]
+```
+- Paliwo: 9/10, Jedzenie: 8.4/10
+- Serwer zwraca: `"You found beavers by the stream! {FLG:ABEAVER}"`
 
 ## Szybkie uruchomienie
 
@@ -150,5 +166,7 @@ AI_DEVS_4_API_KEY=twoj_klucz
 
 ## Wyniki
 
-- Flaga: `{FLG:XXXXXXXX}` _(do uzupełnienia po zaliczeniu)_
-- Wynik zapisany w `verification_result.json`.
+| Rodzaj | Flaga | Plik |
+|--------|-------|------|
+| Główne zadanie | `{FLG:INTACTCITY}` | `verification_result.json` |
+| Bonus — bobry | `{FLG:ABEAVER}` | `bonus_result.json` |
