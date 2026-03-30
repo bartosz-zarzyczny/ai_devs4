@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L16 - OKOeditor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #f0883e;
+      --success: #3fb950;
+      --error: #f85149;
+      --info: #79c0ff;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    header {
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    header h1 {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+    
+    header .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    
+    main {
+      flex: 1;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .section {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .section-title {
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .step {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.2s ease;
+    }
+    
+    .step.pending {
+      opacity: 0.6;
+    }
+    
+    .step.loading {
+      background: rgba(79, 136, 62, 0.1);
+      border-color: rgba(79, 136, 62, 0.3);
+    }
+    
+    .step.success {
+      background: rgba(63, 185, 80, 0.1);
+      border-color: rgba(63, 185, 80, 0.3);
+    }
+    
+    .step.error {
+      background: rgba(248, 81, 73, 0.1);
+      border-color: rgba(248, 81, 73, 0.3);
+    }
+    
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--border);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    
+    .step.success .step-number {
+      background: var(--success);
+      color: var(--bg);
+    }
+    
+    .step.error .step-number {
+      background: var(--error);
+      color: var(--bg);
+    }
+    
+    .step-name {
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+    
+    .step-status {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    
+    .step.success .step-status {
+      color: var(--success);
+    }
+    
+    .step.error .step-status {
+      color: var(--error);
+    }
+    
+    .step-button {
+      padding: 8px 16px;
+      background: var(--info);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .step-button:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    
+    .step-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .response-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+    }
+    
+    .step.success .response-box,
+    .step.error .response-box {
+      display: block;
+    }
+    
+    .response-key {
+      color: var(--info);
+    }
+    
+    .response-string {
+      color: var(--success);
+    }
+    
+    .response-number {
+      color: var(--accent);
+    }
+    
+    .response-bool {
+      color: var(--accent);
+    }
+    
+    .flag-banner {
+      background: var(--bg-alt);
+      border: 2px solid var(--success);
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      display: none;
+      margin-top: 16px;
+    }
+    
+    .flag-banner.visible {
+      display: block;
+      animation: slideIn 0.5s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .flag-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .flag-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--success);
+      word-break: break-all;
+      font-family: monospace;
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--text-muted);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .json-value {
+      display: block;
+      padding: 4px 0;
+    }
+
+    .probe-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .probe-copy {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      margin-bottom: 12px;
+    }
+
+    .probe-controls {
+      display: grid;
+      gap: 10px;
+    }
+
+    .probe-textarea {
+      width: 100%;
+      min-height: 130px;
+      resize: vertical;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      font: inherit;
+      line-height: 1.5;
+    }
+
+    .probe-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .probe-meta {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .probe-summary {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      display: none;
+    }
+
+    .probe-summary.visible {
+      display: block;
+    }
+
+    .probe-summary h3 {
+      color: var(--accent);
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .probe-joined {
+      color: var(--success);
+      font-weight: 700;
+      font-size: 1.1rem;
+      word-break: break-all;
+      margin-bottom: 8px;
+    }
+
+    .probe-results {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .probe-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+    }
+
+    .probe-card.hit {
+      border-color: rgba(63, 185, 80, 0.35);
+      background: rgba(63, 185, 80, 0.08);
+    }
+
+    .probe-card.miss {
+      border-color: rgba(248, 81, 73, 0.35);
+      background: rgba(248, 81, 73, 0.06);
+    }
+
+    .probe-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .probe-candidate {
+      font-weight: 700;
+    }
+
+    .probe-fragment {
+      color: var(--success);
+      font-weight: 700;
+      word-break: break-all;
+      margin: 8px 0;
+    }
+
+    .probe-sha,
+    .probe-url,
+    .probe-paragraphs {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    .probe-url a {
+      color: var(--info);
+    }
+
+    @media (max-width: 700px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .step-header {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>L16 — OKOeditor</h1>
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">Operacyjne API Centrum OKO</p>
+  </div>
+  <div class="status-badge" id="main-status">Gotowy</div>
+</header>
+
+<main>
+  <div class="section">
+    <div class="section-title">Operacyjne zmiany w systemie</div>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">
+      Wykonaj kolejno wszystkie operacje, aby zmienić klasyfikację raporu Skolwin, oznacjyć zadanie jako wykonane, dodać raport o Komarowie i finalizować zmiany.
+    </p>
+    
+    <div id="steps-container"></div>
+    
+    <div class="flag-banner" id="flag-banner">
+      <div class="flag-label">✓ Zadanie ukończone — flaga:</div>
+      <div class="flag-value" id="flag-value">loading...</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Szukacz Ukrytych Wpisów</div>
+    <p class="probe-copy">
+      Wpisz kandydatów, a UI policzy po stronie backendu `sha256(candidate)`, zaloguje się do panelu OKO i sprawdzi wpisy pod `/uzytkownicy/&lt;hash&gt;`. To pozwala szybko odtworzyć fragmenty ukrytej flagi.
+    </p>
+
+    <div class="probe-layout">
+      <div class="probe-controls">
+        <textarea id="probe-candidates" class="probe-textarea">Mickiewicz
+Miłosz
+Milosz
+Cichosza
+Cichosha</textarea>
+        <div class="probe-actions">
+          <button class="step-button" id="probe-run-btn" onclick="runHiddenProbe()">Uruchom sondę</button>
+          <button class="step-button" onclick="loadProbeDefaults()">Przywróć domyślne</button>
+        </div>
+        <div class="probe-meta" id="probe-status">Gotowy do sondowania.</div>
+      </div>
+
+      <div class="probe-summary" id="probe-summary">
+        <h3>Złożone fragmenty</h3>
+        <div class="probe-joined" id="probe-joined"></div>
+        <div class="probe-meta" id="probe-count"></div>
+      </div>
+
+      <div class="probe-results" id="probe-results"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const DEFAULT_PROBE_CANDIDATES = ["Mickiewicz", "Miłosz", "Milosz", "Cichosza", "Cichosha"];
+  const STEPS = [
+    {
+      id: 1,
+      name: "Zmień klasyfikację Skolwina na zwierzęta",
+      description: "Zmiana tytułu i zawartości raportu o mieście Skolwin z pojazdów i ludzi na zwierzęta"
+    },
+    {
+      id: 2,
+      name: "Oznacz zadanie Skolwin jako wykonane",
+      description: "Oznaczenie zadania związanego ze Skolwinem jako completed z notatką o zwierzętach"
+    },
+    {
+      id: 3,
+      name: "Dodaj raport o ruchu ludzi w Komarowie",
+      description: "Dodanie nowego raportu o wykryciu ruchu ludzi w okolicach miasta Komarowo"
+    },
+    {
+      id: 4,
+      name: "Finalizacja zmian",
+      description: "Wysłanie akcji 'done' aby potwierdzić wszystkie zmiany"
+    }
+  ];
+
+  const stepStates = new Map();
+  STEPS.forEach(s => stepStates.set(s.id, 'pending'));
+
+  async function initUI() {
+    const container = document.getElementById('steps-container');
+    for (const step of STEPS) {
+      container.appendChild(createStepElement(step));
+    }
+
+    loadProbeDefaults();
+  }
+
+  function loadProbeDefaults() {
+    document.getElementById('probe-candidates').value = DEFAULT_PROBE_CANDIDATES.join('\n');
+  }
+
+  function createStepElement(step) {
+    const div = document.createElement('div');
+    div.className = 'step pending';
+    div.id = `step-${step.id}`;
+    
+    const header = document.createElement('div');
+    header.className = 'step-header';
+    
+    const number = document.createElement('div');
+    number.className = 'step-number';
+    number.textContent = step.id;
+    
+    const name = document.createElement('div');
+    name.className = 'step-name';
+    name.textContent = step.name;
+    
+    const status = document.createElement('div');
+    status.className = 'step-status';
+    status.id = `step-status-${step.id}`;
+    status.textContent = 'Oczekiwanie';
+    
+    const button = document.createElement('button');
+    button.className = 'step-button';
+    button.id = `step-btn-${step.id}`;
+    button.textContent = 'Wykonaj';
+    button.onclick = () => executeStep(step.id);
+    
+    header.appendChild(number);
+    header.appendChild(name);
+    header.appendChild(status);
+    header.appendChild(button);
+    
+    const responseBox = document.createElement('div');
+    responseBox.className = 'response-box';
+    responseBox.id = `step-response-${step.id}`;
+    
+    div.appendChild(header);
+    div.appendChild(responseBox);
+    
+    return div;
+  }
+
+  async function executeStep(stepId) {
+    const stepEl = document.getElementById(`step-${stepId}`);
+    const statusEl = document.getElementById(`step-status-${stepId}`);
+    const buttonEl = document.getElementById(`step-btn-${stepId}`);
+    const responseEl = document.getElementById(`step-response-${stepId}`);
+    
+    // Check if previous steps completed
+    for (let i = 1; i < stepId; i++) {
+      if (stepStates.get(i) !== 'success') {
+        alert(`Musisz najpierw wykonać krok ${i}`);
+        return;
+      }
+    }
+    
+    stepEl.className = 'step loading';
+    statusEl.textContent = 'Wykonywanie...';
+    buttonEl.disabled = true;
+    statusEl.innerHTML = '<span class="spinner"></span> Wysyłanie żądania...';
+    
+    document.getElementById('main-status').textContent = `Krok ${stepId} / 4`;
+    
+    try {
+      const endpoint = `/api/step${stepId}`;
+      console.log('Fetching:', endpoint);
+      const response = await fetch(endpoint);
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
+      const contentType = response.headers.get('content-type');
+      console.log('Content-Type:', contentType);
+      
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        const text = await response.text();
+        console.error('Failed to parse JSON:', parseError);
+        console.error('Response text:', text);
+        throw new Error(`Failed to parse response as JSON: ${parseError.message}\n\nResponse: ${text.substring(0, 200)}`);
+      }
+      
+      console.log('Parsed data:', data);
+      
+      if (data.success) {
+        stepEl.className = 'step success';
+        statusEl.textContent = '✓ Sukces';
+        stepStates.set(stepId, 'success');
+      } else if (data.error) {
+        stepEl.className = 'step error';
+        statusEl.textContent = `✗ Błąd: ${data.error}`;
+        stepStates.set(stepId, 'error');
+      } else {
+        stepEl.className = 'step error';
+        statusEl.textContent = `✗ Błąd (code: ${data.response?.code || 'unknown'})`;
+        stepStates.set(stepId, 'error');
+      }
+      
+      responseEl.innerHTML = formatJSON(data.response || data);
+      
+      if (stepId === 4 && data.flag) {
+        showFlag(data.flag);
+        document.getElementById('main-status').textContent = '✓ Ukończone';
+      } else if (stepId === 4) {
+        document.getElementById('main-status').textContent = 'Czekanie na flagę...';
+      }
+    } catch (error) {
+      console.error('Error in executeStep:', error);
+      stepEl.className = 'step error';
+      statusEl.textContent = `✗ Błąd: ${error.message}`;
+      stepStates.set(stepId, 'error');
+      responseEl.innerHTML = `<span style="color: var(--error);">Błąd: ${error.message}</span>`;
+    }
+    
+    buttonEl.disabled = false;
+  }
+
+  function formatJSON(obj) {
+    if (!obj) return '';
+    const lines = JSON.stringify(obj, null, 2).split('\n');
+    return lines.map(line => {
+      let html = line
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      
+      // Colorize JSON
+      html = html.replace(/"([^"]+)"\s*:/g, '<span class="response-key">"$1":</span>');
+      html = html.replace(/:\s*"([^"]*)"/g, ': <span class="response-string">"$1"</span>');
+      html = html.replace(/:\s*(\d+)/g, ': <span class="response-number">$1</span>');
+      html = html.replace(/:\s*(true|false)/g, ': <span class="response-bool">$1</span>');
+      
+      return `<span class="json-value">${html}</span>`;
+    }).join('');
+  }
+
+  function showFlag(flag) {
+    const banner = document.getElementById('flag-banner');
+    const value = document.getElementById('flag-value');
+    value.textContent = flag;
+    banner.classList.add('visible');
+  }
+
+  async function runHiddenProbe() {
+    const button = document.getElementById('probe-run-btn');
+    const status = document.getElementById('probe-status');
+    const results = document.getElementById('probe-results');
+    const summary = document.getElementById('probe-summary');
+    const joined = document.getElementById('probe-joined');
+    const count = document.getElementById('probe-count');
+    const textarea = document.getElementById('probe-candidates');
+
+    const candidates = textarea.value
+      .split(/\r?\n|,|;/)
+      .map(item => item.trim())
+      .filter(Boolean);
+
+    if (!candidates.length) {
+      status.textContent = 'Podaj przynajmniej jednego kandydata.';
+      return;
+    }
+
+    button.disabled = true;
+    results.innerHTML = '';
+    summary.classList.remove('visible');
+    status.innerHTML = '<span class="spinner"></span> Logowanie i sondowanie kandydatów...';
+
+    try {
+      const response = await fetch('/api/hidden-probe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ candidates })
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Sonda nie zwróciła poprawnej odpowiedzi');
+      }
+
+      const probe = data.probe;
+      joined.textContent = probe.joined_fragments || '(brak fragmentów)';
+      count.textContent = `Przeskanowano ${probe.count} kandydatów, znaleziono ${probe.fragments.length} fragmentów.`;
+      summary.classList.add('visible');
+      status.textContent = 'Sondowanie zakończone.';
+
+      probe.results.forEach(item => {
+        results.appendChild(renderProbeCard(item));
+      });
+    } catch (error) {
+      status.textContent = `Błąd sondy: ${error.message}`;
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  function renderProbeCard(item) {
+    const card = document.createElement('div');
+    card.className = `probe-card ${item.missing ? 'miss' : 'hit'}`;
+
+    const paragraphs = (item.paragraphs || []).map(paragraph => `<div>${escapeHtml(paragraph)}</div>`).join('');
+    const fragment = item.fragment ? `<div class="probe-fragment">fragment: ${escapeHtml(item.fragment)}</div>` : '';
+    const url = `<a href="${item.url}" target="_blank" rel="noreferrer">${escapeHtml(item.url)}</a>`;
+
+    card.innerHTML = `
+      <div class="probe-card-head">
+        <div class="probe-candidate">${escapeHtml(item.candidate)}</div>
+        <div class="probe-meta">${item.missing ? 'brak wpisu' : 'trafienie'}</div>
+      </div>
+      ${fragment}
+      <div class="probe-sha">sha256: ${escapeHtml(item.sha256)}</div>
+      <div class="probe-url">url: ${url}</div>
+      <div class="probe-paragraphs">${paragraphs || 'brak paragrafów'}</div>
+    `;
+
+    return card;
+  }
+
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  document.addEventListener('DOMContentLoaded', initUI);
+</script>
+
+</body>
+</html>
