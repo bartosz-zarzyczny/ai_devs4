@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>L17 Windpower</title>
+  <style>
+    :root {
+      --bg: #f5efe3;
+      --panel: #fffaf1;
+      --ink: #17221b;
+      --accent: #0f6c5b;
+      --accent-2: #d88c2d;
+      --line: #d9ceb8;
+      --muted: #6f766f;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(216, 140, 45, 0.18), transparent 30%),
+        linear-gradient(180deg, #fbf6ec 0%, var(--bg) 100%);
+      min-height: 100vh;
+    }
+
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      letter-spacing: 0.02em;
+    }
+
+    p { color: var(--muted); max-width: 70ch; }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin: 24px 0;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: white;
+      padding: 12px 18px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 18px;
+      box-shadow: 0 14px 40px rgba(23, 34, 27, 0.08);
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .status {
+      margin-top: 8px;
+      color: var(--accent-2);
+      min-height: 1.5em;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Windpower Scheduler</h1>
+    <p>Uruchom solver, podejrzyj wyliczony harmonogram i odpowiedź z huba bez ręcznego odpytywania API.</p>
+
+    <div class="actions">
+      <button id="run">Uruchom solver</button>
+      <button id="bonus">Uruchom bonus</button>
+      <button id="refresh" class="secondary">Odśwież status</button>
+    </div>
+    <div class="status" id="status"></div>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Schedule</h2>
+        <pre id="schedule">Brak danych</pre>
+      </article>
+      <article class="card">
+        <h2>Verification</h2>
+        <pre id="verification">Brak danych</pre>
+      </article>
+      <article class="card">
+        <h2>Bonus</h2>
+        <pre id="bonus-out">Brak danych</pre>
+        <p id="bonus-flag" style="margin:12px 0 0;color:var(--accent);font-weight:bold">Flaga bonusowa: —</p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const scheduleEl = document.getElementById('schedule');
+    const verificationEl = document.getElementById('verification');
+    const bonusEl = document.getElementById('bonus-out');
+    const bonusFlagEl = document.getElementById('bonus-flag');
+
+    function pretty(value) {
+      if (value === null || value === undefined) {
+        return 'Brak danych';
+      }
+      return JSON.stringify(value, null, 2);
+    }
+
+    async function refresh() {
+      const [statusResponse, bonusFlagResponse] = await Promise.all([
+        fetch('/api/status'),
+        fetch('/api/bonus-flag'),
+      ]);
+      const data = await statusResponse.json();
+      const bonusFlagData = await bonusFlagResponse.json();
+      scheduleEl.textContent = pretty(data.schedule);
+      verificationEl.textContent = pretty(data.verification);
+      bonusEl.textContent = pretty(data.bonus);
+      bonusFlagEl.textContent = `Flaga bonusowa: ${bonusFlagData.flag || '—'}`;
+    }
+
+    async function runSolver() {
+      statusEl.textContent = 'Solver pracuje...';
+      const response = await fetch('/api/run', { method: 'POST' });
+      const data = await response.json();
+      if (!response.ok) {
+        statusEl.textContent = data.error || 'Błąd wykonania';
+        return;
+      }
+      statusEl.textContent = 'Solver zakończył działanie.';
+      scheduleEl.textContent = pretty(data.schedule);
+      verificationEl.textContent = pretty(data.verification);
+    }
+
+    async function runBonus() {
+      statusEl.textContent = 'Bonus pracuje...';
+      const response = await fetch('/api/bonus', { method: 'POST' });
+      const data = await response.json();
+      if (!response.ok) {
+        statusEl.textContent = data.error || 'Błąd wykonania bonusu';
+        return;
+      }
+      statusEl.textContent = data.flag ? `Bonus znaleziony: ${data.flag}` : 'Bonus wykonany.';
+      bonusEl.textContent = pretty(data);
+      bonusFlagEl.textContent = `Flaga bonusowa: ${data.flag || '—'}`;
+    }
+
+    document.getElementById('run').addEventListener('click', runSolver);
+    document.getElementById('bonus').addEventListener('click', runBonus);
+    document.getElementById('refresh').addEventListener('click', refresh);
+    refresh();
+  </script>
+</body>
+</html>

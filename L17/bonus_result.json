@@ -1,0 +1,61 @@
+{
+  "start": {
+    "code": 60,
+    "message": "Windpower session started.",
+    "sessionStart": "2026-03-31 18:27:10",
+    "sessionTimeout": 40
+  },
+  "sequence": [
+    {
+      "startDate": "2020-02-02",
+      "startHour": "20:11:02",
+      "windMs": 4.4,
+      "pitchAngle": 0
+    },
+    {
+      "startDate": "2020-02-02",
+      "startHour": "20:11:02",
+      "windMs": 5.5,
+      "pitchAngle": 0
+    },
+    {
+      "startDate": "2020-02-02",
+      "startHour": "20:11:02",
+      "windMs": 4.4,
+      "pitchAngle": 0
+    }
+  ],
+  "queued": [
+    {
+      "code": 14,
+      "message": "Task has been queued. Use getResult to retrieve the response."
+    },
+    {
+      "code": 14,
+      "message": "Task has been queued. Use getResult to retrieve the response."
+    },
+    {
+      "code": 14,
+      "message": "Task has been queued. Use getResult to retrieve the response."
+    }
+  ],
+  "results": [
+    {
+      "code": 11,
+      "message": "No completed queued response is available yet."
+    },
+    {
+      "code": 12,
+      "message": "Queued response retrieved.",
+      "sourceFunction": "unlockCodeGenerator",
+      "unlockCode": "{FLG:LIVENOTONEVIL}",
+      "signedParams": {
+        "startDate": "2020-02-02",
+        "startHour": "20:11:02",
+        "windMs": "4.4",
+        "pitchAngle": "0.0"
+      }
+    }
+  ],
+  "flag": "{FLG:LIVENOTONEVIL}"
+}
