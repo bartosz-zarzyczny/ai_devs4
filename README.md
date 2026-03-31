@@ -57,6 +57,34 @@ python -m pip install -r requirements.txt
 - L10: dodano UI WWW dla zadania `drone`, solver z analizą mapy przez vision, weryfikację lotu i zapis odpowiedzi do `verification_result.json`.
 - L17: solver `windpower` mieści się w limicie 40 s, zapisuje harmonogram do `schedule.json`, a bonusowy probe odtwarza ukrytą flagę z palindromicznej sekwencji `unlockCodeGenerator`.
 
+## L17 — Windpower (harmonogram turbiny + bonus palindromiczny)
+
+Krótki opis:
+- Cel: wyznaczenie harmonogramu pracy turbiny wiatrowej tak, aby zmieścić się w oknie 40 s, zabezpieczyć turbinę podczas wichur i wygenerować brakującą moc dla elektrowni.
+- Bonus: ukryta ścieżka przez `unlockCodeGenerator` z palindromicznym czasem i lustrzaną sekwencją wiatru.
+
+Najważniejsze pliki:
+- [L17/task.py](L17/task.py) — główny solver: `start`, pobranie raportów async, analiza pogody, podpisanie konfiguracji, `done`.
+- [L17/bonus_probe.py](L17/bonus_probe.py) — odtwarza bonusową flagę przez sekwencję `4.4 → 5.5 → 4.4`.
+- [L17/ui_server.py](L17/ui_server.py) — lokalny serwer HTTP z endpointami dla solvera i bonusu.
+- [L17/ui.html](L17/ui.html) — panel WWW z podglądem harmonogramu, weryfikacji i bonusowej flagi.
+- [L17/schedule.json](L17/schedule.json) — ostatni wyliczony harmonogram konfiguracji.
+- [L17/verification_result.json](L17/verification_result.json) — odpowiedź huba dla głównego zadania.
+- [L17/bonus_result.json](L17/bonus_result.json) — zapis wyniku bonusowego probe.
+
+Szybkie uruchomienie:
+
+```powershell
+python L17/task.py
+python L17/bonus_probe.py
+python L17/ui_server.py
+```
+
+Wyniki:
+- Flaga główna: `{FLG:XXXXXXXXXX}`
+- Flaga bonusowa: `{FLG:XXXXXXXXX}`
+- Zweryfikowany harmonogram używa dokładnie 4 punktów: 3 zabezpieczeń na wichury i 1 punktu produkcyjnego.
+
 ## L13 — Reactor (autonomiczny robot)
 
 Krótki opis:
