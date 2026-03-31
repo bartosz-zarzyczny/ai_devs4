@@ -19,6 +19,7 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L13/README.md](L13/README.md) - zadanie `reactor` (autonomiczny robot na planszy 7×5, omijanie bloków reaktora, UI WWW z trybem AUTO-PLAY)
 - [L15/README.md](L15/README.md) - zadanie `savethem` (optimal routing agent, toolsearch discovery, fuel+food constraints, Dijkstra pathfinding, UI WWW z wizualizacją mapy 10×10)
 - [L16/README.md](L16/README.md) - zadanie `okoeditor` (edycja Centrum Operacyjnego OKO wyłącznie przez API, bez ręcznych zmian w panelu)
+- [L17/README.md](L17/README.md) - zadanie `windpower` (harmonogram turbiny wiatrowej z asynchronicznym API, podpisami unlockCode i limitem 40 s; bonus: palindromiczne lustro czasu/wiatru)
 
 ## Konfiguracja
 
@@ -54,6 +55,7 @@ python -m pip install -r requirements.txt
 - L08: dodano UI WWW, kompresję `failure.log` do `failure_compact.log` (48 linii, 1310 tokenów cl100k_base), weryfikację na `/verify` i zapis odpowiedzi do `verification_result.json`.
 - L09: dodano UI WWW do `zmail`, osobny tor dla głównej flagi i bonusowy solver załącznika; wyniki zapisują się do `verification_result.json` oraz `bonus_flag_result.json`.
 - L10: dodano UI WWW dla zadania `drone`, solver z analizą mapy przez vision, weryfikację lotu i zapis odpowiedzi do `verification_result.json`.
+- L17: solver `windpower` mieści się w limicie 40 s, zapisuje harmonogram do `schedule.json`, a bonusowy probe odtwarza ukrytą flagę z palindromicznej sekwencji `unlockCodeGenerator`.
 
 ## L13 — Reactor (autonomiczny robot)
 

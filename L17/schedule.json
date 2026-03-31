@@ -1,0 +1,29 @@
+{
+  "task": "windpower",
+  "configs": {
+    "2026-04-01 18:00:00": {
+      "windMs": 25.0,
+      "pitchAngle": 90,
+      "turbineMode": "idle",
+      "unlockCode": "3352eb834f50423925d9c1815813ad30"
+    },
+    "2026-04-01 20:00:00": {
+      "windMs": 6.6,
+      "pitchAngle": 0,
+      "turbineMode": "production",
+      "unlockCode": "47b76a9d816fd693f4902ee65f0e498a"
+    },
+    "2026-04-04 18:00:00": {
+      "windMs": 22.0,
+      "pitchAngle": 90,
+      "turbineMode": "idle",
+      "unlockCode": "f4c68960c74250837a8d3df67ccb5ce8"
+    },
+    "2026-04-05 18:00:00": {
+      "windMs": 28.0,
+      "pitchAngle": 90,
+      "turbineMode": "idle",
+      "unlockCode": "c1c392675bbaf8c6e15a8c39ffa9b142"
+    }
+  }
+}
