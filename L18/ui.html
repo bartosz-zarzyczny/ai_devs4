@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L18 - Domatowo Mission Control</title>
+    <style>
+        body {
+            font-family: monospace;
+            margin: 20px;
+            background-color: #1a1a1a;
+            color: #00ff00;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1400px;
+        }
+        .panel {
+            background-color: #2a2a2a;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(11, 30px);
+            gap: 1px;
+            margin: 10px 0;
+            font-size: 10px;
+            line-height: 28px;
+            text-align: center;
+        }
+        .tile {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #666;
+            position: relative;
+            font-weight: bold;
+        }
+        .tile-road { background-color: #666; color: white; }
+        .tile-tree { background-color: #2d5a2d; color: #90EE90; }
+        .tile-house { background-color: #8B4513; color: white; }
+        .tile-empty { background-color: #333; color: #888; }
+        .tile-block1 { background-color: #4169E1; color: white; }
+        .tile-block2 { background-color: #1E90FF; color: white; }
+        .tile-block3 { background-color: #FF4500; color: white; }
+        .tile-church { background-color: #800080; color: white; }
+        .tile-school { background-color: #FFD700; color: black; }
+        .tile-parking { background-color: #555; color: white; }
+        .tile-field { background-color: #7CFC00; color: black; }
+        
+        .unit-marker {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .unit-transporter { background-color: #FF0000; border: 1px solid white; }
+        .unit-scout { background-color: #00FFFF; border: 1px solid black; }
+        
+        .status-bar {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .log-entry {
+            background-color: #1a3a1a;
+            margin: 5px 0;
+            padding: 8px;
+            border-left: 3px solid #00ff00;
+            border-radius: 3px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        button {
+            background-color: #333;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        button:hover { background-color: #444; }
+        button:disabled { 
+            background-color: #222; 
+            color: #666; 
+            cursor: not-allowed; 
+        }
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 5px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 15px;
+            border: 1px solid #666;
+        }
+        .error { color: #ff4444; }
+        .success { color: #44ff44; }
+    </style>
+</head>
+<body>
+    <h1>🚁 L18 - Domatowo Mission Control</h1>
+    
+    <div class="status-bar">
+        <span id="connection-status">⏳ Connecting...</span>
+        <span style="float: right;">Action Points: <span id="action-points">---</span></span>
+    </div>
+    
+    <div class="controls">
+        <button onclick="refreshAll()">🔄 Refresh All</button>
+        <button onclick="resetBoard()">🔧 Reset Board</button>
+        <button onclick="createTransporter()">🚚 Create Transporter</button>
+        <button onclick="createScout()">👤 Create Scout</button>
+        <button onclick="autoSearch()" id="auto-search-btn">🎯 Auto Search</button>
+        <button onclick="callHelicopter()">🚁 Call Helicopter</button>
+    </div>
+    
+    <div class="container">
+        <div class="panel">
+            <h3>📍 Map Grid (11x11)</h3>
+            <div id="map-container">
+                <div class="map-grid" id="map-grid"></div>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color tile-block3"></div>Block3 (3p)
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color tile-block2"></div>Block2 (2p)
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color tile-block1"></div>Block1 (1p)
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color tile-school"></div>School
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color tile-church"></div>Church
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color tile-road"></div>Road
+                </div>
+                <div class="legend-item">
+                    <div class="unit-transporter" style="width: 20px; height: 15px;"></div>Transporter
+                </div>
+                <div class="legend-item">
+                    <div class="unit-scout" style="width: 20px; height: 15px;"></div>Scout
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h3>📊 Units & Status</h3>
+            <div id="units-list"></div>
+            
+            <h3>📝 Mission Logs</h3>
+            <div id="logs-container"></div>
+            
+            <h3>💰 Expenses</h3>
+            <div id="expenses-container"></div>
+        </div>
+    </div>
+    
+    <script>
+        let gameState = {
+            map: null,
+            objects: [],
+            logs: [],
+            expenses: []
+        };
+        
+        const WHERE_LETTERS = "ABCDEFGHIJK";
+        
+        function coordToIndex(coord) {
+            const c = coord[0].toUpperCase();
+            const r = parseInt(coord.slice(1));
+            return [WHERE_LETTERS.indexOf(c), r - 1];
+        }
+        
+        function indexToCoord(x, y) {
+            return WHERE_LETTERS[x] + (y + 1);
+        }
+        
+        async function apiCall(endpoint, data = null) {
+            try {
+                const options = {
+                    method: data ? 'POST' : 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (data) options.body = JSON.stringify(data);
+                
+                const response = await fetch(endpoint, options);
+                return await response.json();
+            } catch (error) {
+                console.error('API call failed:', error);
+                return { error: error.message };
+            }
+        }
+        
+        async function checkConnection() {
+            const status = await apiCall('/api/status');
+            const statusEl = document.getElementById('connection-status');
+            
+            if (status.error) {
+                statusEl.innerHTML = '❌ Connection failed';
+                statusEl.className = 'error';
+            } else {
+                statusEl.innerHTML = '✅ Connected to Domatowo API';
+                statusEl.className = 'success';
+            }
+        }
+        
+        async function loadMap() {
+            const mapData = await apiCall('/api/map');
+            if (mapData.error) {
+                console.error('Map load error:', mapData.error);
+                return;
+            }
+            
+            gameState.map = mapData.map;
+            renderMap();
+        }
+        
+        async function loadObjects() {
+            const objectsData = await apiCall('/api/objects');
+            if (objectsData.error) {
+                console.error('Objects load error:', objectsData.error);
+                return;
+            }
+            
+            gameState.objects = objectsData.objects || [];
+            updateUnitsDisplay();
+            renderUnitsOnMap();
+        }
+        
+        async function loadLogs() {
+            const logsData = await apiCall('/api/logs');
+            if (logsData.error) {
+                console.error('Logs load error:', logsData.error);
+                return;
+            }
+            
+            gameState.logs = logsData.logs || [];
+            updateLogsDisplay();
+        }
+        
+        async function loadExpenses() {
+            const expensesData = await apiCall('/api/expenses');
+            if (expensesData.error) {
+                console.error('Expenses load error:', expensesData.error);
+                return;
+            }
+            
+            gameState.expenses = expensesData.expenses || [];
+            updateExpensesDisplay();
+            
+            // Extract action points if available
+            if (expensesData.action_points_left !== undefined) {
+                document.getElementById('action-points').textContent = expensesData.action_points_left;
+            }
+        }
+        
+        function renderMap() {
+            if (!gameState.map) return;
+            
+            const mapGrid = document.getElementById('map-grid');
+            mapGrid.innerHTML = '';
+            
+            const grid = gameState.map.grid;
+            const tiles = gameState.map.tiles;
+            
+            for (let y = 0; y < grid.length; y++) {
+                for (let x = 0; x < grid[y].length; x++) {
+                    const tileType = grid[y][x];
+                    const tile = document.createElement('div');
+                    tile.className = `tile tile-${tileType}`;
+                    tile.id = `tile-${x}-${y}`;
+                    
+                    // Show symbol or coordinate
+                    const symbol = tiles[tileType]?.symbol || '??';
+                    tile.textContent = symbol;
+                    tile.title = `${indexToCoord(x, y)}: ${tiles[tileType]?.label || tileType}`;
+                    
+                    mapGrid.appendChild(tile);
+                }
+            }
+        }
+        
+        function renderUnitsOnMap() {
+            // Clear existing markers
+            document.querySelectorAll('.unit-marker').forEach(el => el.remove());
+            
+            gameState.objects.forEach(obj => {
+                if (!obj.position) return;
+                
+                const [x, y] = coordToIndex(obj.position);
+                const tileEl = document.getElementById(`tile-${x}-${y}`);
+                if (tileEl) {
+                    const marker = document.createElement('div');
+                    marker.className = `unit-marker unit-${obj.typ}`;
+                    marker.title = `${obj.typ} ${obj.id.slice(0, 8)}...`;
+                    tileEl.appendChild(marker);
+                }
+            });
+        }
+        
+        function updateUnitsDisplay() {
+            const container = document.getElementById('units-list');
+            if (gameState.objects.length === 0) {
+                container.innerHTML = '<p>No units deployed</p>';
+                return;
+            }
+            
+            let html = '';
+            gameState.objects.forEach(obj => {
+                html += `
+                    <div class="log-entry">
+                        <strong>${obj.typ}</strong> @ ${obj.position}<br>
+                        ID: <code>${obj.id.slice(0, 12)}...</code>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+        
+        function updateLogsDisplay() {
+            const container = document.getElementById('logs-container');
+            if (gameState.logs.length === 0) {
+                container.innerHTML = '<p>No inspection logs yet</p>';
+                return;
+            }
+            
+            let html = '';
+            gameState.logs.forEach((log, i) => {
+                html += `
+                    <div class="log-entry">
+                        <strong>${log.field}</strong> (Scout: ${log.scout?.slice(0, 8)}...)<br>
+                        ${log.msg}
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+        
+        function updateExpensesDisplay() {
+            const container = document.getElementById('expenses-container');
+            if (gameState.expenses.length === 0) {
+                container.innerHTML = '<p>No expenses logged</p>';
+                return;
+            }
+            
+            let html = '';
+            let totalCost = 0;
+            gameState.expenses.forEach(expense => {
+                totalCost += expense.cost || 0;
+                html += `
+                    <div style="margin: 3px 0;">
+                        ${expense.action}: ${expense.cost || 0} pts
+                    </div>
+                `;
+            });
+            html = `<strong>Total: ${totalCost} action points</strong><br>` + html;
+            container.innerHTML = html;
+        }
+        
+        async function refreshAll() {
+            await Promise.all([
+                checkConnection(),
+                loadMap(),
+                loadObjects(), 
+                loadLogs(),
+                loadExpenses()
+            ]);
+        }
+        
+        async function resetBoard() {
+            if (!confirm('Reset the entire board state? This will start over.')) return;
+            
+            const result = await apiCall('/api/action', { action: 'reset' });
+            if (result.error) {
+                alert('Reset failed: ' + result.error);
+            } else {
+                alert('Board reset: ' + result.message);
+                await refreshAll();
+            }
+        }
+        
+        async function createTransporter() {
+            const passengers = prompt('Number of scout passengers (1-4):', '2');
+            if (!passengers) return;
+            
+            const result = await apiCall('/api/action', {
+                action: 'create',
+                type: 'transporter',
+                passengers: parseInt(passengers)
+            });
+            
+            if (result.error) {
+                alert('Create failed: ' + result.error);
+            } else {
+                console.log('Transporter created:', result);
+                await refreshAll();
+            }
+        }
+        
+        async function createScout() {
+            const result = await apiCall('/api/action', {
+                action: 'create',
+                type: 'scout'
+            });
+            
+            if (result.error) {
+                alert('Create failed: ' + result.error);
+            } else {
+                console.log('Scout created:', result);
+                await refreshAll();
+            }
+        }
+        
+        async function callHelicopter() {
+            const dest = prompt('Helicopter destination (e.g. F6):');
+            if (!dest) return;
+            
+            if (!confirm(`Call helicopter to ${dest}? This should only be done after confirming human presence.`)) return;
+            
+            const result = await apiCall('/api/action', {
+                action: 'callHelicopter',
+                destination: dest.toUpperCase()
+            });
+            
+            if (result.error) {
+                alert('Helicopter call failed: ' + result.error);
+            } else {
+                alert('Helicopter called! Result: ' + result.message);
+                await refreshAll();
+            }
+        }
+        
+        async function autoSearch() {
+            const btn = document.getElementById('auto-search-btn');
+            btn.disabled = true;
+            btn.textContent = '🔄 Running...';
+            
+            try {
+                // This would interface with the main search algorithm
+                // For now, just refresh to show current state
+                await refreshAll();
+                alert('Auto-search would run the main algorithm from task.py\\nUse: python L18/task.py');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🎯 Auto Search';
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshAll();
+            
+            // Auto-refresh every 10 seconds
+            setInterval(refreshAll, 10000);
+        });
+    </script>
+</body>
+</html>

@@ -20,6 +20,7 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L15/README.md](L15/README.md) - zadanie `savethem` (optimal routing agent, toolsearch discovery, fuel+food constraints, Dijkstra pathfinding, UI WWW z wizualizacją mapy 10×10)
 - [L16/README.md](L16/README.md) - zadanie `okoeditor` (edycja Centrum Operacyjnego OKO wyłącznie przez API, bez ręcznych zmian w panelu)
 - [L17/README.md](L17/README.md) - zadanie `windpower` (harmonogram turbiny wiatrowej z asynchronicznym API, podpisami unlockCode i limitem 40 s; bonus: palindromiczne lustro czasu/wiatru)
+- [L18/README.md](L18/README.md) - zadanie `domatowo` (odnalezienie partyzanta w ruinach miasta, strategiczny solver z priorytetyzacją wysokich budynków, UI WWW z mapą 11×11)
 
 ## Konfiguracja
 
@@ -46,6 +47,7 @@ python -m pip install -r requirements.txt
 
 ## Ostatnie zmiany (skrót)
 
+- L18: strategiczny solver zadania `domatowo`; partyzant odnaleziony w bloku H10, ewakuacja zakończona sukcesem; flaga `{FLG:WEVEGOTHIM}`; UI WWW z mapą 11×11 i wizualizacją jednostek.
 - L13: autonomiczny solver zadania `reactor`; robot przeszedł całą mapę 7×5 w 11 krokach bez kolizji; flaga `{FLG:INSTALLED}`; UI WWW z trybem AUTO-PLAY na porcie 8013.
 - L12: agentowa pętla na VM z `cooler.bin`; flaga główna `{FLG:XXXXXXXX}` z `/verify`; bonusowa zagadka `/bin/flaggengenerator schmetterling` → `{FLG:XXXXXXXX}`; UI z kartą bonusu i przyciskiem.
 - L11: detekcja anomalii w 10 000 plikach JSON (46 programistycznych + 6 z notatek); flaga `{FLG:XXXXXXX}`; bonus AWK `{FLG:XXXXXXXX}`.
@@ -56,6 +58,7 @@ python -m pip install -r requirements.txt
 - L09: dodano UI WWW do `zmail`, osobny tor dla głównej flagi i bonusowy solver załącznika; wyniki zapisują się do `verification_result.json` oraz `bonus_flag_result.json`.
 - L10: dodano UI WWW dla zadania `drone`, solver z analizą mapy przez vision, weryfikację lotu i zapis odpowiedzi do `verification_result.json`.
 - L17: solver `windpower` mieści się w limicie 40 s, zapisuje harmonogram do `schedule.json`, a bonusowy probe odtwarza ukrytą flagę z palindromicznej sekwencji `unlockCodeGenerator`.
+- L18: solver `domatowo` wykorzystuje stratęgię priorytetu wysokościowego (block3 → school/church → block2), transportery minimalizujące koszty ruchu pieszego, oraz precyzyjną detekcję logów potwierdzających obecność partyzanta.
 
 ## L17 — Windpower (harmonogram turbiny + bonus palindromiczny)
 
@@ -84,7 +87,30 @@ Wyniki:
 - Flaga główna: `{FLG:XXXXXXXXXX}`
 - Flaga bonusowa: `{FLG:XXXXXXXXX}`
 - Zweryfikowany harmonogram używa dokładnie 4 punktów: 3 zabezpieczeń na wichury i 1 punktu produkcyjnego.
+## L18 — Domatowo (strategiczne przeszukiwanie ruin)
 
+Krótki opis:
+- Cel: odnalezienie rannego partyzanta ukrywającego się w ruinach miasta Domatowa i przeprowadzenie ewakuacji przez wezwanie helikoptera na dokładne pole potwierdzenia.
+- Strategia: priorytetyzacja wysokich budynków (block3 > school/church > block2), transport drogowy z minimalizacją ruchu pieszego, precyzyjna detekcja logów.
+
+Najważniejsze pliki:
+- [L18/task.py](L18/task.py) — główny solver: analiza mapy, scoring priorytetów, transport + scout deployment, inspect + getLogs, callHelicopter.
+- [L18/ui_server.py](L18/ui_server.py) — serwer HTTP z endpointami API: `/api/map`, `/api/objects`, `/api/logs`, `/api/action`.
+- [L18/ui.html](L18/ui.html) — panel WWW: mapa 11×11 z kolorowanymi typami pól, markery jednostek, logi inspekcji, kontrola akcji.
+- [L18/verification_result.json](L18/verification_result.json) — potwierdzenie sukcesu ewakuacji.
+- [L18/operation_log.jsonl](L18/operation_log.jsonl) — pełny log akcji API z request/response.
+
+Szybkie uruchomienie:
+
+```powershell
+python L18/task.py
+python L18/ui_server.py
+```
+
+Wyniki:
+- Flaga: `{FLG:WEVEGOTHIM}` — partyzant odnaleziony na H10 i pomyślnie ewakuowany.
+- Strategia: 30 wysokich budynków przeanalizowanych, priorytet block3 (14 pozycji) skuteczny.
+- Koszty: ~270 punktów akcji z limitu 300, efektywne wykorzystanie transportu drogowego.
 ## L13 — Reactor (autonomiczny robot)
 
 Krótki opis:
