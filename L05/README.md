@@ -27,7 +27,7 @@ Uwagi o API:
 API zwraca nagłówek HTTP `Retry-After: 240` (= 4 minuty) i odpowiedzi z `retry_after`. Zagadka polega na tym, żeby **w ogóle nie czekać** i bombardować API requestami przez ponad 240 sekund z rzędu. Po wystarczającej liczbie uporczywych żądań, API odpowiada specjalną wiadomością:
 
 ```
-"You're annoying! Here you go {FLG:STUBBORN}"
+"You're annoying! Here you go {FLG:XXXXXXX}"
 ```
 
 **Technika:** wysyłaj requesty bez żadnego czekania, ignorując `Retry-After`, przez ponad 240 sekund — wystarczy ok. 50-60 prób w krótkim czasie.
@@ -231,7 +231,7 @@ W samym UI możesz:
 
 Po poprawnym wykonaniu sekwencji powinna pojawić się flaga:
 
-- `{FLG:COUNTRYROADS}`
+- `{FLG:XXXXXXXXX}`
 
 ## Gotowe skrypty uruchomieniowe
 
