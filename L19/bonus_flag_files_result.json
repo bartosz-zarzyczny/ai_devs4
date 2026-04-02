@@ -1,0 +1,294 @@
+{
+  "main_batch": {
+    "code": 100,
+    "message": "Batch actions executed.",
+    "actions_executed": 35,
+    "results": [
+      {
+        "index": 0,
+        "code": 47,
+        "message": "Filesystem reset completed.",
+        "removed_files": 4,
+        "removed_directories": 1
+      },
+      {
+        "index": 1,
+        "code": 10,
+        "message": "Directory created.",
+        "path": "/miasta"
+      },
+      {
+        "index": 2,
+        "code": 10,
+        "message": "Directory created.",
+        "path": "/osoby"
+      },
+      {
+        "index": 3,
+        "code": 10,
+        "message": "Directory created.",
+        "path": "/towary"
+      },
+      {
+        "index": 4,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/miasta/opalino"
+      },
+      {
+        "index": 5,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/miasta/domatowo"
+      },
+      {
+        "index": 6,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/miasta/brudzewo"
+      },
+      {
+        "index": 7,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/miasta/darzlubie"
+      },
+      {
+        "index": 8,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/miasta/celbowo"
+      },
+      {
+        "index": 9,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/miasta/mechowo"
+      },
+      {
+        "index": 10,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/miasta/puck"
+      },
+      {
+        "index": 11,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/miasta/karlinkowo"
+      },
+      {
+        "index": 12,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/osoby/natan_rams"
+      },
+      {
+        "index": 13,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/osoby/iga_kapecka"
+      },
+      {
+        "index": 14,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/osoby/rafal_kisiel"
+      },
+      {
+        "index": 15,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/osoby/marta_frantz"
+      },
+      {
+        "index": 16,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/osoby/oskar_radtke"
+      },
+      {
+        "index": 17,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/osoby/eliza_redmann"
+      },
+      {
+        "index": 18,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/osoby/damian_kroll"
+      },
+      {
+        "index": 19,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/osoby/lena_konkel"
+      },
+      {
+        "index": 20,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/ryz"
+      },
+      {
+        "index": 21,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/marchew"
+      },
+      {
+        "index": 22,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/chleb"
+      },
+      {
+        "index": 23,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/wolowina"
+      },
+      {
+        "index": 24,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/kilof"
+      },
+      {
+        "index": 25,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/wiertarka"
+      },
+      {
+        "index": 26,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/maka"
+      },
+      {
+        "index": 27,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/mlotek"
+      },
+      {
+        "index": 28,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/makaron"
+      },
+      {
+        "index": 29,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/kapusta"
+      },
+      {
+        "index": 30,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/ziemniak"
+      },
+      {
+        "index": 31,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/kurczak"
+      },
+      {
+        "index": 32,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/lopata"
+      },
+      {
+        "index": 33,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/lopaty"
+      },
+      {
+        "index": 34,
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/towary/mlotki"
+      }
+    ]
+  },
+  "mkdir_flag": {
+    "code": 10,
+    "message": "Directory created.",
+    "path": "/flag"
+  },
+  "create_files": [
+    {
+      "name": "f",
+      "size": 70,
+      "resp": {
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/flag/f"
+      }
+    },
+    {
+      "name": "l",
+      "size": 76,
+      "resp": {
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/flag/l"
+      }
+    },
+    {
+      "name": "a",
+      "size": 65,
+      "resp": {
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/flag/a"
+      }
+    },
+    {
+      "name": "g",
+      "size": 71,
+      "resp": {
+        "code": 20,
+        "message": "File created or overwritten.",
+        "path": "/flag/g"
+      }
+    }
+  ],
+  "list_flag": {
+    "code": 50,
+    "message": "Listing completed.",
+    "path": "/flag",
+    "entries": [
+      {
+        "name": "a",
+        "created_at": 1775148673,
+        "size": 65
+      },
+      {
+        "name": "f",
+        "created_at": 1775148670,
+        "size": 70
+      },
+      {
+        "name": "g",
+        "created_at": 1775148674,
+        "size": 71
+      },
+      {
+        "name": "l",
+        "created_at": 1775148671,
+        "size": 76
+      }
+    ]
+  },
+  "done": {
+    "code": 0,
+    "message": "{FLG:DEALWITHIT}"
+  }
+}
