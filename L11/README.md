@@ -132,7 +132,7 @@ POST https://hub.ag3nts.org/verify
 4. **Dekodowanie** (AWK):
    - `a` = `substr("timestamp",1,4)` = `TIME`
    - `b` = znaki na pozycjach 44,60,66,74,76 notatki: `g`,`u`,`a`,`r`,`d` → `GUARD`
-   - **Flaga: `{FLG:TIMEGUARD}`**
+   - **Flaga: `{FLG:XXXXXXXXXXXX}`**
 
 ```python
 # bonus_solver.py
@@ -145,7 +145,7 @@ python L11/bonus_solver.py
 - **46** anomalii programistycznych (wartosci poza zakresem / nieaktywne pola != 0)
 - **6** anomalii z notatek (dane OK, operator zglasza problem)
 - **52** anomalie lacznie wyslane do Centrali
-- Odpowiedz: `{"code": 0, "message": "{FLG:BUGGYSYSTEM}"}`
+- Odpowiedz: `{"code": 0, "message": "{FLG:XXXXXXXXXX}"}`
 
 ## Uruchomienie
 
