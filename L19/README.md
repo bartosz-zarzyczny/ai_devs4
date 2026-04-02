@@ -114,7 +114,9 @@ Link markdown do miasta oferujacego ten towar (nazwa w mianowniku l.poj.):
 | `task.py`                     | Glowny solver: pobieranie ZIP, LLM, build FS, submit |
 | `natan_data.json`             | Dane wyodrebnione przez LLM (checkpoint)          |
 | `verification_result.json`    | Odpowiedz huba po wywolaniu `done`                |
-| `ui_server.py` / `ui.html`   | Opcjonalny podglad w przegladarce                 |
+| `ui_server.py`                | Lokalny serwer HTTP z UI do obu flag              |
+| `ui.html`                     | Frontend: FS browser, log, uruchamianie flag      |
+| `bonus_cross.py`              | Skrypt do easter egg (ls -la order = FLAG)        |
 
 ---
 
@@ -124,15 +126,35 @@ Link markdown do miasta oferujacego ten towar (nazwa w mianowniku l.poj.):
 # Pelnny run: parse + build + done -> flaga w konsoli i w verification_result.json
 python L19/task.py
 
-# Tylko help API
-python L19/task.py --help-api
+# UI server (obie flagi w przegladarce)
+python L19/ui_server.py
+# Otworz: http://localhost:8019/ui.html
 
-# Tylko parsowanie LLM (zapisuje natan_data.json)
-python L19/task.py --parse
-
-# Tylko budowa filesystemu (wymaga natan_data.json)
-python L19/task.py --build
+# Tylko easter egg bonus (bezposrednio)
+python L19/bonus_cross.py
 ```
+
+---
+
+## Easter egg - flaga bonusowa {FLG:CHAMBEROFSECRETS}
+
+Hint: `print(*map(ord,'FLAG'))` -> `70 76 65 71`
+
+Rozwiazanie polega na polaczeniu dwoch obserwacji:
+1. `ls -la /flag` sortuje pliki **alfabetycznie**: `a f g l`
+2. Rozmiary plikow w tej kolejnosci musza przez `chr(size)` dac **FLAG**
+
+Przypisanie (krzyzowe - nie ord wlasnej litery):
+
+| plik | size | chr(size) | pozycja ls -la |
+|------|------|-----------|----------------|
+| `a`  | 70   | F         | 1              |
+| `f`  | 76   | L         | 2              |
+| `g`  | 65   | A         | 3              |
+| `l`  | 71   | G         | 4              |
+
+Serwer wykrywa wzorzec i wstrzykuje pliki-wiadomosci do `/flag/` oraz loguje easter egg
+do `/debug`: `[filesystem] easter egg activated: {FLG:CHAMBEROFSECRETS}`
 
 ---
 
