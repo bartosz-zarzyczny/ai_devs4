@@ -1,0 +1,119 @@
+{
+  "cities": {
+    "Opalino": {
+      "chleb": 45,
+      "woda": 120,
+      "mlotek": 6
+    },
+    "Domatowo": {
+      "woda": 150,
+      "lopata": 8,
+      "makaron": 60
+    },
+    "Brudzewo": {
+      "woda": 140,
+      "wiertarka": 5,
+      "ryz": 55
+    },
+    "Darzlubie": {
+      "woda": 130,
+      "wolowina": 25,
+      "kilof": 7
+    },
+    "Celbowo": {
+      "woda": 125,
+      "mlotek": 6,
+      "kurczak": 40
+    },
+    "Mechowo": {
+      "woda": 165,
+      "lopata": 9,
+      "marchew": 65,
+      "kapusta": 70,
+      "ziemniak": 100
+    },
+    "Puck": {
+      "chleb": 50,
+      "woda": 175,
+      "wiertarka": 7,
+      "ryz": 45
+    },
+    "Karlinkowo": {
+      "woda": 155,
+      "ziemniak": 95,
+      "makaron": 52,
+      "wolowina": 22,
+      "kilof": 6
+    }
+  },
+  "persons": {
+    "Natan Rams": "Domatowo",
+    "Iga Kapecka": "Opalino",
+    "Rafal Kisiel": "Brudzewo",
+    "Marta Frantz": "Darzlubie",
+    "Oskar Radtke": "Celbowo",
+    "Eliza Redmann": "Mechowo",
+    "Damian Kroll": "Puck",
+    "Lena Konkel": "Karlinkowo"
+  },
+  "goods": {
+    "ryz": [
+      "Darzlubie",
+      "Karlinkowo",
+      "Opalino"
+    ],
+    "marchew": [
+      "Puck"
+    ],
+    "chleb": [
+      "Brudzewo",
+      "Celbowo",
+      "Domatowo"
+    ],
+    "wolowina": [
+      "Opalino"
+    ],
+    "kilof": [
+      "Celbowo",
+      "Mechowo",
+      "Puck"
+    ],
+    "wiertarka": [
+      "Domatowo",
+      "Karlinkowo"
+    ],
+    "maka": [
+      "Brudzewo",
+      "Mechowo"
+    ],
+    "mlotek": [
+      "Karlinkowo",
+      "Mechowo"
+    ],
+    "makaron": [
+      "Opalino"
+    ],
+    "kapusta": [
+      "Celbowo"
+    ],
+    "ziemniak": [
+      "Darzlubie",
+      "Domatowo"
+    ],
+    "kurczak": [
+      "Darzlubie"
+    ],
+    "lopata": [
+      "Brudzewo",
+      "Puck"
+    ],
+    "lopaty": [
+      "Brudzewo",
+      "Puck"
+    ],
+    "mlotki": [
+      "Karlinkowo",
+      "Mechowo"
+    ]
+  }
+}

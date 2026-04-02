@@ -21,6 +21,7 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L16/README.md](L16/README.md) - zadanie `okoeditor` (edycja Centrum Operacyjnego OKO wyłącznie przez API, bez ręcznych zmian w panelu)
 - [L17/README.md](L17/README.md) - zadanie `windpower` (harmonogram turbiny wiatrowej z asynchronicznym API, podpisami unlockCode i limitem 40 s; bonus: palindromiczne lustro czasu/wiatru)
 - [L18/README.md](L18/README.md) - zadanie `domatowo` (odnalezienie partyzanta w ruinach miasta, strategiczny solver z priorytetyzacją wysokich budynków, UI WWW z mapą 11×11)
+- [L19/README.md](L19/README.md) - zadanie `filesystem` (wirtualny filesystem: reset /miasta /osoby /towary, analiza notatek Natana, bonus `/flag` z kodem ASCII FLAG)
 
 ## Konfiguracja
 
@@ -47,6 +48,7 @@ python -m pip install -r requirements.txt
 
 ## Ostatnie zmiany (skrót)
 
+- L19: zadanie `filesystem` - parsowanie notatek Natana, zbudowanie drzewka katalogów `/miasta`, `/osoby`, `/towary`, weryfikacja na `/verify`; bonusowa zagadka `/flag` i wartość ASCII `70 76 65 71` (FLAG).
 - L18: strategiczny solver zadania `domatowo`; partyzant odnaleziony w bloku H10, ewakuacja zakończona sukcesem; flaga `{FLG:XXXXXXX}`; UI WWW z mapą 11×11 i wizualizacją jednostek.
 - L13: autonomiczny solver zadania `reactor`; robot przeszedł całą mapę 7×5 w 11 krokach bez kolizji; flaga `{FLG:XXXXXXXXX}`; UI WWW z trybem AUTO-PLAY na porcie 8013.
 - L12: agentowa pętla na VM z `cooler.bin`; flaga główna `{FLG:XXXXXXXX}` z `/verify`; bonusowa zagadka `/bin/flaggengenerator schmetterling` → `{FLG:XXXXXXXX}`; UI z kartą bonusu i przyciskiem.
