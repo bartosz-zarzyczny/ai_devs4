@@ -33,7 +33,7 @@ Zastosuję podejście agentowe, wysyłając dane i udoskonalając je w pętli na
 
 4. **Sukces**:
    - Powtórzę iterację (Wysłanie -> Feedback -> Poprawa) aż do momentu, w którym technicy potwierdzą, że logi są kompletne i system zwróci poprawną flagę `{FLG:...}`.
-   - W tym rozwiązaniu sukces został osiągnięty po pierwszym wysłaniu, a flagą jest `{FLG:SQUASHIT}`.
+   - W tym rozwiązaniu sukces został osiągnięty po pierwszym wysłaniu, a flagą jest `{FLG:XXXXXXX}`.
    - Ostatnim krokiem jest zapisanie odpowiedzi do `verification_result.json`.
 
 ## UI do kroku 1
