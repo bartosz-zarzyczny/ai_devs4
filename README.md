@@ -47,8 +47,8 @@ python -m pip install -r requirements.txt
 
 ## Ostatnie zmiany (skrót)
 
-- L18: strategiczny solver zadania `domatowo`; partyzant odnaleziony w bloku H10, ewakuacja zakończona sukcesem; flaga `{FLG:WEVEGOTHIM}`; UI WWW z mapą 11×11 i wizualizacją jednostek.
-- L13: autonomiczny solver zadania `reactor`; robot przeszedł całą mapę 7×5 w 11 krokach bez kolizji; flaga `{FLG:INSTALLED}`; UI WWW z trybem AUTO-PLAY na porcie 8013.
+- L18: strategiczny solver zadania `domatowo`; partyzant odnaleziony w bloku H10, ewakuacja zakończona sukcesem; flaga `{FLG:XXXXXXX}`; UI WWW z mapą 11×11 i wizualizacją jednostek.
+- L13: autonomiczny solver zadania `reactor`; robot przeszedł całą mapę 7×5 w 11 krokach bez kolizji; flaga `{FLG:XXXXXXXXX}`; UI WWW z trybem AUTO-PLAY na porcie 8013.
 - L12: agentowa pętla na VM z `cooler.bin`; flaga główna `{FLG:XXXXXXXX}` z `/verify`; bonusowa zagadka `/bin/flaggengenerator schmetterling` → `{FLG:XXXXXXXX}`; UI z kartą bonusu i przyciskiem.
 - L11: detekcja anomalii w 10 000 plikach JSON (46 programistycznych + 6 z notatek); flaga `{FLG:XXXXXXX}`; bonus AWK `{FLG:XXXXXXXX}`.
 - L03: dodano lokalny serwer i narzędzia pomocnicze; folder `L03` zawiera logi i endpointy debugujące (sprawdź L03/logs).
