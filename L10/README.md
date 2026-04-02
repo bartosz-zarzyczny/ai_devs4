@@ -42,7 +42,7 @@ Weryfikacja, ktora potwierdzilem w hubie, to:
 }
 ```
 
-Ta sekwencja zwraca kod `0` i flage `{FLG:LETSFLY}`.
+Ta sekwencja zwraca kod `0` i flage `{FLG:XXXXXXX}`.
 
 ### Bonus Radom
 
@@ -69,7 +69,7 @@ Z dodatkowymi podpowiedziami sprawdzony przebieg to:
 }
 ```
 
-Ta trasa zwraca kod `876` i komunikat o balonie w Radomiu. W zrzucie zdjecia znalazlem bonusowa flage `{FLG:RADOMAIRPORT}`.
+Ta trasa zwraca kod `876` i komunikat o balonie w Radomiu. W zrzucie zdjecia znalazlem bonusowa flage `{FLG:XXXXXXXXXXX}`.
 
 ## Co trzeba zrobic
 
