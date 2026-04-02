@@ -347,7 +347,7 @@ python L18/ui_server.py
 
 ### Wyniki wykonania
 
-- **Flaga**: `{FLG:WEVEGOTHIM}`
+- **Flaga**: `{FLG:XXXXXXXXXX}`
 - **Lokalizacja partyzanta**: **F2** (kompleks kościoła/church, block3)
 - **Status ewakuacji**: Sukces (code: 0)  
 - **Wykorzystane punkty akcji**: 165 z 300 dostępnych (45% wydajność)
