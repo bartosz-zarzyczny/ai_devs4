@@ -287,7 +287,7 @@ Drugie wywołanie różni się tylko `windMs=5.5`, a trzecie wraca do `4.4`.
 
 Przy tej sekwencji `getResult` zwraca bonusową flagę bezpośrednio w polu `unlockCode`:
 
-`{FLG:LIVENOTONEVIL}`
+`{FLG:XXXXXXXXX}`
 
 Uruchomienie:
 
