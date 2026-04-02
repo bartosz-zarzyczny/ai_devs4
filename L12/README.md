@@ -40,7 +40,7 @@ An agentic loop driven by `anthropic/claude-sonnet-4-5` is given two tools:
 
 ### Result
 
-Main task flag: **`{FLG:CANTTOUCHTHIS}`** (returned by `/verify` after submitting the ECCS code).
+Main task flag: **`{FLG:XXXXXXXXXXX}`** (returned by `/verify` after submitting the ECCS code).
 
 ## Bonus — flaggengenerator
 
@@ -59,7 +59,7 @@ Main task flag: **`{FLG:CANTTOUCHTHIS}`** (returned by `/verify` after submittin
 
 Returns base64-encoded output: `e0ZMRzpCUkFUV1VSU1R9`
 
-Decoded: **`{FLG:BRATWURST}`**
+Decoded: **`{FLG:XXXXXXXXXX}`**
 
 ### Reproducing manually
 
