@@ -69,6 +69,6 @@ Odpytanie endpointu `/api/accesslevel` o osobę:
 - Rok urodzenia: **1987**
 
 Zwraca ono flagę bonusową:
-`{FLG:WALDOISHERE}`
+`{FLG:XXXXXXXXXXX}`
 
 
