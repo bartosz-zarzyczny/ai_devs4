@@ -168,5 +168,5 @@ AI_DEVS_4_API_KEY=twoj_klucz
 
 | Rodzaj | Flaga | Plik |
 |--------|-------|------|
-| Główne zadanie | `{FLG:INTACTCITY}` | `verification_result.json` |
-| Bonus — bobry | `{FLG:ABEAVER}` | `bonus_result.json` |
+| Główne zadanie | `{FLG:XXXXXXXXXXX}` | `verification_result.json` |
+| Bonus — bobry | `{FLG:XXXXXXXXXX}` | `bonus_result.json` |
