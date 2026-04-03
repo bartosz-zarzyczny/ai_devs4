@@ -1,0 +1,487 @@
+{
+  "show_tables": {
+    "code": 150,
+    "message": "Database table list loaded.",
+    "tool": "database",
+    "mode": "read-only",
+    "query": "show tables",
+    "tables": [
+      "destinations",
+      "roles",
+      "users"
+    ],
+    "count": 3
+  },
+  "tables": {
+    "destinations": {
+      "code": 170,
+      "message": "Database query executed.",
+      "tool": "database",
+      "mode": "read-only",
+      "query": "select * from destinations",
+      "table": "destinations",
+      "totalTableRows": 40,
+      "columns": [
+        "destination_id",
+        "name"
+      ],
+      "rows": [
+        {
+          "destination_id": 707536,
+          "name": "Karlinkowo"
+        },
+        {
+          "destination_id": 955390,
+          "name": "Reszel"
+        },
+        {
+          "destination_id": 741906,
+          "name": "Celbowo"
+        },
+        {
+          "destination_id": 725741,
+          "name": "Cewice"
+        },
+        {
+          "destination_id": 390716,
+          "name": "Tykocin"
+        },
+        {
+          "destination_id": 917631,
+          "name": "Wyszogrod"
+        },
+        {
+          "destination_id": 695992,
+          "name": "Mechowo"
+        },
+        {
+          "destination_id": 415722,
+          "name": "Krokowa"
+        },
+        {
+          "destination_id": 471906,
+          "name": "Mrozy"
+        },
+        {
+          "destination_id": 884889,
+          "name": "Sompolno"
+        },
+        {
+          "destination_id": 961067,
+          "name": "Rydzyna"
+        },
+        {
+          "destination_id": 988770,
+          "name": "Pasym"
+        },
+        {
+          "destination_id": 271814,
+          "name": "Gniewino"
+        },
+        {
+          "destination_id": 234434,
+          "name": "Brudzewo"
+        },
+        {
+          "destination_id": 968008,
+          "name": "Bobolice"
+        },
+        {
+          "destination_id": 575378,
+          "name": "Tolkmicko"
+        },
+        {
+          "destination_id": 441899,
+          "name": "Kleczew"
+        },
+        {
+          "destination_id": 991828,
+          "name": "Opalino"
+        },
+        {
+          "destination_id": 181279,
+          "name": "Rewal"
+        },
+        {
+          "destination_id": 744542,
+          "name": "Frombork"
+        },
+        {
+          "destination_id": 574835,
+          "name": "Resko"
+        },
+        {
+          "destination_id": 385126,
+          "name": "Ryn"
+        },
+        {
+          "destination_id": 369482,
+          "name": "Biskupiec"
+        },
+        {
+          "destination_id": 106710,
+          "name": "Susz"
+        },
+        {
+          "destination_id": 240752,
+          "name": "Bisztynek"
+        },
+        {
+          "destination_id": 790221,
+          "name": "Hel"
+        },
+        {
+          "destination_id": 140606,
+          "name": "Puck"
+        },
+        {
+          "destination_id": 529177,
+          "name": "Choczewo"
+        },
+        {
+          "destination_id": 273656,
+          "name": "Jastarnia"
+        },
+        {
+          "destination_id": 676323,
+          "name": "Darzlubie"
+        }
+      ],
+      "count": 30,
+      "limit": 30
+    },
+    "roles": {
+      "code": 170,
+      "message": "Database query executed.",
+      "tool": "database",
+      "mode": "read-only",
+      "query": "select * from roles",
+      "table": "roles",
+      "totalTableRows": 6,
+      "columns": [
+        "role_id",
+        "name"
+      ],
+      "rows": [
+        {
+          "role_id": 1,
+          "name": "Pomoc techniczna"
+        },
+        {
+          "role_id": 2,
+          "name": "Obsługa transportów"
+        },
+        {
+          "role_id": 3,
+          "name": "Praktykant"
+        },
+        {
+          "role_id": 4,
+          "name": "Programista"
+        },
+        {
+          "role_id": 5,
+          "name": "Specjalista AI"
+        },
+        {
+          "role_id": 6,
+          "name": "Vibe Coder"
+        }
+      ],
+      "count": 6,
+      "limit": 30
+    },
+    "users": {
+      "code": 170,
+      "message": "Database query executed.",
+      "tool": "database",
+      "mode": "read-only",
+      "query": "select * from users",
+      "table": "users",
+      "totalTableRows": 78,
+      "columns": [
+        "user_id",
+        "login",
+        "name_surname",
+        "password",
+        "birthday",
+        "role",
+        "is_active"
+      ],
+      "rows": [
+        {
+          "user_id": 1,
+          "login": "azurek",
+          "name_surname": "Antonina Żurek",
+          "password": "3208b5e09f4572e8abc2d09a7b39995e",
+          "birthday": "1983-09-23",
+          "role": 3,
+          "is_active": 1
+        },
+        {
+          "user_id": 2,
+          "login": "tgajewski",
+          "name_surname": "Tymon Gajewski",
+          "password": "8693b092bd2c229941f7128fa78363e4",
+          "birthday": "1991-04-06",
+          "role": 2,
+          "is_active": 1
+        },
+        {
+          "user_id": 3,
+          "login": "bczajkowski",
+          "name_surname": "Bartosz Czajkowski",
+          "password": "ffecdc5deb2e823f1ca0164325df489d",
+          "birthday": "1989-06-04",
+          "role": 5,
+          "is_active": 1
+        },
+        {
+          "user_id": 4,
+          "login": "esadowska",
+          "name_surname": "Edyta Sadowska",
+          "password": "a2bfd65b39206ff14f11578e7d95ac24",
+          "birthday": "1950-09-20",
+          "role": 4,
+          "is_active": 1
+        },
+        {
+          "user_id": 5,
+          "login": "mkoodziej",
+          "name_surname": "Mariusz Kołodziej",
+          "password": "de11d12b3bf3a9e19be2661177a2e14b",
+          "birthday": "1987-08-14",
+          "role": 2,
+          "is_active": 1
+        },
+        {
+          "user_id": 6,
+          "login": "jgacek",
+          "name_surname": "Jerzy Gacek",
+          "password": "fe4017a71e1cca2f86a892ae79a875c2",
+          "birthday": "1978-12-25",
+          "role": 1,
+          "is_active": 1
+        },
+        {
+          "user_id": 7,
+          "login": "bkurek",
+          "name_surname": "Bożena Kurek",
+          "password": "a68d1fba0ed1817615e1d64abce53145",
+          "birthday": "1951-04-12",
+          "role": 2,
+          "is_active": 1
+        },
+        {
+          "user_id": 8,
+          "login": "gjabonski",
+          "name_surname": "Gustaw Jabłoński",
+          "password": "f0ca11ecb8b751f846dda0650a25687b",
+          "birthday": "1981-06-27",
+          "role": 2,
+          "is_active": 1
+        },
+        {
+          "user_id": 9,
+          "login": "mkrol",
+          "name_surname": "Marcel Król",
+          "password": "b429d188fd3c68b1eb353142e7a7bc6f",
+          "birthday": "1962-09-21",
+          "role": 3,
+          "is_active": 1
+        },
+        {
+          "user_id": 10,
+          "login": "bkos",
+          "name_surname": "Bruno Kłos",
+          "password": "19aaad5b44351abb490bb6ed12561a0d",
+          "birthday": "1992-05-08",
+          "role": 5,
+          "is_active": 1
+        },
+        {
+          "user_id": 11,
+          "login": "iwojcik",
+          "name_surname": "Izabela Wójcik",
+          "password": "f6e644fc55d9a91ce0c2e6b08271baa5",
+          "birthday": "1970-07-20",
+          "role": 1,
+          "is_active": 1
+        },
+        {
+          "user_id": 12,
+          "login": "apietrzak",
+          "name_surname": "Angelika Pietrzak",
+          "password": "2664a66aa149cd02f2ae32598e2c48c5",
+          "birthday": "1976-09-19",
+          "role": 1,
+          "is_active": 1
+        },
+        {
+          "user_id": 13,
+          "login": "ikubiak",
+          "name_surname": "Izabela Kubiak",
+          "password": "007ad08c7bca84d0f28fc28c7de57099",
+          "birthday": "1965-01-31",
+          "role": 1,
+          "is_active": 1
+        },
+        {
+          "user_id": 14,
+          "login": "dsikora",
+          "name_surname": "Dawid Sikora",
+          "password": "5dc448541c662ad2ec994043046ab155",
+          "birthday": "1970-04-29",
+          "role": 3,
+          "is_active": 1
+        },
+        {
+          "user_id": 15,
+          "login": "jmichalski",
+          "name_surname": "Jakub Michalski",
+          "password": "ca7ad3289296bf63f227b954dc3fa87c",
+          "birthday": "1983-04-19",
+          "role": 5,
+          "is_active": 1
+        },
+        {
+          "user_id": 16,
+          "login": "dbaran",
+          "name_surname": "Dionizy Baran",
+          "password": "7c0f723f37a345ebf948e719afa55773",
+          "birthday": "1958-10-25",
+          "role": 5,
+          "is_active": 1
+        },
+        {
+          "user_id": 17,
+          "login": "badamczyk",
+          "name_surname": "Bernadeta Adamczyk",
+          "password": "c0b154836e0b64a5d2b9c9f5935c42ea",
+          "birthday": "1987-07-12",
+          "role": 4,
+          "is_active": 1
+        },
+        {
+          "user_id": 18,
+          "login": "fgacek",
+          "name_surname": "Felicja Gacek",
+          "password": "217dd9dbe01f656f0eefe9bfa3926d91",
+          "birthday": "1955-04-18",
+          "role": 2,
+          "is_active": 1
+        },
+        {
+          "user_id": 19,
+          "login": "switkowski",
+          "name_surname": "Szymon Witkowski",
+          "password": "d64d092100d1b529c88f81ce4e185019",
+          "birthday": "1990-09-05",
+          "role": 5,
+          "is_active": 1
+        },
+        {
+          "user_id": 20,
+          "login": "tjakubowski",
+          "name_surname": "Tomasz Jakubowski",
+          "password": "13b0a4baada52c78c80c4987cc4d3500",
+          "birthday": "2000-09-19",
+          "role": 2,
+          "is_active": 1
+        },
+        {
+          "user_id": 21,
+          "login": "bkoodziej",
+          "name_surname": "Bernadeta Kołodziej",
+          "password": "23fe2cad0945c58f6c2009dbcab52e40",
+          "birthday": "1955-06-26",
+          "role": 2,
+          "is_active": 1
+        },
+        {
+          "user_id": 22,
+          "login": "smalinowska",
+          "name_surname": "Sylwia Malinowska",
+          "password": "a1a689f6c033c04c7b1ac2f09c7e7c72",
+          "birthday": "1987-08-07",
+          "role": 1,
+          "is_active": 1
+        },
+        {
+          "user_id": 23,
+          "login": "kmichalska",
+          "name_surname": "Kamila Michalska",
+          "password": "00094ed9f048d205fd60c57cf6d40633",
+          "birthday": "1998-08-19",
+          "role": 1,
+          "is_active": 1
+        },
+        {
+          "user_id": 24,
+          "login": "dwojciechowska",
+          "name_surname": "Daniela Wojciechowska",
+          "password": "74a187db517a02ad199c737772207593",
+          "birthday": "1996-02-24",
+          "role": 3,
+          "is_active": 1
+        },
+        {
+          "user_id": 25,
+          "login": "akrajewski",
+          "name_surname": "Antoni Krajewski",
+          "password": "d1f5d421a9067b9206b462b406b7cf00",
+          "birthday": "1987-10-12",
+          "role": 5,
+          "is_active": 1
+        },
+        {
+          "user_id": 26,
+          "login": "szajac",
+          "name_surname": "Sylwester Zając",
+          "password": "ff59aaf2a3aef0c007fcb7ebc3d9ff47",
+          "birthday": "1976-10-30",
+          "role": 3,
+          "is_active": 1
+        },
+        {
+          "user_id": 27,
+          "login": "nborowski",
+          "name_surname": "Natan Borowski",
+          "password": "e6e889797702d6515a699baf0cfcfa81",
+          "birthday": "1992-12-16",
+          "role": 2,
+          "is_active": 1
+        },
+        {
+          "user_id": 28,
+          "login": "eszymanski",
+          "name_surname": "Eryk Szymański",
+          "password": "569314fc0a2d5505c5115e8c50010cc0",
+          "birthday": "1970-12-01",
+          "role": 1,
+          "is_active": 1
+        },
+        {
+          "user_id": 29,
+          "login": "bbaszczyk",
+          "name_surname": "Bianka Błaszczyk",
+          "password": "975a737d4a4b40e71d685e85416c0180",
+          "birthday": "2000-10-12",
+          "role": 5,
+          "is_active": 1
+        },
+        {
+          "user_id": 30,
+          "login": "wgowacki",
+          "name_surname": "Wiesław Głowacki",
+          "password": "c5b30f7106cd25c619794153ccf3f737",
+          "birthday": "1972-09-15",
+          "role": 1,
+          "is_active": 1
+        }
+      ],
+      "count": 30,
+      "limit": 30
+    }
+  }
+}

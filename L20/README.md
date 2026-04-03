@@ -12,6 +12,67 @@ Najpierw trzeba poznac strukture danych i zaleznosci w API, potem ustalic pelne 
 
 Opis zadania zawiera jedno sformulowanie o "jednym poprawnym zamowieniu", ale dalsza specyfikacja jednoznacznie wymaga przygotowania osobnych zamowien dla kazdego miasta z pliku JSON. To wymaganie nalezy traktowac jako operacyjne zrodlo prawdy.
 
+## Wynik
+
+- Flaga glowna: `{FLG:JUSTEATIT}`
+- Bonusowa odpowiedz na zagadke "Nie jestem za stary na VibeCodera?": `{FLG:VIBEAGENT}`
+
+Finalna odpowiedz huba jest zapisana w `verification_result.json`, a odpowiedz bonusowa w `bonus_result.json`.
+
+## Fakty ustalone podczas discovery
+
+### Tabele w bazie
+
+- `destinations`
+- `roles`
+- `users`
+
+### Poprawny tworca zamowien
+
+- `creatorID`: `2`
+- `login`: `tgajewski`
+- `birthday`: `1991-04-06`
+- `role`: `Obsluga transportow`
+
+### Mapowanie miast na destination
+
+| Miasto | destination |
+|---|---:|
+| Opalino | `991828` |
+| Domatowo | `761834` |
+| Brudzewo | `234434` |
+| Darzlubie | `676323` |
+| Celbowo | `741906` |
+| Mechowo | `695992` |
+| Puck | `140606` |
+| Karlinkowo | `707536` |
+
+### Podpisy
+
+Podpis nie jest staly dla uzytkownika. Trzeba go generowac osobno dla kazdego `destination` przez:
+
+```json
+{
+   "tool": "signatureGenerator",
+   "action": "generate",
+   "login": "tgajewski",
+   "birthday": "1991-04-06",
+   "destination": 991828
+}
+```
+
+## Bonus
+
+Bonusowa zagadka nie wymaga dodatkowego endpointu. Odpowiedz byla ukryta w rekordach `users` z rola `Vibe Coder`.
+
+Praktyczna metoda:
+
+1. Pobierz rekordy `users where role = 6 order by birthday desc`.
+2. Sklej pole `name_surname` ze wszystkich rekordow.
+3. Zdekoduj wynik jako `base64`, a potem `gzip`.
+
+Wynik daje komunikat z flaga `{FLG:VIBEAGENT}`.
+
 ## Glowne zasady
 
 - Nie zgadywac wartosci `destination`, `creatorID` ani danych do podpisu.
@@ -231,6 +292,7 @@ Na podstawie API `database` i `signatureGenerator`:
 | `db_dump.json` | Zapis odpowiedzi z eksploracji bazy |
 | `operation_log.jsonl` | Log request/response dla wywolan API |
 | `verification_result.json` | Finalna odpowiedz z `/verify` |
+| `bonus_result.json` | Zapis odpowiedzi bonusowej zagadki |
 
 ### Wzorce do reuzycia
 
@@ -245,6 +307,8 @@ Na podstawie API `database` i `signatureGenerator`:
 - Podpis SHA1 nalezy pobierac przez `signatureGenerator`, a nie liczyc lokalnie, chyba ze `help` wyraznie poda identyczny algorytm i pola oraz zadanie tego wymaga.
 - Batch `append` jest bezpieczniejszy niz wiele pojedynczych wywolan, bo zmniejsza liczbe requestow i upraszcza porownanie stanu.
 - Przed `done` warto zrobic lokalna walidacje: liczba zamowien, zgodnosc miast, zgodnosc pozycji i ilosci.
+- API ma agresywny rate limit, wiec solver spowalnia requesty i uzywa cache discovery zamiast wykonywac pelne rozpoznanie przy kazdym uruchomieniu.
+- `orders/create` zwraca identyfikator zamowienia pod `order.id`, nie na poziomie top-level odpowiedzi.
 
 ## Uruchomienie
 
@@ -254,3 +318,5 @@ python L20/ui_server.py
 ```
 
 Jesli zadanie zostanie rozwiazane poprawnie, Centrala zwroci flage w odpowiedzi na `done`.
+
+UI pokazuje teraz nie tylko artefakty discovery i stan zamowien, ale tez glowna flage oraz bonusowa odpowiedz z `bonus_result.json`.

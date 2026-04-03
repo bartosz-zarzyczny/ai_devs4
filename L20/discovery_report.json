@@ -1,0 +1,1223 @@
+{
+  "requirements": {
+    "opalino": {
+      "chleb": 45,
+      "woda": 120,
+      "mlotek": 6
+    },
+    "domatowo": {
+      "makaron": 60,
+      "woda": 150,
+      "lopata": 8
+    },
+    "brudzewo": {
+      "ryz": 55,
+      "woda": 140,
+      "wiertarka": 5
+    },
+    "darzlubie": {
+      "wolowina": 25,
+      "woda": 130,
+      "kilof": 7
+    },
+    "celbowo": {
+      "kurczak": 40,
+      "woda": 125,
+      "mlotek": 6
+    },
+    "mechowo": {
+      "ziemniaki": 100,
+      "kapusta": 70,
+      "marchew": 65,
+      "woda": 165,
+      "lopata": 9
+    },
+    "puck": {
+      "chleb": 50,
+      "ryz": 45,
+      "woda": 175,
+      "wiertarka": 7
+    },
+    "karlinkowo": {
+      "makaron": 52,
+      "wolowina": 22,
+      "ziemniaki": 95,
+      "woda": 155,
+      "kilof": 6
+    }
+  },
+  "help": {
+    "code": 140,
+    "message": "Foodwarehouse API help.",
+    "usage": {
+      "endpoint": "/verify",
+      "method": "POST",
+      "required_fields": [
+        "apikey",
+        "task",
+        "answer"
+      ],
+      "task": "foodwarehouse"
+    },
+    "tools": [
+      {
+        "tool": "help",
+        "description": "Returns API usage and currently available tools.",
+        "params": []
+      },
+      {
+        "tool": "orders",
+        "description": "Reads and modifies warehouse orders. This tool is fully implemented.",
+        "actions": [
+          {
+            "action": "get",
+            "params": {
+              "id": "optional order identifier"
+            }
+          },
+          {
+            "action": "create",
+            "params": {
+              "title": "required order title",
+              "creatorID": "required existing ID of the user creating the order",
+              "destination": "required numeric code of the target city",
+              "signature": "required correct signature for creatorID and destination"
+            },
+            "notes": [
+              "New orders start with an empty items list.",
+              "creatorID must point to an existing user.",
+              "destination must point to one of the valid city destination codes.",
+              "signature must match for that creator."
+            ]
+          },
+          {
+            "action": "append",
+            "params": {
+              "id": "required order identifier",
+              "name": "required item name in single mode",
+              "items": "single quantity OR batch object/array of items"
+            },
+            "notes": [
+              "If the item already exists, quantity is increased.",
+              "Batch mode accepts {\"woda\":5,\"kilof\":7} or [{\"name\":\"woda\",\"items\":5},{\"name\":\"kilof\",\"items\":7}]."
+            ]
+          },
+          {
+            "action": "delete",
+            "params": {
+              "id": "required order identifier"
+            },
+            "notes": [
+              "Deletes the whole order."
+            ]
+          }
+        ]
+      },
+      {
+        "tool": "signatureGenerator",
+        "description": "Generates signatures for provided user and destination",
+        "actions": [
+          {
+            "action": "generate",
+            "params": {
+              "login": "who is creating this order",
+              "birthday": "required birthday in YYYY-MM-DD existing for user mentioned in login",
+              "destination": "required numeric destination ID of the target city"
+            }
+          }
+        ]
+      },
+      {
+        "tool": "done",
+        "description": "Validates whether one order fully satisfies all city needs and returns the flag on success.",
+        "params": []
+      },
+      {
+        "tool": "reset",
+        "description": "Restores the current user state to the initial set of seeded orders.",
+        "params": []
+      },
+      {
+        "tool": "database",
+        "description": "Read-only access to the SQLite database used by the task.",
+        "params": {
+          "query": "required string"
+        },
+        "notes": [
+          "Allowed commands: SELECT ..., SHOW TABLES, SHOW CREATE TABLE table_name, .tables, .schema, .schema table_name.",
+          "Write operations are blocked."
+        ]
+      }
+    ],
+    "examples": [
+      {
+        "tool": "orders",
+        "action": "get"
+      },
+      {
+        "tool": "orders",
+        "action": "create",
+        "title": "Backup supply train",
+        "creatorID": 9876,
+        "destination": 112211,
+        "signature": "96d66cc4d28484b3c5b9e05e4f79152eb564f6f0"
+      },
+      {
+        "tool": "orders",
+        "action": "append",
+        "id": "ed2f3696d8bcafe2437cdc88f7515037",
+        "items": {
+          "woda": 5,
+          "kilof": 70,
+          "chleb": 45
+        }
+      },
+      {
+        "tool": "signatureGenerator",
+        "action": "generate",
+        "login": "jkowalski",
+        "birthday": "1971-01-01",
+        "destination": 991828
+      },
+      {
+        "tool": "done"
+      },
+      {
+        "tool": "reset"
+      },
+      {
+        "tool": "database",
+        "query": "show tables"
+      }
+    ]
+  },
+  "orders": {
+    "code": 101,
+    "message": "Orders loaded.",
+    "orders": [
+      {
+        "id": "ed2f3696d8bcafe2437cdc88f7515037",
+        "title": "Do kuchni w Suszu",
+        "creatorID": 2,
+        "destination": 106710,
+        "signature": "9fde570fca1cfee02e8deb807ec7ff6e9f2670de",
+        "items": [
+          {
+            "name": "chleb",
+            "items": 12
+          },
+          {
+            "name": "kurczak",
+            "items": 20
+          },
+          {
+            "name": "kapusta",
+            "items": 4
+          }
+        ]
+      },
+      {
+        "id": "8668a2fc9daf2cbe0e953303bb38f524",
+        "title": "Kopalnia pod Rewalem",
+        "creatorID": 5,
+        "destination": 181279,
+        "signature": "77acdf36ae70d9fe067a053360a72cd734407bbf",
+        "items": [
+          {
+            "name": "kilof",
+            "items": 36
+          },
+          {
+            "name": "lopata",
+            "items": 18
+          },
+          {
+            "name": "makaron",
+            "items": 24
+          }
+        ]
+      },
+      {
+        "id": "6a190bf396b54dfd2d8fd3161cec8ec7",
+        "title": "Do warsztatu w Biskupcu",
+        "creatorID": 7,
+        "destination": 369482,
+        "signature": "b343b1aec153a3a591fdd94e5af2c7fdb0880dc7",
+        "items": [
+          {
+            "name": "marchew",
+            "items": 10
+          },
+          {
+            "name": "maka",
+            "items": 8
+          },
+          {
+            "name": "mlotek",
+            "items": 6
+          }
+        ]
+      },
+      {
+        "id": "0b8b7e9fc5679bd339a4c64b15e48ee8",
+        "title": "Harbor Night Shift in Hel",
+        "creatorID": 8,
+        "destination": 790221,
+        "signature": "5cfe2c0fa29d4cc9331282c9f1be65a65cb68a2f",
+        "items": [
+          {
+            "name": "ryz",
+            "items": 14
+          },
+          {
+            "name": "wiertarka",
+            "items": 11
+          },
+          {
+            "name": "woda",
+            "items": 7
+          }
+        ]
+      },
+      {
+        "id": "b9ffd41f42f92553afcd4d96e9badf14",
+        "title": "Dostawa dla Opalino",
+        "creatorID": 2,
+        "destination": 991828,
+        "signature": "96d66cc4d28484b3c5b9e05e4f79152eb564f6e0",
+        "items": [
+          {
+            "name": "chleb",
+            "items": 45
+          },
+          {
+            "name": "woda",
+            "items": 120
+          },
+          {
+            "name": "mlotek",
+            "items": 6
+          }
+        ]
+      },
+      {
+        "id": "53c3be08a3d193eda18e8186c50f539d",
+        "title": "Dostawa dla Domatowo",
+        "creatorID": 2,
+        "destination": 761834,
+        "signature": "29361bec85afce60df2f3472af1a6e298154e82f",
+        "items": [
+          {
+            "name": "makaron",
+            "items": 60
+          },
+          {
+            "name": "woda",
+            "items": 150
+          },
+          {
+            "name": "lopata",
+            "items": 8
+          }
+        ]
+      },
+      {
+        "id": "af73d978b1436b5e55671529f90c9490",
+        "title": "Dostawa dla Brudzewo",
+        "creatorID": 2,
+        "destination": 234434,
+        "signature": "5d1db416d5a978fa56e9610c3598d821492acaeb",
+        "items": [
+          {
+            "name": "ryz",
+            "items": 55
+          },
+          {
+            "name": "woda",
+            "items": 140
+          },
+          {
+            "name": "wiertarka",
+            "items": 5
+          }
+        ]
+      },
+      {
+        "id": "a2e634d868f6ef57edbcd8d161b385ba",
+        "title": "Dostawa dla Darzlubie",
+        "creatorID": 2,
+        "destination": 676323,
+        "signature": "9c52ae1ab999cfc3b26762dcadcdb2407c5fbde6",
+        "items": [
+          {
+            "name": "wolowina",
+            "items": 25
+          },
+          {
+            "name": "woda",
+            "items": 130
+          },
+          {
+            "name": "kilof",
+            "items": 7
+          }
+        ]
+      },
+      {
+        "id": "6cfe19f75ca9f16d4c0795764dde2722",
+        "title": "Dostawa dla Celbowo",
+        "creatorID": 2,
+        "destination": 741906,
+        "signature": "d539fbc8eeee8093f9def9e8d2c39e764de1b704",
+        "items": [
+          {
+            "name": "kurczak",
+            "items": 40
+          },
+          {
+            "name": "woda",
+            "items": 125
+          },
+          {
+            "name": "mlotek",
+            "items": 6
+          }
+        ]
+      },
+      {
+        "id": "725dfa8e17734e4deaacc06bd8b45c4a",
+        "title": "Dostawa dla Mechowo",
+        "creatorID": 2,
+        "destination": 695992,
+        "signature": "8d75eb210a3d5e80098bd6900d10f9e9791069d2",
+        "items": [
+          {
+            "name": "ziemniaki",
+            "items": 100
+          },
+          {
+            "name": "kapusta",
+            "items": 70
+          },
+          {
+            "name": "marchew",
+            "items": 65
+          },
+          {
+            "name": "woda",
+            "items": 165
+          },
+          {
+            "name": "lopata",
+            "items": 9
+          }
+        ]
+      },
+      {
+        "id": "d9616cb94873735a449c6af5de11c795",
+        "title": "Dostawa dla Puck",
+        "creatorID": 2,
+        "destination": 140606,
+        "signature": "414ab8e00fdfc2697876ea4a6db098edc38a0c60",
+        "items": [
+          {
+            "name": "chleb",
+            "items": 50
+          },
+          {
+            "name": "ryz",
+            "items": 45
+          },
+          {
+            "name": "woda",
+            "items": 175
+          },
+          {
+            "name": "wiertarka",
+            "items": 7
+          }
+        ]
+      },
+      {
+        "id": "994af6700794073358a06d049c689dae",
+        "title": "Dostawa dla Karlinkowo",
+        "creatorID": 2,
+        "destination": 707536,
+        "signature": "534a7ff14801f6bc8614ba92b43b81f92a9222a3",
+        "items": [
+          {
+            "name": "makaron",
+            "items": 52
+          },
+          {
+            "name": "wolowina",
+            "items": 22
+          },
+          {
+            "name": "ziemniaki",
+            "items": 95
+          },
+          {
+            "name": "woda",
+            "items": 155
+          },
+          {
+            "name": "kilof",
+            "items": 6
+          }
+        ]
+      }
+    ],
+    "count": 12
+  },
+  "database": {
+    "tables": {
+      "destinations": {
+        "row_count": 30,
+        "columns": [
+          "destination_id",
+          "name"
+        ]
+      },
+      "roles": {
+        "row_count": 6,
+        "columns": [
+          "name",
+          "role_id"
+        ]
+      },
+      "users": {
+        "row_count": 30,
+        "columns": [
+          "birthday",
+          "is_active",
+          "login",
+          "name_surname",
+          "password",
+          "role",
+          "user_id"
+        ]
+      }
+    },
+    "destination_candidates": {
+      "opalino": [
+        {
+          "table": "destinations",
+          "row": {
+            "destination_id": 991828,
+            "name": "Opalino"
+          },
+          "destination_fields": {
+            "destination_id": 991828
+          }
+        }
+      ],
+      "domatowo": [],
+      "brudzewo": [
+        {
+          "table": "destinations",
+          "row": {
+            "destination_id": 234434,
+            "name": "Brudzewo"
+          },
+          "destination_fields": {
+            "destination_id": 234434
+          }
+        }
+      ],
+      "darzlubie": [
+        {
+          "table": "destinations",
+          "row": {
+            "destination_id": 676323,
+            "name": "Darzlubie"
+          },
+          "destination_fields": {
+            "destination_id": 676323
+          }
+        }
+      ],
+      "celbowo": [
+        {
+          "table": "destinations",
+          "row": {
+            "destination_id": 741906,
+            "name": "Celbowo"
+          },
+          "destination_fields": {
+            "destination_id": 741906
+          }
+        }
+      ],
+      "mechowo": [
+        {
+          "table": "destinations",
+          "row": {
+            "destination_id": 695992,
+            "name": "Mechowo"
+          },
+          "destination_fields": {
+            "destination_id": 695992
+          }
+        }
+      ],
+      "puck": [
+        {
+          "table": "destinations",
+          "row": {
+            "destination_id": 140606,
+            "name": "Puck"
+          },
+          "destination_fields": {
+            "destination_id": 140606
+          }
+        }
+      ],
+      "karlinkowo": [
+        {
+          "table": "destinations",
+          "row": {
+            "destination_id": 707536,
+            "name": "Karlinkowo"
+          },
+          "destination_fields": {
+            "destination_id": 707536
+          }
+        }
+      ]
+    },
+    "creator_candidates": [
+      {
+        "table": "users",
+        "row": {
+          "user_id": 1,
+          "login": "azurek",
+          "name_surname": "Antonina Żurek",
+          "password": "3208b5e09f4572e8abc2d09a7b39995e",
+          "birthday": "1983-09-23",
+          "role": 3,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 1
+        },
+        "name_fields": {
+          "user_id": 1,
+          "login": "azurek",
+          "name_surname": "Antonina Żurek"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 2,
+          "login": "tgajewski",
+          "name_surname": "Tymon Gajewski",
+          "password": "8693b092bd2c229941f7128fa78363e4",
+          "birthday": "1991-04-06",
+          "role": 2,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 2
+        },
+        "name_fields": {
+          "user_id": 2,
+          "login": "tgajewski",
+          "name_surname": "Tymon Gajewski"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 3,
+          "login": "bczajkowski",
+          "name_surname": "Bartosz Czajkowski",
+          "password": "ffecdc5deb2e823f1ca0164325df489d",
+          "birthday": "1989-06-04",
+          "role": 5,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 3
+        },
+        "name_fields": {
+          "user_id": 3,
+          "login": "bczajkowski",
+          "name_surname": "Bartosz Czajkowski"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 4,
+          "login": "esadowska",
+          "name_surname": "Edyta Sadowska",
+          "password": "a2bfd65b39206ff14f11578e7d95ac24",
+          "birthday": "1950-09-20",
+          "role": 4,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 4
+        },
+        "name_fields": {
+          "user_id": 4,
+          "login": "esadowska",
+          "name_surname": "Edyta Sadowska"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 5,
+          "login": "mkoodziej",
+          "name_surname": "Mariusz Kołodziej",
+          "password": "de11d12b3bf3a9e19be2661177a2e14b",
+          "birthday": "1987-08-14",
+          "role": 2,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 5
+        },
+        "name_fields": {
+          "user_id": 5,
+          "login": "mkoodziej",
+          "name_surname": "Mariusz Kołodziej"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 6,
+          "login": "jgacek",
+          "name_surname": "Jerzy Gacek",
+          "password": "fe4017a71e1cca2f86a892ae79a875c2",
+          "birthday": "1978-12-25",
+          "role": 1,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 6
+        },
+        "name_fields": {
+          "user_id": 6,
+          "login": "jgacek",
+          "name_surname": "Jerzy Gacek"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 7,
+          "login": "bkurek",
+          "name_surname": "Bożena Kurek",
+          "password": "a68d1fba0ed1817615e1d64abce53145",
+          "birthday": "1951-04-12",
+          "role": 2,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 7
+        },
+        "name_fields": {
+          "user_id": 7,
+          "login": "bkurek",
+          "name_surname": "Bożena Kurek"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 8,
+          "login": "gjabonski",
+          "name_surname": "Gustaw Jabłoński",
+          "password": "f0ca11ecb8b751f846dda0650a25687b",
+          "birthday": "1981-06-27",
+          "role": 2,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 8
+        },
+        "name_fields": {
+          "user_id": 8,
+          "login": "gjabonski",
+          "name_surname": "Gustaw Jabłoński"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 9,
+          "login": "mkrol",
+          "name_surname": "Marcel Król",
+          "password": "b429d188fd3c68b1eb353142e7a7bc6f",
+          "birthday": "1962-09-21",
+          "role": 3,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 9
+        },
+        "name_fields": {
+          "user_id": 9,
+          "login": "mkrol",
+          "name_surname": "Marcel Król"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 10,
+          "login": "bkos",
+          "name_surname": "Bruno Kłos",
+          "password": "19aaad5b44351abb490bb6ed12561a0d",
+          "birthday": "1992-05-08",
+          "role": 5,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 10
+        },
+        "name_fields": {
+          "user_id": 10,
+          "login": "bkos",
+          "name_surname": "Bruno Kłos"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 11,
+          "login": "iwojcik",
+          "name_surname": "Izabela Wójcik",
+          "password": "f6e644fc55d9a91ce0c2e6b08271baa5",
+          "birthday": "1970-07-20",
+          "role": 1,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 11
+        },
+        "name_fields": {
+          "user_id": 11,
+          "login": "iwojcik",
+          "name_surname": "Izabela Wójcik"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 12,
+          "login": "apietrzak",
+          "name_surname": "Angelika Pietrzak",
+          "password": "2664a66aa149cd02f2ae32598e2c48c5",
+          "birthday": "1976-09-19",
+          "role": 1,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 12
+        },
+        "name_fields": {
+          "user_id": 12,
+          "login": "apietrzak",
+          "name_surname": "Angelika Pietrzak"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 13,
+          "login": "ikubiak",
+          "name_surname": "Izabela Kubiak",
+          "password": "007ad08c7bca84d0f28fc28c7de57099",
+          "birthday": "1965-01-31",
+          "role": 1,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 13
+        },
+        "name_fields": {
+          "user_id": 13,
+          "login": "ikubiak",
+          "name_surname": "Izabela Kubiak"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 14,
+          "login": "dsikora",
+          "name_surname": "Dawid Sikora",
+          "password": "5dc448541c662ad2ec994043046ab155",
+          "birthday": "1970-04-29",
+          "role": 3,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 14
+        },
+        "name_fields": {
+          "user_id": 14,
+          "login": "dsikora",
+          "name_surname": "Dawid Sikora"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 15,
+          "login": "jmichalski",
+          "name_surname": "Jakub Michalski",
+          "password": "ca7ad3289296bf63f227b954dc3fa87c",
+          "birthday": "1983-04-19",
+          "role": 5,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 15
+        },
+        "name_fields": {
+          "user_id": 15,
+          "login": "jmichalski",
+          "name_surname": "Jakub Michalski"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 16,
+          "login": "dbaran",
+          "name_surname": "Dionizy Baran",
+          "password": "7c0f723f37a345ebf948e719afa55773",
+          "birthday": "1958-10-25",
+          "role": 5,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 16
+        },
+        "name_fields": {
+          "user_id": 16,
+          "login": "dbaran",
+          "name_surname": "Dionizy Baran"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 17,
+          "login": "badamczyk",
+          "name_surname": "Bernadeta Adamczyk",
+          "password": "c0b154836e0b64a5d2b9c9f5935c42ea",
+          "birthday": "1987-07-12",
+          "role": 4,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 17
+        },
+        "name_fields": {
+          "user_id": 17,
+          "login": "badamczyk",
+          "name_surname": "Bernadeta Adamczyk"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 18,
+          "login": "fgacek",
+          "name_surname": "Felicja Gacek",
+          "password": "217dd9dbe01f656f0eefe9bfa3926d91",
+          "birthday": "1955-04-18",
+          "role": 2,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 18
+        },
+        "name_fields": {
+          "user_id": 18,
+          "login": "fgacek",
+          "name_surname": "Felicja Gacek"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 19,
+          "login": "switkowski",
+          "name_surname": "Szymon Witkowski",
+          "password": "d64d092100d1b529c88f81ce4e185019",
+          "birthday": "1990-09-05",
+          "role": 5,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 19
+        },
+        "name_fields": {
+          "user_id": 19,
+          "login": "switkowski",
+          "name_surname": "Szymon Witkowski"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 20,
+          "login": "tjakubowski",
+          "name_surname": "Tomasz Jakubowski",
+          "password": "13b0a4baada52c78c80c4987cc4d3500",
+          "birthday": "2000-09-19",
+          "role": 2,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 20
+        },
+        "name_fields": {
+          "user_id": 20,
+          "login": "tjakubowski",
+          "name_surname": "Tomasz Jakubowski"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 21,
+          "login": "bkoodziej",
+          "name_surname": "Bernadeta Kołodziej",
+          "password": "23fe2cad0945c58f6c2009dbcab52e40",
+          "birthday": "1955-06-26",
+          "role": 2,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 21
+        },
+        "name_fields": {
+          "user_id": 21,
+          "login": "bkoodziej",
+          "name_surname": "Bernadeta Kołodziej"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 22,
+          "login": "smalinowska",
+          "name_surname": "Sylwia Malinowska",
+          "password": "a1a689f6c033c04c7b1ac2f09c7e7c72",
+          "birthday": "1987-08-07",
+          "role": 1,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 22
+        },
+        "name_fields": {
+          "user_id": 22,
+          "login": "smalinowska",
+          "name_surname": "Sylwia Malinowska"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 23,
+          "login": "kmichalska",
+          "name_surname": "Kamila Michalska",
+          "password": "00094ed9f048d205fd60c57cf6d40633",
+          "birthday": "1998-08-19",
+          "role": 1,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 23
+        },
+        "name_fields": {
+          "user_id": 23,
+          "login": "kmichalska",
+          "name_surname": "Kamila Michalska"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 24,
+          "login": "dwojciechowska",
+          "name_surname": "Daniela Wojciechowska",
+          "password": "74a187db517a02ad199c737772207593",
+          "birthday": "1996-02-24",
+          "role": 3,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 24
+        },
+        "name_fields": {
+          "user_id": 24,
+          "login": "dwojciechowska",
+          "name_surname": "Daniela Wojciechowska"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 25,
+          "login": "akrajewski",
+          "name_surname": "Antoni Krajewski",
+          "password": "d1f5d421a9067b9206b462b406b7cf00",
+          "birthday": "1987-10-12",
+          "role": 5,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 25
+        },
+        "name_fields": {
+          "user_id": 25,
+          "login": "akrajewski",
+          "name_surname": "Antoni Krajewski"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 26,
+          "login": "szajac",
+          "name_surname": "Sylwester Zając",
+          "password": "ff59aaf2a3aef0c007fcb7ebc3d9ff47",
+          "birthday": "1976-10-30",
+          "role": 3,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 26
+        },
+        "name_fields": {
+          "user_id": 26,
+          "login": "szajac",
+          "name_surname": "Sylwester Zając"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 27,
+          "login": "nborowski",
+          "name_surname": "Natan Borowski",
+          "password": "e6e889797702d6515a699baf0cfcfa81",
+          "birthday": "1992-12-16",
+          "role": 2,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 27
+        },
+        "name_fields": {
+          "user_id": 27,
+          "login": "nborowski",
+          "name_surname": "Natan Borowski"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 28,
+          "login": "eszymanski",
+          "name_surname": "Eryk Szymański",
+          "password": "569314fc0a2d5505c5115e8c50010cc0",
+          "birthday": "1970-12-01",
+          "role": 1,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 28
+        },
+        "name_fields": {
+          "user_id": 28,
+          "login": "eszymanski",
+          "name_surname": "Eryk Szymański"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 29,
+          "login": "bbaszczyk",
+          "name_surname": "Bianka Błaszczyk",
+          "password": "975a737d4a4b40e71d685e85416c0180",
+          "birthday": "2000-10-12",
+          "role": 5,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 29
+        },
+        "name_fields": {
+          "user_id": 29,
+          "login": "bbaszczyk",
+          "name_surname": "Bianka Błaszczyk"
+        }
+      },
+      {
+        "table": "users",
+        "row": {
+          "user_id": 30,
+          "login": "wgowacki",
+          "name_surname": "Wiesław Głowacki",
+          "password": "c5b30f7106cd25c619794153ccf3f737",
+          "birthday": "1972-09-15",
+          "role": 1,
+          "is_active": 1
+        },
+        "id_fields": {
+          "user_id": 30
+        },
+        "name_fields": {
+          "user_id": 30,
+          "login": "wgowacki",
+          "name_surname": "Wiesław Głowacki"
+        }
+      }
+    ],
+    "signature_hints": {
+      "likely_tables": []
+    }
+  },
+  "destination_map": {
+    "opalino": 991828,
+    "domatowo": 761834,
+    "brudzewo": 234434,
+    "darzlubie": 676323,
+    "celbowo": 741906,
+    "mechowo": 695992,
+    "puck": 140606,
+    "karlinkowo": 707536
+  },
+  "creator": {
+    "table": "users",
+    "row": {
+      "user_id": 2,
+      "login": "tgajewski",
+      "name_surname": "Tymon Gajewski",
+      "birthday": "1991-04-06",
+      "role": 2,
+      "is_active": 1
+    },
+    "id_fields": {
+      "user_id": 2
+    },
+    "name_fields": {
+      "login": "tgajewski",
+      "name_surname": "Tymon Gajewski"
+    }
+  }
+}
