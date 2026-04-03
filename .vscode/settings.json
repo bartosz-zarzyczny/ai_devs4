@@ -3,6 +3,7 @@
         "/^python L15/task\\.py 2>&1 \\| Select-String \"Full route\"$/": {
             "approve": true,
             "matchCommandLine": true
-        }
+        },
+        "printenv": true
     }
 }

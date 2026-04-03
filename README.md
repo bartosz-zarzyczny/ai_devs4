@@ -22,6 +22,7 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L17/README.md](L17/README.md) - zadanie `windpower` (harmonogram turbiny wiatrowej z asynchronicznym API, podpisami unlockCode i limitem 40 s; bonus: palindromiczne lustro czasu/wiatru)
 - [L18/README.md](L18/README.md) - zadanie `domatowo` (odnalezienie partyzanta w ruinach miasta, strategiczny solver z priorytetyzacją wysokich budynków, UI WWW z mapą 11×11)
 - [L19/README.md](L19/README.md) - zadanie `filesystem` (wirtualny filesystem: reset /miasta /osoby /towary, analiza notatek Natana, bonus `/flag` z kodem ASCII FLAG)
+- [L20/README.md](L20/README.md) - zadanie `foodwarehouse` (discovery API magazynu, analiza SQLite, tworzenie zamówień dla miast, UI WWW do inspekcji)
 
 ## Konfiguracja
 
@@ -49,6 +50,7 @@ python -m pip install -r requirements.txt
 ## Ostatnie zmiany (skrót)
 
 - L19: zadanie `filesystem` - parsowanie notatek Natana, zbudowanie drzewka katalogów `/miasta`, `/osoby`, `/towary`, weryfikacja na `/verify`; bonusowa zagadka `/flag` i wartość ASCII `70 76 65 71` (FLAG).
+- L20: zadanie `foodwarehouse` - discovery API magazynu, mapowanie 8 miast na `destination`, generowanie podpisów per miasto przez `signatureGenerator`, flaga główna `{FLG:XXXXXXX}` oraz bonus `{FLG:XXXXXX}` ukryty w rekordach `Vibe Coder`.
 - L18: strategiczny solver zadania `domatowo`; partyzant odnaleziony w bloku H10, ewakuacja zakończona sukcesem; flaga `{FLG:XXXXXXX}`; UI WWW z mapą 11×11 i wizualizacją jednostek.
 - L13: autonomiczny solver zadania `reactor`; robot przeszedł całą mapę 7×5 w 11 krokach bez kolizji; flaga `{FLG:XXXXXXXXX}`; UI WWW z trybem AUTO-PLAY na porcie 8013.
 - L12: agentowa pętla na VM z `cooler.bin`; flaga główna `{FLG:XXXXXXXX}` z `/verify`; bonusowa zagadka `/bin/flaggengenerator schmetterling` → `{FLG:XXXXXXXX}`; UI z kartą bonusu i przyciskiem.
@@ -61,6 +63,32 @@ python -m pip install -r requirements.txt
 - L10: dodano UI WWW dla zadania `drone`, solver z analizą mapy przez vision, weryfikację lotu i zapis odpowiedzi do `verification_result.json`.
 - L17: solver `windpower` mieści się w limicie 40 s, zapisuje harmonogram do `schedule.json`, a bonusowy probe odtwarza ukrytą flagę z palindromicznej sekwencji `unlockCodeGenerator`.
 - L18: solver `domatowo` wykorzystuje stratęgię priorytetu wysokościowego (block3 → school/church → block2), transportery minimalizujące koszty ruchu pieszego, oraz precyzyjną detekcję logów potwierdzających obecność partyzanta.
+
+## L20 — Foodwarehouse (zamowienia magazynu + bonus Vibe Coder)
+
+Krótki opis:
+- Cel: odczytać bazę `SQLite`, ustalić `destination_id` dla wszystkich miast z `food4cities.json`, wygenerować poprawne podpisy przez `signatureGenerator` i utworzyć osobne zamówienia dla każdego miasta.
+- Bonus: rekordy `users` z rolą `Vibe Coder` zawierają poszatkowany komunikat; po złożeniu i dekodowaniu wychodzi dodatkowa flaga.
+
+Najważniejsze pliki:
+- [L20/task.py](L20/task.py) — główny solver z discovery, cache wyników, rate limitingiem i finalnym `done`.
+- [L20/ui_server.py](L20/ui_server.py) — lokalny serwer HTTP z endpointem statusu, discovery i uruchamianiem solvera.
+- [L20/ui.html](L20/ui.html) — panel WWW pokazujący requirements, discovery, stan zamówień, flagę główną i bonus.
+- [L20/verification_result.json](L20/verification_result.json) — odpowiedź huba z flagą główną.
+- [L20/bonus_result.json](L20/bonus_result.json) — zapis odpowiedzi na bonusową zagadkę.
+- [L20/operation_log.jsonl](L20/operation_log.jsonl) — log request/response do API.
+
+Szybkie uruchomienie:
+
+```powershell
+python L20/task.py
+python L20/ui_server.py
+```
+
+Wyniki:
+- Flaga główna: `{FLG:JUSTEATIT}`
+- Flaga bonusowa: `{FLG:VIBEAGENT}`
+- Poprawny twórca zamówień: `creatorID=2`, login `tgajewski`
 
 ## L17 — Windpower (harmonogram turbiny + bonus palindromiczny)
 

@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>L20 Foodwarehouse</title>
+  <style>
+    :root {
+      --bg: #efe4d1;
+      --paper: rgba(255, 249, 238, 0.88);
+      --ink: #1f1a16;
+      --muted: #6d6257;
+      --line: rgba(93, 72, 49, 0.18);
+      --accent: #a3482f;
+      --accent-2: #2b6a57;
+      --shadow: 0 22px 50px rgba(51, 33, 14, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(163, 72, 47, 0.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(43, 106, 87, 0.16), transparent 32%),
+        linear-gradient(180deg, #f7efdf 0%, var(--bg) 100%);
+    }
+
+    main {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      background: var(--paper);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 22px;
+      padding: 22px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 4.6rem);
+      line-height: 0.95;
+      margin: 0 0 14px;
+      letter-spacing: 0.02em;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 62ch;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      cursor: pointer;
+      color: white;
+      font: inherit;
+      background: linear-gradient(135deg, var(--accent), #c86b3f);
+      box-shadow: 0 12px 30px rgba(163, 72, 47, 0.25);
+      transition: transform 120ms ease, opacity 120ms ease;
+    }
+
+    button.secondary {
+      background: linear-gradient(135deg, var(--accent-2), #4f8d76);
+      box-shadow: 0 12px 30px rgba(43, 106, 87, 0.2);
+    }
+
+    button.ghost {
+      background: white;
+      color: var(--ink);
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+    .status-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,0.75), rgba(255,255,255,0.52)),
+        repeating-linear-gradient(-45deg, rgba(93, 72, 49, 0.04), rgba(93, 72, 49, 0.04) 8px, transparent 8px, transparent 16px);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(31, 26, 22, 0.06);
+      color: var(--muted);
+      width: fit-content;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .hero-copy {
+      display: grid;
+      gap: 14px;
+    }
+
+    .flag-strip {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .flag-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .flag-title {
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .flag-value {
+      font-size: 1.1rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      max-height: 460px;
+      overflow: auto;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid var(--line);
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .meta-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+    }
+
+    .meta-label {
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .meta-value {
+      font-size: 1.4rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .grid,
+      .meta,
+      .flag-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <article class="panel">
+        <div class="hero-copy">
+          <div>
+            <h1>Foodwarehouse</h1>
+            <p>Panel do krokowego przejścia przez discovery, analizę bazy i finalne tworzenie zamówień dla wszystkich miast z pliku wejściowego. UI pokazuje też wynik główny i odpowiedź na bonusową zagadkę o Vibe Coderze.</p>
+          </div>
+          <div class="toolbar">
+            <button id="fetch">Pobierz wymagania</button>
+            <button id="discovery" class="secondary">Uruchom discovery</button>
+            <button id="run">Uruchom solver</button>
+            <button id="bonus" class="secondary">Odkryj bonus</button>
+            <button id="refresh" class="ghost">Odśwież status</button>
+          </div>
+          <div class="flag-strip">
+            <div class="flag-card">
+              <div class="flag-title">Flaga główna</div>
+              <div class="flag-value" id="main-flag">Brak danych</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-title">Bonus</div>
+              <div class="flag-value" id="bonus-flag">Brak danych</div>
+            </div>
+          </div>
+        </div>
+      </article>
+      <article class="panel status-card">
+        <div>
+          <div class="status-pill" id="status">Status: bezczynny</div>
+          <div class="meta">
+            <div class="meta-box">
+              <div class="meta-label">Miasta</div>
+              <div class="meta-value" id="cities-count">0</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Discovery</div>
+              <div class="meta-value" id="discovery-state">brak</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Weryfikacja</div>
+              <div class="meta-value" id="verification-state">brak</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Tworca zamowien</div>
+              <div class="meta-value" id="creator-login">brak</div>
+            </div>
+          </div>
+        </div>
+        <p>Solver korzysta z cache discovery, ale nadal respektuje rate limit API. Publiczny plik wejściowy można pobrać bez klucza, reszta endpointów wymaga `AI_DEVS_4_API_KEY`.</p>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Requirements</h2>
+        <pre id="requirements">Brak danych</pre>
+      </article>
+      <article class="panel">
+        <h2>Discovery</h2>
+        <pre id="discovery-out">Brak danych</pre>
+      </article>
+      <article class="panel">
+        <h2>Orders</h2>
+        <pre id="orders-out">Brak danych</pre>
+      </article>
+      <article class="panel">
+        <h2>Verification</h2>
+        <pre id="verification-out">Brak danych</pre>
+      </article>
+      <article class="panel">
+        <h2>Bonus</h2>
+        <pre id="bonus-out">Brak danych</pre>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const requirementsEl = document.getElementById('requirements');
+    const discoveryEl = document.getElementById('discovery-out');
+    const ordersEl = document.getElementById('orders-out');
+    const verificationEl = document.getElementById('verification-out');
+    const bonusEl = document.getElementById('bonus-out');
+    const statusEl = document.getElementById('status');
+    const citiesCountEl = document.getElementById('cities-count');
+    const discoveryStateEl = document.getElementById('discovery-state');
+    const verificationStateEl = document.getElementById('verification-state');
+    const creatorLoginEl = document.getElementById('creator-login');
+    const mainFlagEl = document.getElementById('main-flag');
+    const bonusFlagEl = document.getElementById('bonus-flag');
+    const buttons = Array.from(document.querySelectorAll('button'));
+
+    function pretty(value) {
+      if (value === null || value === undefined) {
+        return 'Brak danych';
+      }
+      return JSON.stringify(value, null, 2);
+    }
+
+    function setBusy(isBusy, label) {
+      buttons.forEach((button) => { button.disabled = isBusy; });
+      statusEl.textContent = label;
+    }
+
+    function updateStats(data) {
+      const cities = data.requirements && typeof data.requirements === 'object' ? Object.keys(data.requirements) : [];
+      citiesCountEl.textContent = String(cities.length);
+      discoveryStateEl.textContent = data.discovery ? 'gotowe' : 'brak';
+      verificationStateEl.textContent = data.verification ? 'gotowe' : 'brak';
+      creatorLoginEl.textContent = data.discovery && data.discovery.creator && data.discovery.creator.row ? data.discovery.creator.row.login || 'brak' : 'brak';
+      mainFlagEl.textContent = data.verification && data.verification.message ? data.verification.message : 'Brak danych';
+      bonusFlagEl.textContent = data.bonus && data.bonus.message ? data.bonus.message : 'Brak danych';
+    }
+
+    async function refresh() {
+      const response = await fetch('/api/status');
+      const data = await response.json();
+      requirementsEl.textContent = pretty(data.requirements);
+      discoveryEl.textContent = pretty(data.discovery);
+      ordersEl.textContent = pretty(data.orders);
+      verificationEl.textContent = pretty(data.verification);
+      bonusEl.textContent = pretty(data.bonus);
+      updateStats(data);
+    }
+
+    async function postAndRefresh(url, label) {
+      setBusy(true, label);
+      try {
+        const response = await fetch(url, { method: 'POST' });
+        const data = await response.json();
+        if (!response.ok) {
+          statusEl.textContent = `Błąd: ${data.error || 'nieznany'}`;
+        } else {
+          statusEl.textContent = 'Zakończono';
+        }
+        await refresh();
+      } catch (error) {
+        statusEl.textContent = `Błąd: ${error.message}`;
+      } finally {
+        setBusy(false, statusEl.textContent);
+      }
+    }
+
+    document.getElementById('fetch').addEventListener('click', () => postAndRefresh('/api/fetch', 'Pobieranie wymagań...'));
+    document.getElementById('discovery').addEventListener('click', () => postAndRefresh('/api/discovery', 'Discovery w toku...'));
+    document.getElementById('run').addEventListener('click', () => postAndRefresh('/api/run', 'Solver uruchomiony...'));
+    document.getElementById('bonus').addEventListener('click', () => postAndRefresh('/api/bonus', 'Odkrywanie bonusu...'));
+    document.getElementById('refresh').addEventListener('click', refresh);
+    refresh();
+  </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run L20 UI",
+			"type": "shell",
+			"command": "/Users/bartek/Documents/GitHub/ai_devs4/.venv/bin/python",
+			"args": [
+				"L20/ui_server.py"
+			],
+			"isBackground": true,
+			"group": "build"
+		}
+	]
+}
