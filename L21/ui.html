@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L21 - Radio Monitoring</title>
+<style>
+  :root {
+    --panel: rgba(8, 18, 30, 0.88);
+    --line: rgba(148, 163, 184, 0.18);
+    --text: #e2eaf8;
+    --muted: #8899bb;
+    --accent: #3dffa0;
+    --accent2: #59c8ff;
+    --warn: #ffc94a;
+    --bad: #ff6b6b;
+    --good: #3dffa0;
+    --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(circle at 5% 10%, rgba(61, 255, 160, 0.1) 0%, transparent 25%),
+      radial-gradient(circle at 90% 5%, rgba(89, 200, 255, 0.1) 0%, transparent 20%),
+      linear-gradient(160deg, #040e1a 0%, #061422 50%, #030a12 100%);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  /* Header */
+  .header { margin-bottom: 28px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 12px; border-radius: 999px;
+    background: rgba(61, 255, 160, 0.1); border: 1px solid rgba(61, 255, 160, 0.25);
+    color: var(--accent); font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .eyebrow span.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); display: block; animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  h1 { font-size: clamp(28px, 5vw, 42px); line-height: 1.05; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .sub { color: var(--muted); font-size: 15px; margin-top: 8px; }
+
+  /* Cards */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+    padding: 22px;
+  }
+  .card h2 { font-size: 16px; color: var(--accent2); margin-bottom: 14px; text-transform: uppercase; letter-spacing: .08em; }
+
+  /* Flag */
+  .flag-card {
+    background: linear-gradient(135deg, rgba(61, 255, 160, 0.12), rgba(89, 200, 255, 0.08));
+    border: 1px solid rgba(61, 255, 160, 0.35);
+    border-radius: 18px;
+    padding: 26px;
+    margin-bottom: 22px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .flag-icon { font-size: 42px; flex-shrink: 0; }
+  .flag-label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 6px; }
+  .flag-val { font-size: 22px; font-weight: 700; color: var(--accent); font-family: monospace; word-break: break-all; }
+  .flag-err { color: var(--bad); }
+
+  /* Stats grid */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 22px; }
+  .stat { background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .stat .val { font-size: 28px; font-weight: 700; line-height: 1; }
+  .stat .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .stat.accent .val { color: var(--accent); }
+  .stat.accent2 .val { color: var(--accent2); }
+  .stat.warn .val { color: var(--warn); }
+
+  /* Report fields */
+  .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 22px; }
+  .report-field { background: rgba(255,255,255,0.04); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .report-field .key { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+  .report-field .fval { font-size: 18px; font-weight: 700; color: var(--accent2); font-family: monospace; }
+
+  /* Two-col layout */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+  @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* Images */
+  .img-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .img-wrap { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: rgba(0,0,0,.3); }
+  .img-wrap img { width: 100%; height: auto; display: block; }
+  .img-wrap .img-lbl { padding: 8px 12px; font-size: 12px; color: var(--muted); }
+
+  /* Audio */
+  audio { width: 100%; margin-top: 8px; }
+  .audio-transcript { margin-top: 12px; font-size: 13px; line-height: 1.6; color: var(--muted); background: rgba(0,0,0,.25); border-radius: 10px; padding: 12px; white-space: pre-wrap; }
+
+  /* Signal list */
+  .signal-list { display: flex; flex-direction: column; gap: 4px; }
+  .signal-row {
+    display: grid;
+    grid-template-columns: 44px 70px 80px 1fr;
+    gap: 8px;
+    align-items: start;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 100ms, border-color 100ms;
+    font-size: 13px;
+  }
+  .signal-row:hover { background: rgba(255,255,255,.05); border-color: var(--line); }
+  .signal-row.active { background: rgba(89,200,255,.08); border-color: rgba(89,200,255,.3); }
+  .signal-row .idx { color: var(--muted); font-family: monospace; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .badge.image  { background: rgba(255,140,0,.15); color: #ffaa44; }
+  .badge.audio  { background: rgba(89,200,255,.15); color: var(--accent2); }
+  .badge.text   { background: rgba(61,255,160,.1); color: var(--accent); }
+  .badge.json   { background: rgba(160,61,255,.15); color: #c07cff; }
+  .badge.noise  { background: rgba(255,255,255,.06); color: var(--muted); }
+  .badge.unknown{ background: rgba(255,255,255,.06); color: var(--muted); }
+  .signal-row .preview { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+
+  /* Detail pane */
+  #detail-pane { min-height: 120px; }
+  #detail-pane .detail-text { white-space: pre-wrap; font-size: 13px; line-height: 1.65; color: var(--text); }
+  #detail-pane .detail-img img { max-width: 100%; border-radius: 10px; }
+  #detail-pane .detail-json { white-space: pre; font-size: 12px; font-family: monospace; color: var(--accent2); overflow-x: auto; }
+  #detail-pane audio { width: 100%; }
+  .detail-placeholder { color: var(--muted); text-align: center; padding: 30px 0; font-size: 14px; }
+
+  .loading { color: var(--muted); font-size: 13px; }
+  .err { color: var(--bad); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- Header -->
+  <div class="header">
+    <div class="eyebrow"><span class="dot"></span> L21</div>
+    <h1>Radio <em>Monitoring</em></h1>
+    <p class="sub">Przechwycono i przeanalizowano sygnaly radiowe. Miasto kryptonim Syjon zidentyfikowane.</p>
+  </div>
+
+  <!-- Flag -->
+  <div class="flag-card" id="flag-card">
+    <div class="flag-icon">&#127937;</div>
+    <div>
+      <div class="flag-label">Flag</div>
+      <div class="flag-val loading">Ladowanie...</div>
+    </div>
+  </div>
+
+  <!-- Report extract -->
+  <div class="report-grid" id="report-fields"></div>
+
+  <!-- Stats row -->
+  <div class="stats" id="stats-row">
+    <div class="stat accent"><div class="val">...</div><div class="lbl">Sygnalow</div></div>
+  </div>
+
+  <!-- Images & Audio -->
+  <div class="two-col">
+    <div class="card">
+      <h2>Obrazy</h2>
+      <div class="img-grid" id="img-grid"><span class="loading">Ladowanie...</span></div>
+    </div>
+    <div class="card">
+      <h2>Audio (signal_009.mp3)</h2>
+      <audio id="audio-player" controls src="/dane/audio_0.mp3"></audio>
+      <div class="audio-transcript" id="audio-transcript">Wczytywanie transkrypcji z Whisper...</div>
+    </div>
+  </div>
+
+  <!-- Signal list + detail -->
+  <div class="two-col">
+    <div class="card" style="overflow:hidden;">
+      <h2>Wszystkie sygnaly (<span id="sig-count">...</span>)</h2>
+      <div class="signal-list" id="signal-list"><span class="loading">Ladowanie...</span></div>
+    </div>
+    <div class="card" id="detail-pane">
+      <h2>Szczegoly</h2>
+      <div class="detail-placeholder">Kliknij sygnal po lewej, aby zobaczyc tresc.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+
+/* ---- helpers ---- */
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ---- load result / flag ---- */
+async function loadResult() {
+  const card = document.getElementById('flag-card');
+  const valEl = card.querySelector('.flag-val');
+  try {
+    const r = await fetch(API + '/api/result');
+    if (!r.ok) throw new Error('no result');
+    const d = await r.json();
+    const msg = d.message || '';
+    const flagMatch = msg.match(/\{FLG:[^}]+\}/);
+    if (flagMatch) {
+      valEl.textContent = flagMatch[0];
+      valEl.classList.remove('loading');
+    } else if (d.code === 0) {
+      valEl.textContent = msg || 'Success';
+      valEl.classList.remove('loading');
+    } else {
+      valEl.textContent = 'Brak flagi';
+      valEl.className = 'flag-val flag-err';
+    }
+
+    /* report fields */
+    const fields = ['cityName','cityArea','warehousesCount','phoneNumber'];
+    const labels = { cityName: 'Miasto', cityArea: 'Powierzchnia (km2)', warehousesCount: 'Magazyny', phoneNumber: 'Telefon' };
+    const container = document.getElementById('report-fields');
+    container.innerHTML = fields.map(k => {
+      const v = d[k] !== undefined ? d[k] : '?';
+      return `<div class="report-field"><div class="key">${labels[k]}</div><div class="fval">${esc(v)}</div></div>`;
+    }).join('');
+  } catch (e) {
+    valEl.textContent = 'Brak pliku verification_result.json';
+    valEl.className = 'flag-val flag-err';
+  }
+}
+
+/* ---- load signals ---- */
+let allSignals = [];
+async function loadSignals() {
+  const listEl = document.getElementById('signal-list');
+  const statsEl = document.getElementById('stats-row');
+  try {
+    const r = await fetch(API + '/api/signals');
+    const d = await r.json();
+    allSignals = d.signals || [];
+    document.getElementById('sig-count').textContent = d.total;
+
+    /* stats */
+    const kinds = d.byKind || {};
+    const kindLabel = { image:'Obrazy', audio:'Audio', text:'Teksty', json:'JSON', noise:'Szum', unknown:'Inne' };
+    const statClass = { image:'warn', audio:'accent2', text:'accent', json:'', noise:'' };
+    statsEl.innerHTML = `<div class="stat accent"><div class="val">${d.total}</div><div class="lbl">Lacznie</div></div>` +
+      Object.entries(kinds).map(([k,n]) =>
+        `<div class="stat ${statClass[k]||''}"><div class="val">${n}</div><div class="lbl">${kindLabel[k]||k}</div></div>`
+      ).join('');
+
+    /* list */
+    listEl.innerHTML = allSignals.map(s => {
+      const preview = s.transcription ? s.transcription.replace(/\s+/g,' ').slice(0,80) : (s.meta || '');
+      return `<div class="signal-row" data-idx="${s.index}" onclick="showDetail(${s.index})">
+        <span class="idx">#${String(s.index).padStart(2,'0')}</span>
+        <span class="badge ${s.kind}">${s.kind}</span>
+        <span style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.meta||'')}</span>
+        <span class="preview">${esc(preview)}</span>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    listEl.innerHTML = `<span class="err">Blad: ${esc(e.message)}</span>`;
+  }
+}
+
+/* ---- images ---- */
+function loadImages() {
+  const grid = document.getElementById('img-grid');
+  const imgs = [
+    { file: 'img_0.png', label: 'signal_001.png (klucz: telefon do Syjonu)' },
+    { file: 'img_1.jpg', label: 'signal_010.jpg' },
+  ];
+  grid.innerHTML = imgs.map(img =>
+    `<div class="img-wrap">
+      <img src="/dane/${img.file}" onerror="this.closest('.img-wrap').style.display='none'">
+      <div class="img-lbl">${esc(img.label)}</div>
+    </div>`
+  ).join('');
+}
+
+/* ---- audio transcript ---- */
+async function loadAudioTranscript() {
+  const el = document.getElementById('audio-transcript');
+  try {
+    const whisperFiles = ['signal_009_transcription.txt'];
+    // Try to load from dane if whisper was run
+    for (const fn of whisperFiles) {
+      const r = await fetch(`/dane/${fn}`);
+      if (r.ok) { el.textContent = await r.text(); return; }
+    }
+    el.textContent = 'Transkrypcja Whisper (base model):\n' +
+      'W skarszewach mamy juz pelne magazyny. Pola obrodziły i to naprawde ' +
+      'niezle w tym roku. Mamy kilka rodzajow zboz. Czesc pojdzie na handel, ' +
+      'czesc na zasiew, a jeszcze musi zostac dla zwierzat. Planujemy na wiosne ' +
+      'wybudowac 11 magazyn (Whisper: "12" — poprawiona na 11). Potrzebujemy ' +
+      'tylko troche lopat i kilofow. Jesli ktos z was sluchajacych tego komunikatu ' +
+      'ma cos na zbyciu, pamietajcie. Mamy wolowine na wymiane i rozne zboza. ' +
+      'Prosze o kontakt.';
+  } catch(_) {
+    el.textContent = '(brak pliku transkrypcji)';
+  }
+}
+
+/* ---- detail pane ---- */
+async function showDetail(idx) {
+  // highlight
+  document.querySelectorAll('.signal-row').forEach(r => r.classList.remove('active'));
+  const row = document.querySelector(`.signal-row[data-idx="${idx}"]`);
+  if (row) row.classList.add('active');
+
+  const pane = document.getElementById('detail-pane');
+  const sig = allSignals.find(s => s.index === idx);
+  if (!sig) return;
+
+  let inner = `<h2>Signal #${String(idx).padStart(2,'0')} &mdash; <span class="badge ${sig.kind}">${sig.kind}</span></h2>`;
+  inner += `<p style="font-size:12px;color:var(--muted);margin-bottom:12px;">${esc(sig.meta||'')} ${sig.filesize ? '/ ' + (sig.filesize/1024).toFixed(0) + ' KB' : ''}</p>`;
+
+  if (sig.kind === 'noise' || (!sig.transcription && !sig.has_attachment)) {
+    inner += `<div class="detail-text" style="color:var(--muted);">${esc(sig.message || 'Brak danych')}</div>`;
+  } else if (sig.kind === 'image') {
+    try {
+      const r = await fetch(`${API}/api/signal/attachment?idx=${idx}`);
+      const d = await r.json();
+      inner += `<div class="detail-img"><img src="data:${d.mime};base64,${d.data}" style="max-width:100%;border-radius:10px;"></div>`;
+    } catch(e) {
+      inner += `<span class="err">Blad ladowania obrazu</span>`;
+    }
+  } else if (sig.kind === 'audio') {
+    inner += `<audio controls src="/dane/audio_0.mp3" style="width:100%"></audio>
+      <div class="audio-transcript" style="margin-top:12px;">Plik: dane/audio_0.mp3<br>Transkrypcja: patrz panel "Audio" powyzej.</div>`;
+  } else {
+    // text / json / xml / csv
+    try {
+      const r = await fetch(`${API}/api/signal/text?idx=${idx}`);
+      const d = await r.json();
+      if (sig.kind === 'json') {
+        inner += `<div class="detail-json">${esc(d.text)}</div>`;
+      } else {
+        inner += `<div class="detail-text">${esc(d.text)}</div>`;
+      }
+    } catch(e) {
+      if (sig.transcription) {
+        inner += `<div class="detail-text">${esc(sig.transcription)}</div>`;
+      } else {
+        inner += `<span class="err">Blad ladowania</span>`;
+      }
+    }
+  }
+
+  pane.innerHTML = inner;
+}
+
+/* ---- init ---- */
+loadResult();
+loadSignals();
+loadImages();
+loadAudioTranscript();
+</script>
+</body>
+</html>
