@@ -161,6 +161,12 @@
     white-space: pre-wrap; word-break: break-word; display: none;
   }
   .run-log.visible { display: block; }
+
+  .bonus-card { margin-bottom: 22px; }
+  .bonus-note { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 12px; }
+  .bonus-actions { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .bonus-link { color: var(--accent2); text-decoration: none; font-size: 13px; }
+  .bonus-link:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -169,7 +175,7 @@
   <div class="header">
     <div class="eyebrow"><span class="dot"></span> L21</div>
     <h1>Radio <em>Monitoring</em></h1>
-    <p class="sub">Przechwycono i przeanalizowano sygnaly radiowe. Miasto kryptonim Syjon zidentyfikowane.</p>
+    <p class="sub">Przechwycono i przeanalizowano sygnaly radiowe. UI obsluguje glowny pipeline oraz bonus z ukrytej strony /deeper.</p>
   </div>
 
   <!-- Flag -->
@@ -187,9 +193,21 @@
     <div class="run-controls">
       <button class="run-btn" id="btn-replay" onclick="runPipeline('replay')">&#9654; Replay (z pliku)</button>
       <button class="run-btn run-btn-warn" id="btn-full" onclick="runPipeline('full')">&#9654; Nowa sesja (live)</button>
+      <button class="run-btn" id="btn-bonus" onclick="runPipeline('bonus')">&#9654; Szukaj bonusu</button>
       <span class="run-status" id="run-status-badge"></span>
     </div>
     <pre class="run-log" id="run-log"></pre>
+  </div>
+
+  <div class="card bonus-card">
+    <h2>Bonus /deeper</h2>
+    <div class="bonus-note">Wskazowka z sygnalu Morse'a prowadzi do ukrytej strony <strong>/deeper</strong>. UI moze uruchomic automatyczne szukanie hasla i zapisac wynik do bonus_result.json.</div>
+    <div class="bonus-actions">
+      <a class="bonus-link" href="https://hub.ag3nts.org/deeper" target="_blank" rel="noreferrer">Otworz https://hub.ag3nts.org/deeper</a>
+    </div>
+    <div class="report-grid" id="bonus-fields">
+      <div class="report-field"><div class="key">Status</div><div class="fval">Brak wyniku</div></div>
+    </div>
   </div>
 
   <!-- Report extract -->
@@ -232,6 +250,13 @@ const API = '';
 /* ---- helpers ---- */
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function setRunButtonsDisabled(disabled) {
+  ['btn-replay', 'btn-full', 'btn-bonus'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = disabled;
+  });
 }
 
 /* ---- load result / flag ---- */
@@ -304,12 +329,33 @@ async function loadSignals() {
   }
 }
 
+async function loadBonus() {
+  const container = document.getElementById('bonus-fields');
+  try {
+    const r = await fetch(API + '/api/bonus');
+    if (!r.ok) throw new Error('no bonus');
+    const d = await r.json();
+    const hint = d.hintDecoded || 'MUSISZ SPRAWDZIC / DEEPER';
+    const fields = [
+      ['Wskazowka', hint],
+      ['Haslo', d.password || 'nie znaleziono'],
+      ['Zakodowany cel', d.encodedTarget || 'nie znaleziono'],
+      ['Flaga bonusowa', d.flag || 'brak bonus_result.json'],
+    ];
+    container.innerHTML = fields.map(([key, value]) =>
+      `<div class="report-field"><div class="key">${esc(key)}</div><div class="fval">${esc(value)}</div></div>`
+    ).join('');
+  } catch (e) {
+    container.innerHTML = `<div class="report-field"><div class="key">Blad</div><div class="fval">${esc(e.message)}</div></div>`;
+  }
+}
+
 /* ---- images ---- */
 function loadImages() {
   const grid = document.getElementById('img-grid');
   const imgs = [
-    { file: 'img_0.png', label: 'signal_001.png (klucz: telefon do Syjonu)' },
-    { file: 'img_1.jpg', label: 'signal_010.jpg' },
+    { file: 'img_0.jpg', label: 'signal_023.jpg (meme / szum)' },
+    { file: 'img_1.png', label: 'signal_024.png (karteczka z telefonem)' },
   ];
   grid.innerHTML = imgs.map(img =>
     `<div class="img-wrap">
@@ -396,8 +442,7 @@ let _pollTimer = null;
 let _logOffset = 0;
 
 async function runPipeline(mode) {
-  document.getElementById('btn-replay').disabled = true;
-  document.getElementById('btn-full').disabled = true;
+  setRunButtonsDisabled(true);
   const logEl = document.getElementById('run-log');
   logEl.classList.add('visible');
   logEl.textContent = '';
@@ -412,17 +457,15 @@ async function runPipeline(mode) {
     if (!r.ok) {
       const d = await r.json().catch(() => ({}));
       setRunStatus('done-err', 'Blad: ' + (d.error || r.status));
-      document.getElementById('btn-replay').disabled = false;
-      document.getElementById('btn-full').disabled = false;
+      setRunButtonsDisabled(false);
       return;
     }
-    setRunStatus('running', 'Tryb: ' + mode + ' — uruchomiono');
+    setRunStatus('running', 'Tryb: ' + mode + ' - uruchomiono');
     _logOffset = 0;
     pollLog();
   } catch (e) {
     setRunStatus('done-err', 'Blad sieci: ' + e.message);
-    document.getElementById('btn-replay').disabled = false;
-    document.getElementById('btn-full').disabled = false;
+    setRunButtonsDisabled(false);
   }
 }
 
@@ -446,9 +489,8 @@ async function pollLog() {
     if (d.done) {
       const ok = d.exitCode === 0;
       setRunStatus(ok ? 'done-ok' : 'done-err', ok ? 'Gotowe (kod 0)' : 'Blad (kod ' + d.exitCode + ')');
-      document.getElementById('btn-replay').disabled = false;
-      document.getElementById('btn-full').disabled = false;
-      if (ok) { setTimeout(() => { loadResult(); loadSignals(); }, 800); }
+      setRunButtonsDisabled(false);
+      if (ok) { setTimeout(() => { loadResult(); loadSignals(); loadBonus(); }, 800); }
     } else {
       _pollTimer = setTimeout(pollLog, 800);
     }
@@ -460,6 +502,7 @@ async function pollLog() {
 /* ---- init ---- */
 loadResult();
 loadSignals();
+loadBonus();
 loadImages();
 loadAudioTranscript();
 </script>

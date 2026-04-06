@@ -12,6 +12,30 @@ Odpowiedź wysyłamy na: `POST https://hub.ag3nts.org/verify`
 FLAG: {FLG:XXXXXXXXXX}
 ```
 
+## Bonus
+
+Bonus prowadzi przez ukryta strone `https://hub.ag3nts.org/deeper`, do ktorej naprowadza sygnal Morse'a:
+
+```text
+MUSISZ SPRAWDZIC / DEEPER
+```
+
+Automatyczny solver bonusu:
+- znajduje wskazowke w transkrypcjach Morse'a,
+- otwiera `/deeper`,
+- brute-force'uje haslo znak po znaku przez `/encoder_deeper`, korzystajac z pola `correct`,
+- zapisuje wynik do `bonus_result.json`.
+
+Wynik bonusu:
+
+```json
+{
+  "password": "DIWBU",
+  "encodedTarget": "FLAGA",
+  "flag": "{FLG:XXXXXXXXXX}"
+}
+```
+
 Poprawna odpowiedź:
 ```json
 {
@@ -51,8 +75,8 @@ Końcowy payload:
 ### Phase 0 — Bootstrap L21
 
 - Folder `L21/` (pusty — nic do re-użycia)
-- Tworzone pliki: `task.py`, `README.md`
-- Brak UI server (pipeline jest sekwencyjny i samowystarczalny)
+- Tworzone pliki: `task.py`, `README.md`, `ui_server.py`, `ui.html`
+- UI server sluzy do inspekcji sygnalow, uruchamiania glownego pipeline oraz wyszukiwania bonusu
 
 ---
 
@@ -92,7 +116,7 @@ Dla każdej odpowiedzi z pętli:
 
 ### Phase 3 — Ekstrakcja przez LLM
 
-5. Wszystkie `gathered_texts[]` + zseriializowane `gathered_json[]` → **jeden prompt** do **`z-ai/glm-4.5-air:free`** (darmowy model Z.ai na OpenRouter, $0/M tokenów, 131K kontekst) przez OpenRouter  
+5. Wszystkie `gathered_texts[]` + zseriializowane `gathered_json[]` → **jeden prompt** do **`openai/gpt-oss-120b:free`** przez OpenRouter  
    Wymagany JSON odpowiedzi:
    ```json
    {
@@ -102,9 +126,16 @@ Dla każdej odpowiedzi z pętli:
      "phoneNumber": "..."
    }
    ```
-6. Jeśli `pending_images[]` niepusty → dodatkowe wywołanie `openai/gpt-4o` (vision) per obraz; scalaj znalezione pola
-   > Uwaga: `z-ai/glm-4.5-air:free` nie obsługuje obrazów — do analizy wizualnej konieczny model vision (np. `z-ai/glm-4.6v` lub `openai/gpt-4o`)
+  6. Jeśli `pending_images[]` niepusty → dodatkowe wywołanie `google/gemma-3-27b-it:free` (vision) per obraz; scalaj znalezione pola
 7. Formatowanie `cityArea`: `f"{round(float(v), 2):.2f}"` — gwarantuje dokładnie 2 miejsca po przecinku i prawdziwe zaokrąglenie
+
+  ### Phase 5 — Bonus /deeper
+
+  10. Zlokalizuj wskazowke Morse'a: `MUSISZ SPRAWDZIC / DEEPER`
+  11. Otworz ukryta strone `https://hub.ag3nts.org/deeper`
+  12. Odpytuj `POST https://hub.ag3nts.org/encoder_deeper` z kolejnymi prefiksami hasla
+  13. Dla kazdej pozycji wybieraj litere, dla ktorej backend zwraca index w polu `correct`
+  14. Zapisz wynik do `bonus_result.json`
 
 ---
 
@@ -124,10 +155,24 @@ python L21/task.py
 # Replay z zapisanej sesji (bez nowych wywolan API)
 python L21/task.py --replay
 
+# Bonus: ukryta strona /deeper
+python L21/task.py --bonus
+
 # UI — przegladarka do inspekcji sygnalow i wynikow
 python L21/ui_server.py
 # otworz http://localhost:8082/ui.html
+
+# opcjonalnie wymus konkretny port
+$env:PORT = "8083"
+python L21/ui_server.py
 ```
+
+W UI dostepne sa trzy akcje:
+- `Replay (z pliku)`
+- `Nowa sesja (live)`
+- `Szukaj bonusu`
+
+Jesli `8082` jest zajety, serwer automatycznie przejdzie na kolejny wolny port i wypisze docelowy adres w konsoli.
 
 Pliki wyjsciowe:
 
@@ -137,6 +182,7 @@ Pliki wyjsciowe:
 | `dane/` | zdekodowane pliki (obrazy, audio, JSON, CSV, XML) |
 | `dane/64/` | surowe dane base64 |
 | `verification_result.json` | odpowiedz huba po `transmit` |
+| `bonus_result.json` | wynik bonusu z `/deeper` |
 
 ---
 

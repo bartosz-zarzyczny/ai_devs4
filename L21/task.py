@@ -6,6 +6,7 @@ Usage:
     python L21/task.py           # full run: start session, listen, analyse, transmit
     python L21/task.py --replay  # re-analyse from saved session_raw.jsonl (no API calls)
     python L21/task.py --listen  # only collect data, skip LLM + transmit
+    python L21/task.py --bonus   # solve the hidden /deeper bonus puzzle
 """
 
 from __future__ import annotations
@@ -47,6 +48,12 @@ INTER_REQUEST_SLEEP = 1.0  # seconds between listen calls
 DANE_DIR = L21_DIR / "dane"
 SESSION_RAW_FILE = L21_DIR / "session_raw.jsonl"
 RESULT_FILE = L21_DIR / "verification_result.json"
+BONUS_RESULT_FILE = L21_DIR / "bonus_result.json"
+
+DEEPER_URL = "https://hub.ag3nts.org/deeper"
+DEEPER_ENCODER_URL = "https://hub.ag3nts.org/encoder_deeper"
+BONUS_MAX_PASSWORD_LEN = 32
+BONUS_PROBE_SLEEP = 0.35
 
 # ---------------------------------------------------------------------------
 # Hub helpers
@@ -553,6 +560,100 @@ def format_report(extracted: dict) -> dict:
     }
 
 
+def find_bonus_hint(signals: list[dict]) -> tuple[int | None, str | None]:
+    for idx, resp in enumerate(signals, start=1):
+        text = str(resp.get("transcription", "") or "").strip()
+        if not text:
+            continue
+        decoded = _decode_morse(text)
+        if decoded and "DEEPER" in decoded.upper():
+            return idx, decoded
+
+    for path in sorted(DANE_DIR.glob("signal_*_transcription.txt")):
+        text = path.read_text(encoding="utf-8")
+        decoded = _decode_morse(text)
+        if decoded and "DEEPER" in decoded.upper():
+            match = re.search(r"signal_(\d{3})_transcription\.txt$", path.name)
+            idx = int(match.group(1)) if match else None
+            return idx, decoded
+
+    return None, None
+
+
+def _probe_deeper(session: requests.Session, text: str) -> dict:
+    while True:
+        resp = session.post(DEEPER_ENCODER_URL, json={"text": text}, timeout=30)
+        if resp.status_code == 429:
+            print("[bonus] Rate limited by /encoder_deeper, sleeping 3.2s...")
+            time.sleep(3.2)
+            continue
+        resp.raise_for_status()
+        return resp.json()
+
+
+def solve_bonus(signals: list[dict] | None = None) -> dict:
+    if signals is None:
+        if SESSION_RAW_FILE.exists():
+            signals = load_signals_from_file()
+        else:
+            signals = []
+
+    hint_index, hint_decoded = find_bonus_hint(signals)
+    if not hint_decoded:
+        raise RuntimeError("Could not find the Morse clue with DEEPER in saved signals/dane files.")
+
+    print(f"[bonus] Morse clue found in signal_{hint_index:03d}: {hint_decoded}" if hint_index else f"[bonus] Morse clue: {hint_decoded}")
+    print(f"[bonus] Opening hidden page: {DEEPER_URL}")
+
+    session = requests.Session()
+    page = session.get(DEEPER_URL, timeout=30)
+    page.raise_for_status()
+
+    password = ""
+    final_probe: dict | None = None
+
+    for position in range(BONUS_MAX_PASSWORD_LEN):
+        matched = False
+        for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+            candidate = password + letter
+            probe = _probe_deeper(session, candidate)
+            correct = set(probe.get("correct") or [])
+            print(f"[bonus] probe={candidate!r} encoded={probe.get('encoded', '')!r} correct={sorted(correct)}")
+            if position in correct:
+                password = candidate
+                final_probe = probe
+                matched = True
+                print(f"[bonus] position {position} -> {letter}")
+                break
+            time.sleep(BONUS_PROBE_SLEEP)
+
+        if final_probe and final_probe.get("flag"):
+            break
+        if not matched:
+            raise RuntimeError(f"Could not determine bonus password character at position {position}. Partial password={password!r}")
+
+    if not final_probe or not final_probe.get("flag"):
+        final_probe = _probe_deeper(session, password)
+
+    flag = final_probe.get("flag") if final_probe else None
+    if not flag:
+        raise RuntimeError(f"Bonus password {password!r} did not return a flag.")
+
+    result = {
+        "pageUrl": DEEPER_URL,
+        "encoderUrl": DEEPER_ENCODER_URL,
+        "hintSignalIndex": hint_index,
+        "hintDecoded": hint_decoded,
+        "password": password,
+        "encodedTarget": final_probe.get("encoded"),
+        "flag": flag,
+    }
+    BONUS_RESULT_FILE.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"[bonus] bonus_result.json saved: {BONUS_RESULT_FILE}")
+    print(f"[bonus] Result: {result}")
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Main pipeline
 # ---------------------------------------------------------------------------
@@ -612,6 +713,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="L21 radiomonitoring solver")
     parser.add_argument("--replay", action="store_true", help="Re-analyse saved session_raw.jsonl without new API calls")
     parser.add_argument("--listen", action="store_true", help="Only collect signals, skip LLM and transmit")
+    parser.add_argument("--bonus", action="store_true", help="Solve the hidden /deeper bonus puzzle and save bonus_result.json")
     args = parser.parse_args()
 
-    run(replay=args.replay, listen_only=args.listen)
+    if args.bonus:
+        solve_bonus()
+    else:
+        run(replay=args.replay, listen_only=args.listen)

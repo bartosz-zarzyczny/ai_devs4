@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import errno
 import http.server
 import json
 import mimetypes
@@ -12,12 +13,17 @@ import threading
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
-PORT = int(os.environ.get("PORT", "8082"))
+PORT_ENV = os.environ.get("PORT")
+PORT = int(PORT_ENV or "8082")
+PORT_FALLBACK_SPAN = 10
 
 L21_DIR = Path(__file__).resolve().parent
 DANE_DIR = L21_DIR / "dane"
 JSONL_PATH = L21_DIR / "session_raw.jsonl"
 RESULT_PATH = L21_DIR / "verification_result.json"
+BONUS_RESULT_PATH = L21_DIR / "bonus_result.json"
+BONUS_PAGE_URL = "https://hub.ag3nts.org/deeper"
+BONUS_HINT = "MUSISZ SPRAWDZIC / DEEPER"
 
 os.chdir(L21_DIR)
 
@@ -38,6 +44,8 @@ def _run_pipeline(mode: str) -> None:
         cmd.append("--replay")
     elif mode == "listen":
         cmd.append("--listen")
+    elif mode == "bonus":
+        cmd.append("--bonus")
     # else: full run (no extra flag)
 
     with _run_lock:
@@ -258,6 +266,19 @@ class RadioHandler(http.server.SimpleHTTPRequestHandler):
                 self.write_json({"error": "no result yet"}, 404)
             return
 
+        if path == "/api/bonus":
+            if BONUS_RESULT_PATH.exists():
+                data = json.loads(BONUS_RESULT_PATH.read_text(encoding="utf-8"))
+                data["available"] = True
+                self.write_json(data)
+            else:
+                self.write_json({
+                    "available": False,
+                    "pageUrl": BONUS_PAGE_URL,
+                    "hintDecoded": BONUS_HINT,
+                })
+            return
+
         if path.startswith("/dane/"):
             # Serve files from dane/ directly (images, audio)
             rel = unquote(path[len("/dane/"):])
@@ -291,8 +312,37 @@ class RadioHandler(http.server.SimpleHTTPRequestHandler):
 
 
 def main():
-    with socketserver.TCPServer(("", PORT), RadioHandler) as httpd:
-        print(f"UI server running at http://localhost:{PORT}/ui.html")
+    def is_bind_conflict(exc: OSError) -> bool:
+        return getattr(exc, "winerror", None) in (10013, 10048) or exc.errno in (errno.EACCES, errno.EADDRINUSE)
+
+    class ReusableTCPServer(socketserver.TCPServer):
+        allow_reuse_address = True
+
+    ports_to_try = [PORT] if PORT_ENV else list(range(PORT, PORT + PORT_FALLBACK_SPAN))
+    httpd = None
+    bound_port = None
+    last_error: OSError | None = None
+
+    for candidate_port in ports_to_try:
+        try:
+            httpd = ReusableTCPServer(("", candidate_port), RadioHandler)
+            bound_port = candidate_port
+            break
+        except OSError as exc:
+            last_error = exc
+            if PORT_ENV or not is_bind_conflict(exc):
+                raise
+            print(f"Port {candidate_port} unavailable ({exc}). Trying next port...")
+
+    if httpd is None or bound_port is None:
+        tried = f"port {PORT}" if PORT_ENV else f"ports {PORT}-{PORT + PORT_FALLBACK_SPAN - 1}"
+        raise SystemExit(f"Could not start UI server on {tried}: {last_error}")
+
+    with httpd:
+        if bound_port != PORT:
+            print(f"Default port {PORT} was unavailable. Using http://localhost:{bound_port}/ui.html instead.")
+        else:
+            print(f"UI server running at http://localhost:{bound_port}/ui.html")
         httpd.serve_forever()
 
 
