@@ -6,6 +6,9 @@ import json
 import mimetypes
 import os
 import socketserver
+import subprocess
+import sys
+import threading
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
@@ -17,6 +20,54 @@ JSONL_PATH = L21_DIR / "session_raw.jsonl"
 RESULT_PATH = L21_DIR / "verification_result.json"
 
 os.chdir(L21_DIR)
+
+# ---------------------------------------------------------------------------
+# Pipeline runner (background thread)
+# ---------------------------------------------------------------------------
+
+_run_lock = threading.Lock()
+_run_state: dict = {"running": False, "lines": [], "done": True, "exit_code": None, "mode": None}
+
+
+def _run_pipeline(mode: str) -> None:
+    """Execute task.py in a subprocess and stream lines into _run_state."""
+    global _run_state
+    task_script = L21_DIR / "task.py"
+    cmd = [sys.executable, str(task_script)]
+    if mode == "replay":
+        cmd.append("--replay")
+    elif mode == "listen":
+        cmd.append("--listen")
+    # else: full run (no extra flag)
+
+    with _run_lock:
+        _run_state = {"running": True, "lines": [], "done": False, "exit_code": None, "mode": mode}
+
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            cwd=str(L21_DIR),
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        for line in proc.stdout:
+            with _run_lock:
+                _run_state["lines"].append(line.rstrip("\n"))
+        proc.wait()
+        with _run_lock:
+            _run_state["running"] = False
+            _run_state["done"] = True
+            _run_state["exit_code"] = proc.returncode
+    except Exception as exc:
+        with _run_lock:
+            _run_state["lines"].append(f"[ERROR] {exc}")
+            _run_state["running"] = False
+            _run_state["done"] = True
+            _run_state["exit_code"] = -1
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -117,12 +168,30 @@ def route_summary(signals: list[dict]) -> dict:
 class RadioHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
         super().end_headers()
 
     def do_OPTIONS(self):
         self.send_response(200)
         self.end_headers()
+
+    def do_POST(self):
+        parsed = urlparse(self.path)
+        if parsed.path == "/api/run":
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length) or b"{}")
+            mode = body.get("mode", "replay")  # replay | full | listen
+            with _run_lock:
+                already = _run_state.get("running", False)
+            if already:
+                self.write_json({"error": "pipeline already running"}, 409)
+                return
+            t = threading.Thread(target=_run_pipeline, args=(mode,), daemon=True)
+            t.start()
+            self.write_json({"status": "started", "mode": mode})
+            return
+        self.write_json({"error": "not found"}, 404)
 
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -161,6 +230,25 @@ class RadioHandler(http.server.SimpleHTTPRequestHandler):
                 self.write_json({"index": idx, "mime": mime, "data": body, "filename": f.name})
             else:
                 self.write_json({"error": "not found"}, 404)
+            return
+
+        if path == "/api/run/status":
+            with _run_lock:
+                snap = dict(_run_state)
+                snap["lineCount"] = len(snap["lines"])
+                del snap["lines"]  # keep payload small
+            self.write_json(snap)
+            return
+
+        if path == "/api/run/log":
+            offset = int(params.get("offset", [0])[0])
+            with _run_lock:
+                lines = _run_state["lines"][offset:]
+                running = _run_state["running"]
+                done = _run_state["done"]
+                exit_code = _run_state["exit_code"]
+                total = len(_run_state["lines"])
+            self.write_json({"lines": lines, "running": running, "done": done, "exitCode": exit_code, "total": total})
             return
 
         if path == "/api/result":

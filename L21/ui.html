@@ -136,6 +136,31 @@
 
   .loading { color: var(--muted); font-size: 13px; }
   .err { color: var(--bad); font-size: 13px; }
+
+  /* Run pipeline */
+  .run-card { margin-bottom: 22px; }
+  .run-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .run-btn {
+    padding: 8px 18px; border-radius: 9px;
+    border: 1px solid rgba(61,255,160,.35); background: rgba(61,255,160,.08);
+    color: var(--accent); cursor: pointer; font-size: 13px; font-weight: 600;
+    letter-spacing: .05em; transition: background 120ms;
+  }
+  .run-btn:hover { background: rgba(61,255,160,.18); }
+  .run-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .run-btn-warn { border-color: rgba(255,201,74,.35); background: rgba(255,201,74,.08); color: var(--warn); }
+  .run-btn-warn:hover { background: rgba(255,201,74,.18); }
+  .run-status { font-size: 12px; padding: 4px 10px; border-radius: 999px; }
+  .run-status.running { background: rgba(89,200,255,.15); color: var(--accent2); }
+  .run-status.done-ok  { background: rgba(61,255,160,.12); color: var(--accent); }
+  .run-status.done-err { background: rgba(255,107,107,.12); color: var(--bad); }
+  .run-log {
+    background: rgba(0,0,0,.45); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px; font-family: monospace; font-size: 12px; line-height: 1.55;
+    color: var(--text); max-height: 380px; overflow-y: auto;
+    white-space: pre-wrap; word-break: break-word; display: none;
+  }
+  .run-log.visible { display: block; }
 </style>
 </head>
 <body>
@@ -154,6 +179,17 @@
       <div class="flag-label">Flag</div>
       <div class="flag-val loading">Ladowanie...</div>
     </div>
+  </div>
+
+  <!-- Run pipeline -->
+  <div class="card run-card">
+    <h2>Uruchom Pipeline</h2>
+    <div class="run-controls">
+      <button class="run-btn" id="btn-replay" onclick="runPipeline('replay')">&#9654; Replay (z pliku)</button>
+      <button class="run-btn run-btn-warn" id="btn-full" onclick="runPipeline('full')">&#9654; Nowa sesja (live)</button>
+      <span class="run-status" id="run-status-badge"></span>
+    </div>
+    <pre class="run-log" id="run-log"></pre>
   </div>
 
   <!-- Report extract -->
@@ -353,6 +389,72 @@ async function showDetail(idx) {
   }
 
   pane.innerHTML = inner;
+}
+
+/* ---- run pipeline ---- */
+let _pollTimer = null;
+let _logOffset = 0;
+
+async function runPipeline(mode) {
+  document.getElementById('btn-replay').disabled = true;
+  document.getElementById('btn-full').disabled = true;
+  const logEl = document.getElementById('run-log');
+  logEl.classList.add('visible');
+  logEl.textContent = '';
+  _logOffset = 0;
+  setRunStatus('running', 'Uruchamianie...');
+  try {
+    const r = await fetch(API + '/api/run', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({mode})
+    });
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      setRunStatus('done-err', 'Blad: ' + (d.error || r.status));
+      document.getElementById('btn-replay').disabled = false;
+      document.getElementById('btn-full').disabled = false;
+      return;
+    }
+    setRunStatus('running', 'Tryb: ' + mode + ' — uruchomiono');
+    _logOffset = 0;
+    pollLog();
+  } catch (e) {
+    setRunStatus('done-err', 'Blad sieci: ' + e.message);
+    document.getElementById('btn-replay').disabled = false;
+    document.getElementById('btn-full').disabled = false;
+  }
+}
+
+function setRunStatus(cls, text) {
+  const el = document.getElementById('run-status-badge');
+  el.className = 'run-status ' + cls;
+  el.textContent = text;
+}
+
+async function pollLog() {
+  if (_pollTimer) clearTimeout(_pollTimer);
+  try {
+    const r = await fetch(API + '/api/run/log?offset=' + _logOffset);
+    const d = await r.json();
+    if (d.lines && d.lines.length) {
+      const logEl = document.getElementById('run-log');
+      logEl.textContent += d.lines.join('\n') + '\n';
+      logEl.scrollTop = logEl.scrollHeight;
+      _logOffset = d.total;
+    }
+    if (d.done) {
+      const ok = d.exitCode === 0;
+      setRunStatus(ok ? 'done-ok' : 'done-err', ok ? 'Gotowe (kod 0)' : 'Blad (kod ' + d.exitCode + ')');
+      document.getElementById('btn-replay').disabled = false;
+      document.getElementById('btn-full').disabled = false;
+      if (ok) { setTimeout(() => { loadResult(); loadSignals(); }, 800); }
+    } else {
+      _pollTimer = setTimeout(pollLog, 800);
+    }
+  } catch (_) {
+    _pollTimer = setTimeout(pollLog, 1500);
+  }
 }
 
 /* ---- init ---- */
