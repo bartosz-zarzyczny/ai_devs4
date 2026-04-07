@@ -24,6 +24,7 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L19/README.md](L19/README.md) - zadanie `filesystem` (wirtualny filesystem: reset /miasta /osoby /towary, analiza notatek Natana, bonus `/flag` z kodem ASCII FLAG)
 - [L20/README.md](L20/README.md) - zadanie `foodwarehouse` (discovery API magazynu, analiza SQLite, tworzenie zamówień dla miast, UI WWW do inspekcji)
 - [L21/README.md](L21/README.md) - zadanie `radiomonitoring` (nasłuch radiowy, główny solver Syjonu oraz bonus `/deeper` z UI WWW)
+- [L22/README.md](L22/README.md) - zadanie `phonecall` (automatyczna rozmowa audio z operatorem po polsku, ustalenie przejezdnej drogi i wyłączenie monitoringu; TTS gTTS, STT whisper; bonus: secret-file-0502 — liczba 7-cyfrowa bez 0 i 7, podzielna przez 7; UI WWW)
 
 ## Konfiguracja
 

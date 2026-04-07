@@ -1,0 +1,11 @@
+{
+  "flag": "{FLG:PHONEBOOTH}",
+  "secret_path": "/secret-file-0502",
+  "number": "1111124",
+  "constraints": [
+    "7 digits",
+    "no digit 0",
+    "no digit 7",
+    "divisible by 7"
+  ]
+}
