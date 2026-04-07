@@ -14,8 +14,8 @@ Odpowiedź wysyłamy na: `POST https://hub.ag3nts.org/verify`
 
 | Zadanie | Flaga |
 |---------|-------|
-| Główne  | `{FLG:CANYOUHEARME}` |
-| Bonus   | `{FLG:PHONEBOOTH}` |
+| Główne  | `{FLG:XXXXXXXXX}` |
+| Bonus   | `{FLG:XXXXXXXXX}` |
 
 ---
 
