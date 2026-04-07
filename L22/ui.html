@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L22 - Phonecall</title>
+<style>
+  :root {
+    --panel: rgba(8, 18, 30, 0.88);
+    --line: rgba(148, 163, 184, 0.18);
+    --text: #e2eaf8;
+    --muted: #8899bb;
+    --accent: #3dffa0;
+    --accent2: #59c8ff;
+    --warn: #ffc94a;
+    --bad: #ff6b6b;
+    --good: #3dffa0;
+    --shadow: 0 20px 50px rgba(0,0,0,.5);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background:
+      radial-gradient(circle at 5% 10%, rgba(61,255,160,.1) 0%, transparent 25%),
+      radial-gradient(circle at 90% 5%, rgba(89,200,255,.1) 0%, transparent 20%),
+      linear-gradient(160deg, #040e1a 0%, #061422 50%, #030a12 100%);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 12px; border-radius: 999px;
+    background: rgba(61,255,160,.1); border: 1px solid rgba(61,255,160,.25);
+    color: var(--accent); font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+  h1 { font-size: clamp(26px,5vw,40px); line-height: 1.05; margin-bottom: 6px; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+  .card h2 { font-size: 13px; color: var(--accent2); margin-bottom: 16px; text-transform: uppercase; letter-spacing: .08em; }
+
+  /* flags */
+  .flags { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media(max-width:600px){ .flags { grid-template-columns: 1fr; } }
+  .flag-card {
+    border-radius: 16px; padding: 20px;
+    border: 1px solid rgba(61,255,160,.3);
+    background: linear-gradient(135deg, rgba(61,255,160,.1), rgba(89,200,255,.06));
+  }
+  .flag-card.bonus { border-color: rgba(255,201,74,.35); background: linear-gradient(135deg, rgba(255,201,74,.1), rgba(89,200,255,.06)); }
+  .flag-label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 6px; }
+  .flag-val { font-size: 18px; font-weight: 700; color: var(--accent); font-family: monospace; word-break: break-all; }
+  .flag-val.bonus { color: var(--warn); }
+  .flag-val.empty { color: var(--muted); font-size: 14px; font-weight: 400; }
+
+  /* buttons */
+  .btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+  button {
+    cursor: pointer; border: none; border-radius: 10px;
+    padding: 10px 22px; font-size: 14px; font-weight: 600;
+    transition: opacity .15s, transform .1s;
+  }
+  button:active { transform: scale(.97); }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-main { background: var(--accent); color: #040e1a; }
+  .btn-bonus { background: var(--warn); color: #040e1a; }
+  .btn-clear { background: rgba(255,107,107,.18); border: 1px solid rgba(255,107,107,.35); color: var(--bad); }
+
+  /* status badge */
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  }
+  .badge.running { background: rgba(255,201,74,.2); color: var(--warn); border: 1px solid rgba(255,201,74,.4); }
+  .badge.done-ok { background: rgba(61,255,160,.15); color: var(--good); border: 1px solid rgba(61,255,160,.35); }
+  .badge.done-err { background: rgba(255,107,107,.15); color: var(--bad); border: 1px solid rgba(255,107,107,.35); }
+  .badge.idle { background: rgba(148,163,184,.1); color: var(--muted); border: 1px solid var(--line); }
+
+  /* log */
+  #log {
+    font-family: "Cascadia Code", "Fira Code", monospace;
+    font-size: 12px; line-height: 1.6;
+    background: rgba(0,0,0,.45); border-radius: 12px;
+    padding: 14px; height: 380px; overflow-y: auto;
+    color: #c0d4f0; border: 1px solid var(--line);
+    white-space: pre-wrap; word-break: break-all;
+  }
+  #log .ok   { color: var(--accent); }
+  #log .warn { color: var(--warn); }
+  #log .err  { color: var(--bad); }
+  #log .info { color: var(--accent2); }
+
+  /* conversation */
+  .conv-entry {
+    display: flex; gap: 10px; margin-bottom: 12px;
+    font-size: 13px; line-height: 1.5;
+  }
+  .conv-who {
+    flex-shrink: 0; width: 80px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; padding-top: 2px;
+  }
+  .conv-who.send { color: var(--accent); }
+  .conv-who.recv { color: var(--accent2); }
+  .conv-text { color: var(--text); }
+  .conv-empty { color: var(--muted); font-size: 13px; }
+
+  /* bonus info */
+  .bonus-info { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .bonus-info strong { color: var(--warn); }
+  code { background: rgba(255,255,255,.07); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow"><span class="dot"></span> L22 &mdash; Phonecall</div>
+  <h1>Phonecall <em>Solver</em></h1>
+  <p class="sub">Automatyczna rozmowa audio z operatorem &bull; Bonus: secret-file-0502</p>
+
+  <!-- Flags -->
+  <div class="flags">
+    <div class="flag-card">
+      <div class="flag-label">&#x1F3F3; Flaga g&oacute;wna</div>
+      <div class="flag-val empty" id="flagMain">brak</div>
+    </div>
+    <div class="flag-card bonus">
+      <div class="flag-label">&#x2B50; Flaga bonus</div>
+      <div class="flag-val bonus empty" id="flagBonus">brak</div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="card">
+    <h2>Uruchomienie</h2>
+    <div class="btns">
+      <button class="btn-main" id="btnMain" onclick="runTask('main')">&#x260E; Uruchom rozmow&#x0119;</button>
+      <button class="btn-bonus" id="btnBonus" onclick="runTask('bonus')">&#x2B50; Uruchom bonus</button>
+      <button class="btn-clear" onclick="clearLog()">&#x2715; Wyczy&#347;&#263; log</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:13px;color:var(--muted)">Status:</span>
+      <span class="badge idle" id="badge">Idle</span>
+      <span style="font-size:12px; color:var(--muted)" id="modeLabel"></span>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="card">
+    <h2>Log wykonania</h2>
+    <div id="log"><span class="info">Kliknij przycisk, by uruchomi&#263; zadanie...</span></div>
+  </div>
+
+  <!-- Conversation -->
+  <div class="card">
+    <h2>Transkrypcja rozmowy</h2>
+    <div id="conv"><p class="conv-empty">Brak wpisów w conversation.jsonl</p></div>
+  </div>
+
+  <!-- Bonus info -->
+  <div class="card">
+    <h2>Jak dzia&#322;a bonus</h2>
+    <div class="bonus-info">
+      <p>1. Wysy&#322;amy <strong>3 b&#322;&#281;dne pliki audio</strong> do endpointu <code>/verify</code> (zamiast MP3 &mdash; losowe bajty).</p>
+      <p>2. Trzecia odpowied&#378; ujawnia pole <strong><code>secret</code></strong> z &#347;cie&#380;k&#261; np. <code>/secret-file-0502</code>.</p>
+      <p>3. Wysy&#322;amy GET na t&#281; &#347;cie&#380;k&#281; z parametrem <code>input[number]</code> &mdash; liczba 7-cyfrowa, <strong>bez cyfry 0 i 7</strong>, <strong>podzielna przez 7</strong>.</p>
+      <p>4. Odpowied&#378; zawiera flag&#281; <strong><code>{FLG:...}</code></strong>.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+let pollTimer = null;
+let logOffset = 0;
+
+function runTask(mode) {
+  fetch('/api/run', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({mode})
+  }).then(r => r.json()).then(d => {
+    if (d.error) { appendLog('[ERROR] ' + d.error, 'err'); return; }
+    logOffset = 0;
+    clearLog();
+    appendLog('[start] mode=' + mode, 'info');
+    startPoll();
+  });
+}
+
+function clearLog() {
+  document.getElementById('log').innerHTML = '';
+}
+
+function appendLog(line, cls) {
+  const el = document.getElementById('log');
+  const span = document.createElement('span');
+  if (cls) span.className = cls;
+  span.textContent = line + '\n';
+  el.appendChild(span);
+  el.scrollTop = el.scrollHeight;
+}
+
+function classifyLine(line) {
+  if (line.startsWith('[DONE]') || line.includes('FLAG:') || line.includes('{FLG:')) return 'ok';
+  if (line.startsWith('[ERROR]') || line.includes('burned') || line.includes('exhausted')) return 'err';
+  if (line.startsWith('[state]') || line.startsWith('[operator')) return 'info';
+  if (line.startsWith('[warn]') || line.includes('retrying')) return 'warn';
+  return '';
+}
+
+function startPoll() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(poll, 1000);
+}
+
+function stopPoll() {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+}
+
+function poll() {
+  fetch('/api/status').then(r => r.json()).then(data => {
+    const st = data.state;
+    const newLines = (st.lines || []).slice(logOffset);
+    newLines.forEach(l => appendLog(l, classifyLine(l)));
+    logOffset = (st.lines || []).length;
+
+    const badge = document.getElementById('badge');
+    const modeLabel = document.getElementById('modeLabel');
+    if (st.running) {
+      badge.className = 'badge running';
+      badge.textContent = 'Running';
+      modeLabel.textContent = st.mode === 'bonus' ? '(bonus)' : '(main)';
+    } else if (st.done && st.exit_code !== null) {
+      badge.className = st.exit_code === 0 ? 'badge done-ok' : 'badge done-err';
+      badge.textContent = st.exit_code === 0 ? 'Done OK' : 'Done (error)';
+      modeLabel.textContent = '';
+      stopPoll();
+    } else {
+      badge.className = 'badge idle';
+      badge.textContent = 'Idle';
+      modeLabel.textContent = '';
+    }
+
+    document.getElementById('btnMain').disabled = st.running;
+    document.getElementById('btnBonus').disabled = st.running;
+
+    if (data.result && data.result.flag) {
+      const el = document.getElementById('flagMain');
+      el.textContent = data.result.flag;
+      el.classList.remove('empty');
+    }
+    if (data.bonus && data.bonus.flag) {
+      const el = document.getElementById('flagBonus');
+      el.textContent = data.bonus.flag;
+      el.classList.remove('empty');
+    }
+
+    loadConversation();
+  });
+}
+
+function loadConversation() {
+  fetch('/api/conversation').then(r => r.json()).then(entries => {
+    const conv = document.getElementById('conv');
+    const relevant = entries.filter(e => e.event === 'send' || e.event === 'operator_audio');
+    if (!relevant.length) {
+      conv.innerHTML = '<p class="conv-empty">Brak wpisów w conversation.jsonl</p>';
+      return;
+    }
+    conv.innerHTML = relevant.map(e => {
+      if (e.event === 'send') {
+        return `<div class="conv-entry">
+          <span class="conv-who send">Tymon</span>
+          <span class="conv-text">${esc(e.text || '')}</span>
+        </div>`;
+      } else {
+        return `<div class="conv-entry">
+          <span class="conv-who recv">Operator</span>
+          <span class="conv-text">${esc(e.transcript || '')}</span>
+        </div>`;
+      }
+    }).join('');
+  });
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Initial load
+poll();
+</script>
+</body>
+</html>
