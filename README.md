@@ -51,7 +51,7 @@ python -m pip install -r requirements.txt
 
 ## Ostatnie zmiany (skrót)
 
-- L21: zadanie `radiomonitoring` - solver głównego raportu dla Syjonu, bonusowa ścieżka `/deeper`, flaga główna `{FLG:GOODMORNINGZION}`, bonus `{FLG:SECRETUM}` oraz UI WWW z uruchamianiem pipeline i bonusu.
+- L21: zadanie `radiomonitoring` - solver głównego raportu dla Syjonu, bonusowa ścieżka `/deeper`, flaga główna `{FLG:XXXXXXXX}`, bonus `{FLG:XXXXX}` oraz UI WWW z uruchamianiem pipeline i bonusu.
 - L19: zadanie `filesystem` - parsowanie notatek Natana, zbudowanie drzewka katalogów `/miasta`, `/osoby`, `/towary`, weryfikacja na `/verify`; bonusowa zagadka `/flag` i wartość ASCII `70 76 65 71` (FLAG).
 - L20: zadanie `foodwarehouse` - discovery API magazynu, mapowanie 8 miast na `destination`, generowanie podpisów per miasto przez `signatureGenerator`, flaga główna `{FLG:XXXXXXX}` oraz bonus `{FLG:XXXXXX}` ukryty w rekordach `Vibe Coder`.
 - L18: strategiczny solver zadania `domatowo`; partyzant odnaleziony w bloku H10, ewakuacja zakończona sukcesem; flaga `{FLG:XXXXXXX}`; UI WWW z mapą 11×11 i wizualizacją jednostek.
