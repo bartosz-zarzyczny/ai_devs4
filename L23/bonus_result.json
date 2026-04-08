@@ -1,0 +1,7 @@
+{
+  "flag": "{FLG:SECRETLAIR}",
+  "method": "sudo tar -c /usr/local/share/flaga.txt (bez -f, domyslnie stdout)",
+  "file": "/usr/local/share/flaga.txt",
+  "permissions": "r-------- root root 17 Apr 4 13:00",
+  "note": "sudo tar bez -f wypisuje archiwum na stdout w busybox - hub nie filtruje tej formy"
+}
