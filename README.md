@@ -25,6 +25,7 @@ Repozytorium zawiera rozwiązania zadań AI_DEVS 4.
 - [L20/README.md](L20/README.md) - zadanie `foodwarehouse` (discovery API magazynu, analiza SQLite, tworzenie zamówień dla miast, UI WWW do inspekcji)
 - [L21/README.md](L21/README.md) - zadanie `radiomonitoring` (nasłuch radiowy, główny solver Syjonu oraz bonus `/deeper` z UI WWW)
 - [L22/README.md](L22/README.md) - zadanie `phonecall` (automatyczna rozmowa audio z operatorem po polsku, ustalenie przejezdnej drogi i wyłączenie monitoringu; TTS gTTS, STT whisper; bonus: secret-file-0502 — liczba 7-cyfrowa bez 0 i 7, podzielna przez 7; UI WWW)
+- [L23/README.md](L23/README.md) - zadanie `shellaccess` (eksploracja zdalnego serwera komendami powłoki, wyszukiwanie logów czasu w `/data`, ustalenie miejsca i daty odnalezienia Rafała, UI WWW z ręcznym terminalem; flaga `{FLG:HUGEFILE}`)
 
 ## Konfiguracja
 
@@ -51,6 +52,7 @@ python -m pip install -r requirements.txt
 
 ## Ostatnie zmiany (skrót)
 
+- L23: zadanie `shellaccess` - eksploracja katalogu `/data` na zdalnym serwerze komendami powłoki przez `/verify`; trzy pliki: `gps.json`, `locations.json`, `time_logs.csv`; znaleziono ciało Rafała Bomby w jaskini w Grudziądzu dnia 2024-11-13; odpowiedź: `2024-11-12` / Grudziądz / lon 18.968774 / lat 53.432303; flaga `{FLG:HUGEFILE}`; UI WWW na porcie 8023.
 - L21: zadanie `radiomonitoring` - solver głównego raportu dla Syjonu, bonusowa ścieżka `/deeper`, flaga główna `{FLG:XXXXXXXX}`, bonus `{FLG:XXXXX}` oraz UI WWW z uruchamianiem pipeline i bonusu.
 - L19: zadanie `filesystem` - parsowanie notatek Natana, zbudowanie drzewka katalogów `/miasta`, `/osoby`, `/towary`, weryfikacja na `/verify`; bonusowa zagadka `/flag` i wartość ASCII `70 76 65 71` (FLAG).
 - L20: zadanie `foodwarehouse` - discovery API magazynu, mapowanie 8 miast na `destination`, generowanie podpisów per miasto przez `signatureGenerator`, flaga główna `{FLG:XXXXXXX}` oraz bonus `{FLG:XXXXXX}` ukryty w rekordach `Vibe Coder`.
