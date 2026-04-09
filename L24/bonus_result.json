@@ -1,0 +1,10 @@
+{
+  "code": -950,
+  "message": "The rocket crashed. Send {\"command\":\"start\"} to begin again.",
+  "crashed": true,
+  "crashReason": "stone",
+  "crashMessage": "The rocket crashed. Send {\"command\":\"start\"} to begin again.",
+  "secretFlag": "{FLG:CRASHEDPLANE}",
+  "_http_status": 400,
+  "_crash_step": 2
+}
