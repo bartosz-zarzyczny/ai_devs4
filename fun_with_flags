@@ -1,71 +1,25 @@
-{
-  "code": 0,
-  "message": "{FLG:SURVIVORS}"
-}
-
-
-Zweryfikowany wynik (zaakceptowany przez /verify):
-
-name: Wojciech
-surname: Bielik
-accessLevel: 7
-powerPlant: PWR2758PL
-Status verify:
-
-code: 0
-message: {FLG:BUSTED}
-
-
-Intercepcja zadziałała:
-API paczek potwierdza: "destination": "PWR6132PL" ✅
-Model powiedział operatorowi że poszło do Zabrza (PWR3847PL) – kamuflaż działa ✅
-Operator na końcu podał flagę: {FLG:FABRICATOR} ✅
-
-
-Response JSON: {
-  "code": 0,
-  "message": "{FLG:WISDOM}"
-}
-
-
-
-{"code": 0, "message": "{FLG:COUNTRYROADS}"}
-
-
+{FLG:SURVIVORS}
+{FLG:BUSTED}
+{FLG:FABRICATOR} 
+{FLG:WISDOM}
+{FLG:COUNTRYROADS}
 {FLG:SMUGGLER}
-
 {FLG:ROTATEIT}
-
 {FLG:SQUASHIT}
-
 {FLG:TRAITOR}
-
 {FLG:LETSFLY}
-
 {FLG:BUGGYSYSTEM}
-
 {FLG:CANTTOUCHTHIS}
-
 {FLG:INSTALLED}
-
 {FLG:WINDFARM}
-
 {FLG:INTACTCITY}
-
 {FLG:NEWREALITY}
-
 {FLG:IVEGOTTHEPOWER}
-
 {FLG:WEVEGOTHIM}
-
 {FLG:DEALWITHIT}
-
 {FLG:JUSTEATIT}
-
 {FLG:GOODMORNINGZION}
-
 {FLG:CANYOUHEARME}
-
 {FLG:HUGEFILE}
 
 
