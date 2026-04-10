@@ -52,7 +52,7 @@ python -m pip install -r requirements.txt
 
 ## Ostatnie zmiany (skrót)
 
-- L23: zadanie `shellaccess` - eksploracja katalogu `/data` na zdalnym serwerze komendami powłoki przez `/verify`; trzy pliki: `gps.json`, `locations.json`, `time_logs.csv`; znaleziono ciało Rafała Bomby w jaskini w Grudziądzu dnia 2024-11-13; odpowiedź: `2024-11-12` / Grudziądz / lon 18.968774 / lat 53.432303; flaga `{FLG:HUGEFILE}`; UI WWW na porcie 8023.
+- L23: zadanie `shellaccess` - eksploracja katalogu `/data` na zdalnym serwerze komendami powłoki przez `/verify`; trzy pliki: `gps.json`, `locations.json`, `time_logs.csv`; znaleziono ciało Rafała Bomby w jaskini w Grudziądzu dnia 2024-11-13; odpowiedź: `2024-11-12` / Grudziądz / lon 18.968774 / lat 53.432303; flaga `{FLG:XXXXXXX}`; UI WWW na porcie 8023.
 - L21: zadanie `radiomonitoring` - solver głównego raportu dla Syjonu, bonusowa ścieżka `/deeper`, flaga główna `{FLG:XXXXXXXX}`, bonus `{FLG:XXXXX}` oraz UI WWW z uruchamianiem pipeline i bonusu.
 - L19: zadanie `filesystem` - parsowanie notatek Natana, zbudowanie drzewka katalogów `/miasta`, `/osoby`, `/towary`, weryfikacja na `/verify`; bonusowa zagadka `/flag` i wartość ASCII `70 76 65 71` (FLAG).
 - L20: zadanie `foodwarehouse` - discovery API magazynu, mapowanie 8 miast na `destination`, generowanie podpisów per miasto przez `signatureGenerator`, flaga główna `{FLG:XXXXXXX}` oraz bonus `{FLG:XXXXXX}` ukryty w rekordach `Vibe Coder`.
@@ -91,8 +91,8 @@ python L20/ui_server.py
 ```
 
 Wyniki:
-- Flaga główna: `{FLG:JUSTEATIT}`
-- Flaga bonusowa: `{FLG:VIBEAGENT}`
+- Flaga główna: `{FLG:XXXXXXXX}`
+- Flaga bonusowa: `{FLG:XXXXXXXX}`
 - Poprawny twórca zamówień: `creatorID=2`, login `tgajewski`
 
 ## L17 — Windpower (harmonogram turbiny + bonus palindromiczny)
@@ -143,7 +143,7 @@ python L18/ui_server.py
 ```
 
 Wyniki:
-- Flaga: `{FLG:WEVEGOTHIM}` — partyzant odnaleziony na H10 i pomyślnie ewakuowany.
+- Flaga: `{FLG:XXXXXXXXX}` — partyzant odnaleziony na H10 i pomyślnie ewakuowany.
 - Strategia: 30 wysokich budynków przeanalizowanych, priorytet block3 (14 pozycji) skuteczny.
 - Koszty: ~270 punktów akcji z limitu 300, efektywne wykorzystanie transportu drogowego.
 ## L13 — Reactor (autonomiczny robot)
